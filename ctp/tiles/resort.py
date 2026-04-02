@@ -4,7 +4,7 @@ from ctp.tiles.base import TileStrategy
 from ctp.core.models import Player
 from ctp.core.board import Tile, Board, SpaceId
 from ctp.core.events import GameEvent, EventType
-from ctp.core.constants import BASE_UNIT
+from ctp.core.constants import BASE_UNIT, STARTING_CASH
 
 
 class ResortStrategy(TileStrategy):
@@ -55,7 +55,6 @@ class ResortStrategy(TileStrategy):
                         "position": tile.position,
                         "property": "Resort",
                         "price": price,
-                        "level": 1
                     }
                 ))
                 event_bus.publish(events[-1])
@@ -74,6 +73,9 @@ class ResortStrategy(TileStrategy):
 
                 rent = int(toll_cost * (increase_rate ** level)) * BASE_UNIT
 
+                if tile.is_golden:
+                    rent *= 2
+
                 # Deduct from payer (even if negative)
                 player.cash -= rent
 
@@ -90,10 +92,24 @@ class ResortStrategy(TileStrategy):
                         "position": tile.position,
                         "amount": rent,
                         "recipient": tile.owner_id,
-                        "level": tile.building_level
+                        "level": tile.building_level,
+                        "is_golden": tile.is_golden,
                     }
                 ))
                 event_bus.publish(events[-1])
+
+        # Phí lễ hội: nếu ô này đang tổ chức lễ hội → trả phí cho hệ thống
+        if board.festival_tile_position == tile.position and not player.is_bankrupt:
+            festival_config = board.get_festival_config() or {}
+            hold_cost_rate = festival_config.get("holdCostRate", 0.02)
+            festival_fee = int(hold_cost_rate * STARTING_CASH)
+            player.cash -= festival_fee
+            events.append(GameEvent(
+                event_type=EventType.FESTIVAL_FEE_PAID,
+                player_id=player.player_id,
+                data={"position": tile.position, "fee": festival_fee}
+            ))
+            event_bus.publish(events[-1])
 
         return events
 

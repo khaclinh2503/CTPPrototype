@@ -21,8 +21,8 @@ class SpaceId(IntEnum):
     START       = 7   # Start tile (unchanged)
     TAX         = 8   # Tax tile
     TRAVEL      = 9   # Travel/teleport tile
-    GOD         = 10  # God tile (Map 2/3 stub)
-    WATER_SLIDE = 40  # Water slide tile (Map 3 stub)
+    GOD         = 10  # God tile (Map 2)
+    WATER_SLIDE = 40  # Water slide tile (Map 3)
 
 
 @dataclass
@@ -42,6 +42,7 @@ class Tile:
     opt: int
     owner_id: Optional[str] = None
     building_level: int = 0
+    is_golden: bool = False  # x2 toll khi check in
 
 
 class Board:
@@ -61,6 +62,7 @@ class Board:
         land_config: dict,
         resort_config: Optional[dict] = None,
         festival_config: Optional[dict] = None,
+        prison_config: Optional[dict] = None,
     ):
         """Initialize board from config data.
 
@@ -70,11 +72,15 @@ class Board:
             land_config: LandSpace config dict, e.g., {"1": {"1": {...}}}
             resort_config: Optional ResortSpace config.
             festival_config: Optional FestivalSpace config.
+            prison_config: Optional PrisonSpace config (escapeCostRate, limitTurns).
         """
         self.land_config = land_config
         self.resort_config = resort_config
         self.festival_config = festival_config
+        self.prison_config = prison_config
         self.festival_level: int = 0
+        self.festival_tile_position: int | None = None  # Ô đang tổ chức lễ hội
+        self.elevated_tile: int | None = None  # chỉ 1 ô được nâng trên toàn map
 
         # Build 32 tiles from SpacePosition0
         self.board: list[Tile] = []
@@ -124,6 +130,10 @@ class Board:
         """
         return self.resort_config
 
+    def get_prison_config(self) -> Optional[dict]:
+        """Get prison space configuration (escapeCostRate, limitTurns)."""
+        return self.prison_config
+
     def get_festival_config(self) -> Optional[dict]:
         """Get festival space configuration.
 
@@ -131,3 +141,60 @@ class Board:
             Festival config dict or None if not configured.
         """
         return self.festival_config
+
+    def get_color_group_positions(self, opt: int) -> list[int]:
+        """Get all board positions of CITY tiles that share the same color as opt.
+
+        Args:
+            opt: Land tile opt index.
+
+        Returns:
+            List of tile positions (1-32) with the same color group.
+        """
+        map_cfg = self.land_config.get("1", {})
+        target = map_cfg.get(str(opt), {})
+        target_color = target.get("color")
+        if target_color is None:
+            return []
+
+        same_color_opts = {
+            int(o) for o, cfg in map_cfg.items() if cfg.get("color") == target_color
+        }
+
+        return [
+            tile.position
+            for tile in self.board
+            if tile.space_id == SpaceId.CITY and tile.opt in same_color_opts
+        ]
+
+    def elevate_tile(self, position: int) -> bool:
+        """Elevate a tile. Returns False if a tile is already elevated on the map."""
+        if self.elevated_tile is not None:
+            return False
+        self.elevated_tile = position
+        return True
+
+    def lower_tile(self, position: int) -> None:
+        """Lower an elevated tile (called when player is blocked by it)."""
+        if self.elevated_tile == position:
+            self.elevated_tile = None
+
+    def is_elevated(self, position: int) -> bool:
+        """Check if a tile is currently elevated."""
+        return self.elevated_tile == position
+
+    def find_elevated_in_path(self, old_pos: int, steps: int) -> int | None:
+        """Find the first elevated tile in the movement path.
+
+        Args:
+            old_pos: Starting position (1-32).
+            steps: Number of steps to move forward.
+
+        Returns:
+            Position of first elevated tile encountered, or None.
+        """
+        for i in range(1, steps + 1):
+            pos = ((old_pos - 1 + i) % 32) + 1
+            if self.is_elevated(pos):
+                return pos
+        return None

@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Skill(gsd:new-project)",
+      "Bash(node __TRACKED_VAR__/.claude/get-shit-done/bin/gsd-tools.cjs commit 'docs: initialize project' --files .planning/PROJECT.md)",
+      "Bash(mkdir -p .planning)",
+      "Bash(node __TRACKED_VAR__/.claude/get-shit-done/bin/gsd-tools.cjs config-new-project '{\"mode\":\"yolo\",\"granularity\":\"coarse\",\"parallelization\":true,\"commit_docs\":true,\"model_profile\":\"quality\",\"workflow\":{\"research\":true,\"plan_check\":true,\"verifier\":true,\"nyquist_validation\":false}}')",
+      "Bash(node __TRACKED_VAR__/.claude/get-shit-done/bin/gsd-tools.cjs commit 'chore: add project config' --files .planning/config.json)",
+      "WebSearch",
+      "WebFetch(domain:arxiv.org)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:www.pygame.org)",
+      "WebFetch(domain:jeffbradberry.com)",
+      "Bash(wc -l \"D:/workspace/CTP/CTPPrototype/.planning/research/\"*.md)",
+      "Bash(node __TRACKED_VAR__/.claude/get-shit-done/bin/gsd-tools.cjs commit 'docs: add requirements' --files .planning/REQUIREMENTS.md)",
+      "Bash(node __TRACKED_VAR__/.claude/get-shit-done/bin/gsd-tools.cjs commit 'docs: add roadmap and state' --files .planning/ROADMAP.md .planning/STATE.md)",
+      "Bash(python3 -c ':*)",
+      "Bash(python -c ':*)",
+      "Bash(node __TRACKED_VAR__/.claude/get-shit-done/bin/gsd-tools.cjs state record-session --stopped-at 'Phase 1 context gathered' --resume-file .planning/phases/01-headless-core/01-CONTEXT.md)",
+      "Bash(node __TRACKED_VAR__/.claude/get-shit-done/bin/gsd-tools.cjs commit 'docs\\(state\\): record phase 1 context session' --files .planning/STATE.md)",
+      "Skill(gsd:plan-phase)",
+      "Bash(node \"D:/workspace/CTP/CTPPrototype/.claude/get-shit-done/bin/gsd-tools.cjs\" frontmatter validate \"D:/workspace/CTP/CTPPrototype/.planning/phases/01-headless-core/01-02-PLAN.md\" --schema plan)",
+      "Bash(node .claude/get-shit-done/bin/gsd-tools.cjs frontmatter validate .planning/phases/01-headless-core/01-02-PLAN.md --schema plan)",
+      "Skill(gsd:execute-phase)",
+      "Skill(gsd:discuss-phase)",
+      "Bash(node __TRACKED_VAR__/.claude/get-shit-done/bin/gsd-tools.cjs config-get workflow.discuss_mode)",
+      "Bash(sort echo:*)",
+      "Bash(node __TRACKED_VAR__/.claude/get-shit-done/bin/gsd-tools.cjs todo match-phase 2)",
+      "Bash(python:*)"
+    ]
+  }
+}

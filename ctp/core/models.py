@@ -26,6 +26,8 @@ class Player:
     is_bankrupt: bool = False
     owned_properties: list[int] = field(default_factory=list)  # tile positions (1-32)
     prison_turns_remaining: int = 0  # 0 = not in prison
+    pending_travel: bool = False     # True = đầu lượt sau phải xử lý travel
+    turns_taken: int = 0              # Số lượt đã hoàn thành (dùng cho God tile)
 
     def can_afford(self, amount: float) -> bool:
         """Check if player has enough cash (excluding property value).

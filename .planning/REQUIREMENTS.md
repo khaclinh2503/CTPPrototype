@@ -42,11 +42,11 @@
 
 ### Property & Trading — Mua bán đất
 
-- [ ] **PROP-01**: Người chơi dừng ở ô đất chưa có chủ → AI quyết định mua hay bỏ qua
-- [ ] **PROP-02**: Người chơi dừng ở ô đất của đối thủ → trả tiền thuê theo cấp hiện tại
-- [ ] **PROP-03**: Nếu property chưa đạt max upgrade → người chơi dừng có thể mua từ chủ theo giá config (acquisition price)
-- [ ] **PROP-04**: AI quyết định có bán property hay không khi bị offer giá acquisition
-- [ ] **PROP-05**: Nâng cấp property: AI quyết định upgrade khi đủ tiền và điều kiện
+- [x] **PROP-01**: Người chơi dừng ở ô đất chưa có chủ → AI quyết định mua hay bỏ qua
+- [x] **PROP-02**: Người chơi dừng ở ô đất của đối thủ → trả tiền thuê theo cấp hiện tại
+- [x] **PROP-03**: Nếu property chưa đạt max upgrade → người chơi dừng có thể mua từ chủ theo giá config (acquisition price)
+- [x] **PROP-04**: AI quyết định có bán property hay không khi bị offer giá acquisition
+- [x] **PROP-05**: Nâng cấp property: AI quyết định upgrade khi đủ tiền và điều kiện
 
 ### AI Engine — Ra quyết định
 

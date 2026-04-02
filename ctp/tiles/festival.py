@@ -1,83 +1,70 @@
-"""FestivalStrategy - festival corner with pot mechanics."""
+"""FestivalStrategy - player chọn ô để tổ chức lễ hội."""
 
+import random
 from ctp.tiles.base import TileStrategy
 from ctp.core.models import Player
 from ctp.core.board import Tile, Board, SpaceId
 from ctp.core.events import GameEvent, EventType
+from ctp.core.constants import STARTING_CASH
 
 
 class FestivalStrategy(TileStrategy):
-    """Strategy for Festival tiles.
+    """Strategy for Festival tile (spaceId=1).
 
-    Festival mechanics:
-    - Player landing pays holdCostRate into the pot
-    - Player receives reward based on festival_level and increaseRate
-    - festival_level increments on each landing (capped at maxFestival)
+    Khi player dừng ở ô lễ hội:
+    - Chọn 1 ô CITY hoặc RESORT trên map để tổ chức lễ hội
+    - Ô được chọn trở thành "festival tile" — chỉ có 1 ô festival trên map
+    - Các player đứng vào ô festival trả phí = holdCostRate × STARTING_CASH cho hệ thống
+
+    Config (Board.json FestivalSpace):
+        holdCostRate: 0.02  — tỷ lệ phí lễ hội (phí = rate × STARTING_CASH)
+        maxFestival: 1      — chỉ 1 ô festival trên map tại 1 thời điểm
     """
 
-    # Default festival config
     DEFAULT_HOLD_COST_RATE = 0.02
-    DEFAULT_INCREASE_RATE = 2
-    DEFAULT_MAX_FESTIVAL = 1
 
     def on_land(self, player: Player, tile: Tile, board: Board, event_bus,
                 players: list | None = None) -> list[GameEvent]:
-        """Handle player landing on a festival tile.
+        """Player chọn 1 ô CITY/RESORT để đặt lễ hội.
+
+        Stub AI: chọn ngẫu nhiên trong các ô CITY/RESORT trên board.
 
         Args:
-            player: The player who landed.
-            tile: The festival tile.
-            board: The game board.
-            event_bus: Event bus for publishing events.
+            player: Player vừa dừng ở ô lễ hội.
+            tile: Festival tile.
+            board: Game board.
+            event_bus: Event bus.
+            players: All players (unused).
 
         Returns:
-            List of events from this tile resolution.
+            List với 1 FESTIVAL_UPDATED event.
         """
         events = []
 
-        # Get festival config
         festival_config = board.get_festival_config() or {}
         hold_cost_rate = festival_config.get("holdCostRate", self.DEFAULT_HOLD_COST_RATE)
-        increase_rate = festival_config.get("increaseRate", self.DEFAULT_INCREASE_RATE)
-        max_festival = festival_config.get("maxFestival", self.DEFAULT_MAX_FESTIVAL)
 
-        # Player pays into pot
-        hold_cost = int(player.cash * hold_cost_rate)
-        if player.cash >= hold_cost:
-            player.cash -= hold_cost
+        # Tìm tất cả ô CITY và RESORT
+        candidates = [
+            t for t in board.board
+            if t.space_id in (SpaceId.CITY, SpaceId.RESORT)
+        ]
+        if not candidates:
+            return events
 
-        # Calculate reward based on festival level
-        base_reward = 100  # Base reward amount
-        festival_level = board.festival_level
-        reward = int(base_reward * (increase_rate ** festival_level))
+        # Stub AI: chọn ngẫu nhiên
+        chosen = random.choice(candidates)
 
-        # Receive reward
-        player.cash += reward
-
-        # Increment festival level (capped)
-        if festival_level < max_festival:
-            board.festival_level += 1
+        # Xóa festival cũ (maxFestival = 1)
+        board.festival_tile_position = chosen.position
 
         events.append(GameEvent(
             event_type=EventType.FESTIVAL_UPDATED,
             player_id=player.player_id,
             data={
-                "position": tile.position,
-                "level": board.festival_level,
-                "hold_cost": hold_cost,
-                "reward": reward
-            }
-        ))
-        event_bus.publish(events[-1])
-
-        # Also emit bonus received event
-        events.append(GameEvent(
-            event_type=EventType.BONUS_RECEIVED,
-            player_id=player.player_id,
-            data={
-                "position": tile.position,
-                "amount": reward,
-                "reason": "festival"
+                "festival_position": chosen.position,
+                "hold_cost_rate": hold_cost_rate,
+                "fee": int(hold_cost_rate * STARTING_CASH),
             }
         ))
         event_bus.publish(events[-1])
@@ -86,11 +73,4 @@ class FestivalStrategy(TileStrategy):
 
     def on_pass(self, player: Player, tile: Tile, board: Board, event_bus,
                 players: list | None = None) -> list[GameEvent]:
-        """Handle player passing a festival tile.
-
-        Passing festival has no effect.
-
-        Returns:
-            Empty list (no events).
-        """
         return []

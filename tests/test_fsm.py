@@ -201,10 +201,11 @@ class TestFSMStateTransitions:
         assert controller.phase == TurnPhase.CHECK_BANKRUPTCY
 
     def test_step_check_to_end_turn(self, controller):
-        """CHECK_BANKRUPTCY -> END_TURN"""
-        # Roll
-        controller.step()
+        """CHECK_BANKRUPTCY -> END_TURN (force non-doubles so no re-roll)"""
+        controller._current_dice = (1, 2)  # ensure not doubles before check
+        controller._rolled_doubles = False
         # Move
+        controller.phase = TurnPhase.MOVE
         controller.step()
         # Resolve
         controller.step()
@@ -295,13 +296,15 @@ class TestPrisonHandling:
     """Test prison handling in FSM."""
 
     def test_prison_player_skips_roll(self, controller, event_bus):
-        """Player in prison skips roll phase."""
-        controller.current_player.prison_turns_remaining = 1
+        """Player in prison (turns>1) with no money skips roll phase."""
+        controller.current_player.prison_turns_remaining = 2
+        controller.current_player.cash = 0  # cannot afford escape fee
 
         # Step should go from ROLL directly to END_TURN
         controller.step()
 
         assert controller.phase == TurnPhase.END_TURN
+        assert controller.current_player.prison_turns_remaining == 1
 
 
 class TestBankruptcyResolution:

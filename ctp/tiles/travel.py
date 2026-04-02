@@ -1,6 +1,5 @@
-"""TravelStrategy - teleport tile."""
+"""TravelStrategy - đặt pending_travel flag, xử lý thực tế ở FSM lượt sau."""
 
-import random
 from ctp.tiles.base import TileStrategy
 from ctp.core.models import Player
 from ctp.core.board import Tile, Board, SpaceId
@@ -8,64 +7,30 @@ from ctp.core.events import GameEvent, EventType
 
 
 class TravelStrategy(TileStrategy):
-    """Strategy for Travel tiles.
+    """Strategy for Travel tiles (spaceId=9).
 
-    Teleports player to a random destination and charges
-    travel cost based on travelCostRate.
+    Khi player dừng ở ô Travel:
+    - Set pending_travel = True, kết thúc lượt ngay.
+    - Đầu lượt SAU: FSM chọn ngẫu nhiên 1 CITY/RESORT làm đích,
+      hỏi player có muốn đi không (stub AI: đi nếu đủ tiền).
+    - Phí = travelCostRate × STARTING_CASH = 20,000.
+    - Chấp nhận: trả phí + teleport + kết thúc lượt.
+    - Từ chối hoặc không đủ tiền: kết thúc lượt (không di chuyển).
     """
-
-    # Default travel cost rate if not in config
-    DEFAULT_TRAVEL_COST_RATE = 0.02
 
     def on_land(self, player: Player, tile: Tile, board: Board, event_bus,
                 players: list | None = None) -> list[GameEvent]:
-        """Handle player landing on a travel tile.
+        """Đặt pending_travel = True. Teleport thực tế ở _do_roll lượt sau."""
+        player.pending_travel = True
 
-        Args:
-            player: The player who landed.
-            tile: The travel tile.
-            board: The game board.
-            event_bus: Event bus for publishing events.
-
-        Returns:
-            List of events from this tile resolution.
-        """
-        events = []
-
-        # Calculate travel cost (2% of cash)
-        travel_cost_rate = self.DEFAULT_TRAVEL_COST_RATE
-        travel_cost = int(player.cash * travel_cost_rate)
-
-        if player.cash >= travel_cost:
-            player.cash -= travel_cost
-
-        # Teleport to a random position (simplified for Phase 1)
-        # In a full implementation, this would consider unowned properties
-        # For now, teleport to Start (position 1)
-        old_position = player.position
-        player.position = 1  # Go to Start
-
-        events.append(GameEvent(
-            event_type=EventType.PLAYER_MOVE,
+        event = GameEvent(
+            event_type=EventType.TILE_LANDED,
             player_id=player.player_id,
-            data={
-                "old_pos": old_position,
-                "new_pos": player.position,
-                "travel_cost": travel_cost,
-                "reason": "teleport"
-            }
-        ))
-        event_bus.publish(events[-1])
-
-        return events
+            data={"position": tile.position, "tile_type": "TRAVEL", "pending": True}
+        )
+        event_bus.publish(event)
+        return [event]
 
     def on_pass(self, player: Player, tile: Tile, board: Board, event_bus,
                 players: list | None = None) -> list[GameEvent]:
-        """Handle player passing a travel tile.
-
-        Passing travel has no effect.
-
-        Returns:
-            Empty list (no events).
-        """
         return []

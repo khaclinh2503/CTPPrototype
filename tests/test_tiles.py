@@ -177,13 +177,15 @@ class TestLandStrategy:
     """Test LandStrategy.on_land and on_pass (renamed CITY)."""
 
     def test_city_unowned_auto_buy(self, board, event_bus):
-        """Landing on unowned city triggers auto-buy."""
+        """Landing on unowned city triggers auto-buy via GameController."""
+        from ctp.controller.fsm import GameController
         from ctp.core.constants import BASE_UNIT
-        player = Player(player_id="p1", cash=1_000_000)
+        # Give exactly level-1 price so player can only afford level 1 (build=10)
+        player = Player(player_id="p1", cash=10 * BASE_UNIT)
         tile = board.get_tile(2)  # Position 2 is CITY with opt=1
 
-        strategy = TileRegistry.resolve(SpaceId.CITY)
-        events = strategy.on_land(player, tile, board, event_bus)
+        controller = GameController(board=board, players=[player], max_turns=1, event_bus=event_bus)
+        events = controller._try_buy_property(player, tile)
 
         # Should have purchased property
         assert tile.owner_id == "p1"
@@ -281,20 +283,18 @@ class TestPrisonStrategy:
 class TestTravelStrategy:
     """Test TravelStrategy.on_land and on_pass."""
 
-    def test_travel_teleports_and_charges(self, board, event_bus):
-        """Landing on travel teleports player and charges cost."""
-        from ctp.core.constants import BASE_UNIT
+    def test_travel_sets_pending_flag(self, board, event_bus):
+        """Landing on travel sets pending_travel — teleport happens next turn via FSM."""
         player = Player(player_id="p1", cash=1_000_000)
-        player.position = 25  # Currently on TRAVEL (spaceId=9)
+        player.position = 25
         tile = board.get_tile(25)
 
         strategy = TileRegistry.resolve(SpaceId.TRAVEL)
         events = strategy.on_land(player, tile, board, event_bus)
 
-        # Player should be teleported to position 1 (Start)
-        assert player.position == 1
-        # Player should have paid travel cost
-        assert player.cash < 1_000_000
+        assert player.pending_travel is True
+        assert player.position == 25   # chưa di chuyển
+        assert player.cash == 1_000_000  # chưa trả phí
 
     def test_travel_pass_no_effect(self, board, event_bus):
         """Passing travel has no effect."""

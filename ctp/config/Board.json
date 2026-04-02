@@ -1,3780 +1,3780 @@
 {
-    "General": {
-        "limitTime": 1500,
-        "limitTurn": 25,
-        "actionTimeout": 15,
-        "acquireRate": 1,
-        "sellRate": 0.5,
-        "winReward": 0.9,
-        "defaultHouse": {
-            "3": {
-                "houseLevel": 4,
-                "numHouse": 3
-            }
-        },
-        "tollMultiply": {
-            "3": {
-                "11": 2
-            }
-        },
-        "cardKeepLimit": {
-            "1": 1,
-            "2": 1,
-            "3": 1,
-            "4": 3,
-            "5": 1,
-            "6": 1,
-            "7": 1
-        }
+  "General": {
+    "limitTime": 1500,
+    "limitTurn": 25,
+    "actionTimeout": 15,
+    "acquireRate": 1,
+    "sellRate": 0.5,
+    "winReward": 0.9,
+    "defaultHouse": {
+      "3": {
+        "houseLevel": 4,
+        "numHouse": 3
+      }
     },
-    "SpacePositionNote": "SpacePosition index = GAME_CUSTOM - 1, spaceId - an id of SlotType - GameConfig.js",
-    "SpacePosition0": {
-        "1": {
-            "spaceId": 7,
-            "opt": 0
-        },
-        "2": {
-            "spaceId": 3,
-            "opt": 1
-        },
-        "3": {
-            "spaceId": 4,
-            "opt": 0
-        },
-        "4": {
-            "spaceId": 3,
-            "opt": 2
-        },
-        "5": {
-            "spaceId": 6,
-            "opt": 101
-        },
-        "6": {
-            "spaceId": 3,
-            "opt": 3
-        },
-        "7": {
-            "spaceId": 3,
-            "opt": 4
-        },
-        "8": {
-            "spaceId": 3,
-            "opt": 5
-        },
-        "9": {
-            "spaceId": 5,
-            "opt": 0
-        },
-        "10": {
-            "spaceId": 6,
-            "opt": 102
-        },
-        "11": {
-            "spaceId": 3,
-            "opt": 6
-        },
-        "12": {
-            "spaceId": 3,
-            "opt": 7
-        },
-        "13": {
-            "spaceId": 2,
-            "opt": 0
-        },
-        "14": {
-            "spaceId": 3,
-            "opt": 8
-        },
-        "15": {
-            "spaceId": 6,
-            "opt": 101
-        },
-        "16": {
-            "spaceId": 3,
-            "opt": 9
-        },
-        "17": {
-            "spaceId": 1,
-            "opt": 0
-        },
-        "18": {
-            "spaceId": 3,
-            "opt": 10
-        },
-        "19": {
-            "spaceId": 6,
-            "opt": 101
-        },
-        "20": {
-            "spaceId": 3,
-            "opt": 11
-        },
-        "21": {
-            "spaceId": 2,
-            "opt": 0
-        },
-        "22": {
-            "spaceId": 3,
-            "opt": 12
-        },
-        "23": {
-            "spaceId": 3,
-            "opt": 13
-        },
-        "24": {
-            "spaceId": 3,
-            "opt": 14
-        },
-        "25": {
-            "spaceId": 9,
-            "opt": 0
-        },
-        "26": {
-            "spaceId": 6,
-            "opt": 102
-        },
-        "27": {
-            "spaceId": 3,
-            "opt": 15
-        },
-        "28": {
-            "spaceId": 3,
-            "opt": 16
-        },
-        "29": {
-            "spaceId": 2,
-            "opt": 0
-        },
-        "30": {
-            "spaceId": 3,
-            "opt": 17
-        },
-        "31": {
-            "spaceId": 8,
-            "opt": 0
-        },
-        "32": {
-            "spaceId": 3,
-            "opt": 18
-        }
+    "tollMultiply": {
+      "3": {
+        "11": 2
+      }
     },
-    "SpacePosition1": {
-        "1": {
-            "spaceId": 7,
-            "opt": 0
-        },
-        "2": {
-            "spaceId": 3,
-            "opt": 1
-        },
-        "3": {
-            "spaceId": 4,
-            "opt": 2
-        },
-        "4": {
-            "spaceId": 3,
-            "opt": 2
-        },
-        "5": {
-            "spaceId": 10,
-            "opt": 1
-        },
-        "6": {
-            "spaceId": 3,
-            "opt": 3
-        },
-        "7": {
-            "spaceId": 3,
-            "opt": 4
-        },
-        "8": {
-            "spaceId": 6,
-            "opt": 101
-        },
-        "9": {
-            "spaceId": 5,
-            "opt": 0
-        },
-        "10": {
-            "spaceId": 2,
-            "opt": 0
-        },
-        "11": {
-            "spaceId": 3,
-            "opt": 5
-        },
-        "12": {
-            "spaceId": 3,
-            "opt": 6
-        },
-        "13": {
-            "spaceId": 10,
-            "opt": 2
-        },
-        "14": {
-            "spaceId": 3,
-            "opt": 7
-        },
-        "15": {
-            "spaceId": 6,
-            "opt": 101
-        },
-        "16": {
-            "spaceId": 3,
-            "opt": 8
-        },
-        "17": {
-            "spaceId": 1,
-            "opt": 0
-        },
-        "18": {
-            "spaceId": 3,
-            "opt": 9
-        },
-        "19": {
-            "spaceId": 2,
-            "opt": 0
-        },
-        "20": {
-            "spaceId": 3,
-            "opt": 10
-        },
-        "21": {
-            "spaceId": 10,
-            "opt": 3
-        },
-        "22": {
-            "spaceId": 3,
-            "opt": 11
-        },
-        "23": {
-            "spaceId": 3,
-            "opt": 12
-        },
-        "24": {
-            "spaceId": 6,
-            "opt": 101
-        },
-        "25": {
-            "spaceId": 9,
-            "opt": 0
-        },
-        "26": {
-            "spaceId": 3,
-            "opt": 13
-        },
-        "27": {
-            "spaceId": 2,
-            "opt": 0
-        },
-        "28": {
-            "spaceId": 3,
-            "opt": 14
-        },
-        "29": {
-            "spaceId": 10,
-            "opt": 4
-        },
-        "30": {
-            "spaceId": 3,
-            "opt": 15
-        },
-        "31": {
-            "spaceId": 6,
-            "opt": 102
-        },
-        "32": {
-            "spaceId": 3,
-            "opt": 16
-        }
-    },
-    "SpacePosition2": {
-        "1": {
-            "spaceId": 7,
-            "opt": 0
-        },
-        "2": {
-            "spaceId": 3,
-            "opt": 1
-        },
-        "3": {
-            "spaceId": 13,
-            "opt": 0
-        },
-        "4": {
-            "spaceId": 3,
-            "opt": 2
-        },
-        "5": {
-            "spaceId": 6,
-            "opt": 101
-        },
-        "6": {
-            "spaceId": 3,
-            "opt": 3
-        },
-        "7": {
-            "spaceId": 3,
-            "opt": 4
-        },
-        "8": {
-            "spaceId": 8,
-            "opt": 0
-        },
-        "9": {
-            "spaceId": 5,
-            "opt": 0
-        },
-        "10": {
-            "spaceId": 6,
-            "opt": 101
-        },
-        "11": {
-            "spaceId": 3,
-            "opt": 5
-        },
-        "12": {
-            "spaceId": 3,
-            "opt": 6
-        },
-        "13": {
-            "spaceId": 12,
-            "opt": 0
-        },
-        "14": {
-            "spaceId": 3,
-            "opt": 7
-        },
-        "15": {
-            "spaceId": 2,
-            "opt": 0
-        },
-        "16": {
-            "spaceId": 3,
-            "opt": 8
-        },
-        "17": {
-            "spaceId": 1,
-            "opt": 0
-        },
-        "18": {
-            "spaceId": 3,
-            "opt": 9
-        },
-        "19": {
-            "spaceId": 6,
-            "opt": 101
-        },
-        "20": {
-            "spaceId": 3,
-            "opt": 10
-        },
-        "21": {
-            "spaceId": 2,
-            "opt": 0
-        },
-        "22": {
-            "spaceId": 3,
-            "opt": 11
-        },
-        "23": {
-            "spaceId": 3,
-            "opt": 12
-        },
-        "24": {
-            "spaceId": 8,
-            "opt": 0
-        },
-        "25": {
-            "spaceId": 9,
-            "opt": 0
-        },
-        "26": {
-            "spaceId": 6,
-            "opt": 102
-        },
-        "27": {
-            "spaceId": 3,
-            "opt": 13
-        },
-        "28": {
-            "spaceId": 3,
-            "opt": 14
-        },
-        "29": {
-            "spaceId": 11,
-            "opt": 0
-        },
-        "30": {
-            "spaceId": 3,
-            "opt": 15
-        },
-        "31": {
-            "spaceId": 8,
-            "opt": 0
-        },
-        "32": {
-            "spaceId": 3,
-            "opt": 16
-        }
-    },
-    "SpacePosition3": {
-        "1": {
-            "spaceId": 31,
-            "opt": 0
-        },
-        "2": {
-            "spaceId": 21,
-            "opt": 0
-        },
-        "3": {
-            "spaceId": 14,
-            "opt": 1
-        },
-        "4": {
-            "spaceId": 19,
-            "opt": 6
-        },
-        "5": {
-            "spaceId": 22,
-            "opt": 20
-        },
-        "6": {
-            "spaceId": 16,
-            "opt": 0
-        },
-        "7": {
-            "spaceId": 14,
-            "opt": 3
-        },
-        "8": {
-            "spaceId": 14,
-            "opt": 4
-        },
-        "9": {
-            "spaceId": 5,
-            "opt": 0
-        },
-        "10": {
-            "spaceId": 14,
-            "opt": 5
-        },
-        "11": {
-            "spaceId": 14,
-            "opt": 6
-        },
-        "12": {
-            "spaceId": 18,
-            "opt": 1
-        },
-        "13": {
-            "spaceId": 22,
-            "opt": 28
-        },
-        "14": {
-            "spaceId": 19,
-            "opt": -6
-        },
-        "15": {
-            "spaceId": 14,
-            "opt": 7
-        },
-        "16": {
-            "spaceId": 14,
-            "opt": 8
-        },
-        "17": {
-            "spaceId": 20,
-            "opt": 0
-        },
-        "18": {
-            "spaceId": 14,
-            "opt": 9
-        },
-        "19": {
-            "spaceId": 14,
-            "opt": 10
-        },
-        "20": {
-            "spaceId": 19,
-            "opt": 6
-        },
-        "21": {
-            "spaceId": 24,
-            "opt": 0
-        },
-        "22": {
-            "spaceId": 17,
-            "opt": 0
-        },
-        "23": {
-            "spaceId": 14,
-            "opt": 11
-        },
-        "24": {
-            "spaceId": 14,
-            "opt": 12
-        },
-        "25": {
-            "spaceId": 15,
-            "opt": 0
-        },
-        "26": {
-            "spaceId": 14,
-            "opt": 13
-        },
-        "27": {
-            "spaceId": 14,
-            "opt": 14
-        },
-        "28": {
-            "spaceId": 18,
-            "opt": 2
-        },
-        "29": {
-            "spaceId": 24,
-            "opt": 0
-        },
-        "30": {
-            "spaceId": 19,
-            "opt": -6
-        },
-        "31": {
-            "spaceId": 23,
-            "opt": 0
-        },
-        "32": {
-            "spaceId": 14,
-            "opt": 15
-        }
-    },
-    "SpacePosition4": {
-        "1": {
-            "spaceId": 7,
-            "opt": 0
-        },
-        "2": {
-            "spaceId": 3,
-            "opt": 1
-        },
-        "3": {
-            "spaceId": 3,
-            "opt": 2
-        },
-        "4": {
-            "spaceId": 3,
-            "opt": 3
-        },
-        "5": {
-            "spaceId": 6,
-            "opt": 101
-        },
-        "6": {
-            "spaceId": 3,
-            "opt": 4
-        },
-        "7": {
-            "spaceId": 3,
-            "opt": 5
-        },
-        "8": {
-            "spaceId": 2,
-            "opt": 0
-        },
-        "9": {
-            "spaceId": 5,
-            "opt": 0
-        },
-        "10": {
-            "spaceId": 6,
-            "opt": 101
-        },
-        "11": {
-            "spaceId": 3,
-            "opt": 6
-        },
-        "12": {
-            "spaceId": 3,
-            "opt": 7
-        },
-        "13": {
-            "spaceId": 25,
-            "opt": 2
-        },
-        "14": {
-            "spaceId": 3,
-            "opt": 8
-        },
-        "15": {
-            "spaceId": 2,
-            "opt": 0
-        },
-        "16": {
-            "spaceId": 3,
-            "opt": 9
-        },
-        "17": {
-            "spaceId": 1,
-            "opt": 0
-        },
-        "18": {
-            "spaceId": 3,
-            "opt": 10
-        },
-        "19": {
-            "spaceId": 6,
-            "opt": 101
-        },
-        "20": {
-            "spaceId": 3,
-            "opt": 11
-        },
-        "21": {
-            "spaceId": 25,
-            "opt": 3
-        },
-        "22": {
-            "spaceId": 3,
-            "opt": 12
-        },
-        "23": {
-            "spaceId": 3,
-            "opt": 13
-        },
-        "24": {
-            "spaceId": 3,
-            "opt": 14
-        },
-        "25": {
-            "spaceId": 9,
-            "opt": 0
-        },
-        "26": {
-            "spaceId": 6,
-            "opt": 102
-        },
-        "27": {
-            "spaceId": 3,
-            "opt": 15
-        },
-        "28": {
-            "spaceId": 3,
-            "opt": 16
-        },
-        "29": {
-            "spaceId": 2,
-            "opt": 0
-        },
-        "30": {
-            "spaceId": 3,
-            "opt": 17
-        },
-        "31": {
-            "spaceId": 8,
-            "opt": 0
-        },
-        "32": {
-            "spaceId": 3,
-            "opt": 18
-        }
-    },
-    "SpacePosition5": {
-        "1": {
-            "spaceId": 26,
-            "opt": 0
-        },
-        "2": {
-            "spaceId": 3,
-            "opt": 1
-        },
-        "3": {
-            "spaceId": 3,
-            "opt": 2
-        },
-        "4": {
-            "spaceId": 27,
-            "opt": 0
-        },
-        "5": {
-            "spaceId": 28,
-            "opt": 0
-        },
-        "6": {
-            "spaceId": 3,
-            "opt": 3
-        },
-        "7": {
-            "spaceId": 3,
-            "opt": 4
-        },
-        "8": {
-            "spaceId": 9,
-            "opt": 0
-        },
-        "9": {
-            "spaceId": 3,
-            "opt": 5
-        },
-        "10": {
-            "spaceId": 3,
-            "opt": 6
-        },
-        "11": {
-            "spaceId": 28,
-            "opt": 6
-        },
-        "12": {
-            "spaceId": 27,
-            "opt": 7
-        },
-        "13": {
-            "spaceId": 3,
-            "opt": 7
-        },
-        "14": {
-            "spaceId": 3,
-            "opt": 8
-        },
-        "15": {
-            "spaceId": 26,
-            "opt": 0
-        },
-        "16": {
-            "spaceId": 26,
-            "opt": 0
-        },
-        "17": {
-            "spaceId": 3,
-            "opt": 9
-        },
-        "18": {
-            "spaceId": 3,
-            "opt": 10
-        },
-        "19": {
-            "spaceId": 27,
-            "opt": 0
-        },
-        "20": {
-            "spaceId": 3,
-            "opt": 11
-        },
-        "21": {
-            "spaceId": 3,
-            "opt": 12
-        },
-        "22": {
-            "spaceId": 28,
-            "opt": 4
-        },
-        "23": {
-            "spaceId": 3,
-            "opt": 13
-        },
-        "24": {
-            "spaceId": 3,
-            "opt": 14
-        },
-        "25": {
-            "spaceId": 27,
-            "opt": 6
-        },
-        "26": {
-            "spaceId": 3,
-            "opt": 15
-        },
-        "27": {
-            "spaceId": 3,
-            "opt": 16
-        },
-        "28": {
-            "spaceId": 26,
-            "opt": 0
-        },
-        "29": {
-            "spaceId": 26,
-            "opt": 0
-        },
-        "30": {
-            "spaceId": 3,
-            "opt": 17
-        },
-        "31": {
-            "spaceId": 3,
-            "opt": 18
-        },
-        "32": {
-            "spaceId": 27,
-            "opt": 0
-        },
-        "33": {
-            "spaceId": 28,
-            "opt": 0
-        },
-        "34": {
-            "spaceId": 3,
-            "opt": 19
-        },
-        "35": {
-            "spaceId": 3,
-            "opt": 20
-        },
-        "36": {
-            "spaceId": 9,
-            "opt": 0
-        },
-        "37": {
-            "spaceId": 3,
-            "opt": 21
-        },
-        "38": {
-            "spaceId": 3,
-            "opt": 22
-        },
-        "39": {
-            "spaceId": 28,
-            "opt": 6
-        },
-        "40": {
-            "spaceId": 27,
-            "opt": 0
-        },
-        "41": {
-            "spaceId": 3,
-            "opt": 23
-        },
-        "42": {
-            "spaceId": 3,
-            "opt": 24
-        },
-        "43": {
-            "spaceId": 26,
-            "opt": 0
-        }
-    },
-    "SpacePosition6": {
-        "1": {
-            "spaceId": 7,
-            "opt": 0
-        },
-        "2": {
-            "spaceId": 40,
-            "opt": 1
-        },
-        "3": {
-            "spaceId": 3,
-            "opt": 1
-        },
-        "4": {
-            "spaceId": 4,
-            "opt": 2
-        },
-        "5": {
-            "spaceId": 3,
-            "opt": 2
-        },
-        "6": {
-            "spaceId": 3,
-            "opt": 3
-        },
-        "7": {
-            "spaceId": 3,
-            "opt": 4
-        },
-        "8": {
-            "spaceId": 6,
-            "opt": 101
-        },
-        "9": {
-            "spaceId": 1,
-            "opt": 0
-        },
-        "10": {
-            "spaceId": 40,
-            "opt": 2
-        },
-        "11": {
-            "spaceId": 2,
-            "opt": 0
-        },
-        "12": {
-            "spaceId": 3,
-            "opt": 5
-        },
-        "13": {
-            "spaceId": 3,
-            "opt": 6
-        },
-        "14": {
-            "spaceId": 3,
-            "opt": 7
-        },
-        "15": {
-            "spaceId": 6,
-            "opt": 101
-        },
-        "16": {
-            "spaceId": 3,
-            "opt": 8
-        },
-        "17": {
-            "spaceId": 5,
-            "opt": 0
-        },
-        "18": {
-            "spaceId": 40,
-            "opt": 3
-        },
-        "19": {
-            "spaceId": 3,
-            "opt": 9
-        },
-        "20": {
-            "spaceId": 2,
-            "opt": 0
-        },
-        "21": {
-            "spaceId": 3,
-            "opt": 10
-        },
-        "22": {
-            "spaceId": 3,
-            "opt": 11
-        },
-        "23": {
-            "spaceId": 3,
-            "opt": 12
-        },
-        "24": {
-            "spaceId": 6,
-            "opt": 101
-        },
-        "25": {
-            "spaceId": 9,
-            "opt": 0
-        },
-        "26": {
-            "spaceId": 40,
-            "opt": 4
-        },
-        "27": {
-            "spaceId": 3,
-            "opt": 13
-        },
-        "28": {
-            "spaceId": 2,
-            "opt": 0
-        },
-        "29": {
-            "spaceId": 3,
-            "opt": 14
-        },
-        "30": {
-            "spaceId": 3,
-            "opt": 15
-        },
-        "31": {
-            "spaceId": 6,
-            "opt": 102
-        },
-        "32": {
-            "spaceId": 3,
-            "opt": 16
-        }
-    },
-    "SpacePosition7": {
-        "1": {
-            "spaceId": 7,
-            "opt": 0
-        },
-        "2": {
-            "spaceId": 3,
-            "opt": 1
-        },
-        "3": {
-            "spaceId": 4,
-            "opt": 0
-        },
-        "4": {
-            "spaceId": 3,
-            "opt": 2
-        },
-        "5": {
-            "spaceId": 6,
-            "opt": 101
-        },
-        "6": {
-            "spaceId": 3,
-            "opt": 3
-        },
-        "7": {
-            "spaceId": 3,
-            "opt": 4
-        },
-        "8": {
-            "spaceId": 3,
-            "opt": 5
-        },
-        "9": {
-            "spaceId": 5,
-            "opt": 0
-        },
-        "10": {
-            "spaceId": 6,
-            "opt": 102
-        },
-        "11": {
-            "spaceId": 3,
-            "opt": 6
-        },
-        "12": {
-            "spaceId": 3,
-            "opt": 7
-        },
-        "13": {
-            "spaceId": 2,
-            "opt": 0
-        },
-        "14": {
-            "spaceId": 3,
-            "opt": 8
-        },
-        "15": {
-            "spaceId": 6,
-            "opt": 101
-        },
-        "16": {
-            "spaceId": 3,
-            "opt": 9
-        },
-        "17": {
-            "spaceId": 1,
-            "opt": 0
-        },
-        "18": {
-            "spaceId": 3,
-            "opt": 10
-        },
-        "19": {
-            "spaceId": 6,
-            "opt": 101
-        },
-        "20": {
-            "spaceId": 3,
-            "opt": 11
-        },
-        "21": {
-            "spaceId": 2,
-            "opt": 0
-        },
-        "22": {
-            "spaceId": 3,
-            "opt": 12
-        },
-        "23": {
-            "spaceId": 3,
-            "opt": 13
-        },
-        "24": {
-            "spaceId": 3,
-            "opt": 14
-        },
-        "25": {
-            "spaceId": 9,
-            "opt": 0
-        },
-        "26": {
-            "spaceId": 6,
-            "opt": 102
-        },
-        "27": {
-            "spaceId": 3,
-            "opt": 15
-        },
-        "28": {
-            "spaceId": 3,
-            "opt": 16
-        },
-        "29": {
-            "spaceId": 2,
-            "opt": 0
-        },
-        "30": {
-            "spaceId": 3,
-            "opt": 17
-        },
-        "31": {
-            "spaceId": 8,
-            "opt": 0
-        },
-        "32": {
-            "spaceId": 3,
-            "opt": 18
-        }
-    },
-    "FestivalSpace": {
-        "holdCostRate": 0.02,
-        "increaseRate": 2,
-        "maxFestival": 1
-    },
-    "FortuneSpace": {
-        "deckSet": [
-            "IT_CA_21",
-            "IT_CA_20",
-            "IT_CA_19",
-            "IT_CA_18",
-            "IT_CA_17",
-            "IT_CA_16",
-            "IT_CA_15",
-            "IT_CA_14",
-            "IT_CA_13",
-            "IT_CA_12",
-            "IT_CA_11",
-            "IT_CA_10",
-            "IT_CA_9",
-            "IT_CA_8",
-            "IT_CA_7",
-            "IT_CA_6",
-            "IT_CA_5",
-            "IT_CA_4",
-            "IT_CA_3",
-            "IT_CA_2",
-            "IT_CA_1"
-        ]
-    },
-    "LandSpaceNote": "LandSpace index = GAME_CUSTOM, define list citySlot in SpacePosition config, index = citySlot.opt",
-    "LandSpace": {
-        "1": {
-            "1": {
-                "color": 1,
-                "building": {
-                    "1": {
-                        "build": 10,
-                        "toll": 1
-                    },
-                    "2": {
-                        "build": 5,
-                        "toll": 3
-                    },
-                    "3": {
-                        "build": 15,
-                        "toll": 10
-                    },
-                    "4": {
-                        "build": 25,
-                        "toll": 28
-                    },
-                    "5": {
-                        "build": 25,
-                        "toll": 125
-                    }
-                }
-            },
-            "2": {
-                "color": 1,
-                "building": {
-                    "1": {
-                        "build": 13,
-                        "toll": 1
-                    },
-                    "2": {
-                        "build": 5,
-                        "toll": 4
-                    },
-                    "3": {
-                        "build": 15,
-                        "toll": 11
-                    },
-                    "4": {
-                        "build": 25,
-                        "toll": 30
-                    },
-                    "5": {
-                        "build": 25,
-                        "toll": 135
-                    }
-                }
-            },
-            "3": {
-                "color": 2,
-                "building": {
-                    "1": {
-                        "build": 24,
-                        "toll": 3
-                    },
-                    "2": {
-                        "build": 10,
-                        "toll": 9
-                    },
-                    "3": {
-                        "build": 30,
-                        "toll": 23
-                    },
-                    "4": {
-                        "build": 50,
-                        "toll": 60
-                    },
-                    "5": {
-                        "build": 50,
-                        "toll": 225
-                    }
-                }
-            },
-            "4": {
-                "color": 2,
-                "building": {
-                    "1": {
-                        "build": 24,
-                        "toll": 3
-                    },
-                    "2": {
-                        "build": 10,
-                        "toll": 9
-                    },
-                    "3": {
-                        "build": 30,
-                        "toll": 23
-                    },
-                    "4": {
-                        "build": 50,
-                        "toll": 60
-                    },
-                    "5": {
-                        "build": 50,
-                        "toll": 225
-                    }
-                }
-            },
-            "5": {
-                "color": 2,
-                "building": {
-                    "1": {
-                        "build": 27,
-                        "toll": 4
-                    },
-                    "2": {
-                        "build": 10,
-                        "toll": 10
-                    },
-                    "3": {
-                        "build": 30,
-                        "toll": 24
-                    },
-                    "4": {
-                        "build": 50,
-                        "toll": 62
-                    },
-                    "5": {
-                        "build": 50,
-                        "toll": 225
-                    }
-                }
-            },
-            "6": {
-                "color": 3,
-                "building": {
-                    "1": {
-                        "build": 36,
-                        "toll": 7
-                    },
-                    "2": {
-                        "build": 15,
-                        "toll": 16
-                    },
-                    "3": {
-                        "build": 45,
-                        "toll": 42
-                    },
-                    "4": {
-                        "build": 75,
-                        "toll": 110
-                    },
-                    "5": {
-                        "build": 75,
-                        "toll": 300
-                    }
-                }
-            },
-            "7": {
-                "color": 3,
-                "building": {
-                    "1": {
-                        "build": 36,
-                        "toll": 7
-                    },
-                    "2": {
-                        "build": 15,
-                        "toll": 16
-                    },
-                    "3": {
-                        "build": 45,
-                        "toll": 42
-                    },
-                    "4": {
-                        "build": 75,
-                        "toll": 110
-                    },
-                    "5": {
-                        "build": 75,
-                        "toll": 300
-                    }
-                }
-            },
-            "8": {
-                "color": 4,
-                "building": {
-                    "1": {
-                        "build": 47,
-                        "toll": 10
-                    },
-                    "2": {
-                        "build": 20,
-                        "toll": 23
-                    },
-                    "3": {
-                        "build": 60,
-                        "toll": 57
-                    },
-                    "4": {
-                        "build": 100,
-                        "toll": 135
-                    },
-                    "5": {
-                        "build": 100,
-                        "toll": 325
-                    }
-                }
-            },
-            "9": {
-                "color": 4,
-                "building": {
-                    "1": {
-                        "build": 50,
-                        "toll": 12
-                    },
-                    "2": {
-                        "build": 20,
-                        "toll": 24
-                    },
-                    "3": {
-                        "build": 60,
-                        "toll": 59
-                    },
-                    "4": {
-                        "build": 100,
-                        "toll": 140
-                    },
-                    "5": {
-                        "build": 100,
-                        "toll": 325
-                    }
-                }
-            },
-            "10": {
-                "color": 5,
-                "building": {
-                    "1": {
-                        "build": 59,
-                        "toll": 16
-                    },
-                    "2": {
-                        "build": 25,
-                        "toll": 35
-                    },
-                    "3": {
-                        "build": 75,
-                        "toll": 84
-                    },
-                    "4": {
-                        "build": 125,
-                        "toll": 190
-                    },
-                    "5": {
-                        "build": 125,
-                        "toll": 375
-                    }
-                }
-            },
-            "11": {
-                "color": 5,
-                "building": {
-                    "1": {
-                        "build": 62,
-                        "toll": 17
-                    },
-                    "2": {
-                        "build": 25,
-                        "toll": 37
-                    },
-                    "3": {
-                        "build": 75,
-                        "toll": 86
-                    },
-                    "4": {
-                        "build": 125,
-                        "toll": 195
-                    },
-                    "5": {
-                        "build": 125,
-                        "toll": 380
-                    }
-                }
-            },
-            "12": {
-                "color": 6,
-                "building": {
-                    "1": {
-                        "build": 70,
-                        "toll": 22
-                    },
-                    "2": {
-                        "build": 30,
-                        "toll": 43
-                    },
-                    "3": {
-                        "build": 90,
-                        "toll": 100
-                    },
-                    "4": {
-                        "build": 150,
-                        "toll": 230
-                    },
-                    "5": {
-                        "build": 150,
-                        "toll": 365
-                    }
-                }
-            },
-            "13": {
-                "color": 6,
-                "building": {
-                    "1": {
-                        "build": 73,
-                        "toll": 24
-                    },
-                    "2": {
-                        "build": 30,
-                        "toll": 46
-                    },
-                    "3": {
-                        "build": 90,
-                        "toll": 110
-                    },
-                    "4": {
-                        "build": 150,
-                        "toll": 235
-                    },
-                    "5": {
-                        "build": 150,
-                        "toll": 375
-                    }
-                }
-            },
-            "14": {
-                "color": 6,
-                "building": {
-                    "1": {
-                        "build": 73,
-                        "toll": 24
-                    },
-                    "2": {
-                        "build": 30,
-                        "toll": 46
-                    },
-                    "3": {
-                        "build": 90,
-                        "toll": 110
-                    },
-                    "4": {
-                        "build": 150,
-                        "toll": 235
-                    },
-                    "5": {
-                        "build": 150,
-                        "toll": 375
-                    }
-                }
-            },
-            "15": {
-                "color": 7,
-                "building": {
-                    "1": {
-                        "build": 82,
-                        "toll": 28
-                    },
-                    "2": {
-                        "build": 35,
-                        "toll": 62
-                    },
-                    "3": {
-                        "build": 105,
-                        "toll": 140
-                    },
-                    "4": {
-                        "build": 175,
-                        "toll": 300
-                    },
-                    "5": {
-                        "build": 175,
-                        "toll": 350
-                    }
-                }
-            },
-            "16": {
-                "color": 7,
-                "building": {
-                    "1": {
-                        "build": 85,
-                        "toll": 30
-                    },
-                    "2": {
-                        "build": 35,
-                        "toll": 65
-                    },
-                    "3": {
-                        "build": 105,
-                        "toll": 145
-                    },
-                    "4": {
-                        "build": 175,
-                        "toll": 310
-                    },
-                    "5": {
-                        "build": 175,
-                        "toll": 350
-                    }
-                }
-            },
-            "17": {
-                "color": 8,
-                "building": {
-                    "1": {
-                        "build": 96,
-                        "toll": 28
-                    },
-                    "2": {
-                        "build": 40,
-                        "toll": 62
-                    },
-                    "3": {
-                        "build": 120,
-                        "toll": 140
-                    },
-                    "4": {
-                        "build": 200,
-                        "toll": 300
-                    },
-                    "5": {
-                        "build": 200,
-                        "toll": 380
-                    }
-                }
-            },
-            "18": {
-                "color": 8,
-                "building": {
-                    "1": {
-                        "build": 100,
-                        "toll": 40
-                    },
-                    "2": {
-                        "build": 40,
-                        "toll": 80
-                    },
-                    "3": {
-                        "build": 120,
-                        "toll": 170
-                    },
-                    "4": {
-                        "build": 200,
-                        "toll": 350
-                    },
-                    "5": {
-                        "build": 200,
-                        "toll": 300
-                    }
-                }
-            }
-        },
-        "2": {
-            "1": {
-                "color": 1,
-                "building": {
-                    "1": {
-                        "build": 10,
-                        "toll": 1
-                    },
-                    "2": {
-                        "build": 5,
-                        "toll": 3
-                    },
-                    "3": {
-                        "build": 15,
-                        "toll": 10
-                    },
-                    "4": {
-                        "build": 25,
-                        "toll": 28
-                    },
-                    "5": {
-                        "build": 25,
-                        "toll": 125
-                    }
-                }
-            },
-            "2": {
-                "color": 1,
-                "building": {
-                    "1": {
-                        "build": 13,
-                        "toll": 1
-                    },
-                    "2": {
-                        "build": 5,
-                        "toll": 4
-                    },
-                    "3": {
-                        "build": 15,
-                        "toll": 11
-                    },
-                    "4": {
-                        "build": 25,
-                        "toll": 30
-                    },
-                    "5": {
-                        "build": 25,
-                        "toll": 135
-                    }
-                }
-            },
-            "3": {
-                "color": 2,
-                "building": {
-                    "1": {
-                        "build": 24,
-                        "toll": 3
-                    },
-                    "2": {
-                        "build": 10,
-                        "toll": 9
-                    },
-                    "3": {
-                        "build": 30,
-                        "toll": 23
-                    },
-                    "4": {
-                        "build": 50,
-                        "toll": 60
-                    },
-                    "5": {
-                        "build": 50,
-                        "toll": 225
-                    }
-                }
-            },
-            "4": {
-                "color": 2,
-                "building": {
-                    "1": {
-                        "build": 24,
-                        "toll": 3
-                    },
-                    "2": {
-                        "build": 10,
-                        "toll": 9
-                    },
-                    "3": {
-                        "build": 30,
-                        "toll": 23
-                    },
-                    "4": {
-                        "build": 50,
-                        "toll": 60
-                    },
-                    "5": {
-                        "build": 50,
-                        "toll": 225
-                    }
-                }
-            },
-            "5": {
-                "color": 3,
-                "building": {
-                    "1": {
-                        "build": 36,
-                        "toll": 7
-                    },
-                    "2": {
-                        "build": 15,
-                        "toll": 16
-                    },
-                    "3": {
-                        "build": 45,
-                        "toll": 42
-                    },
-                    "4": {
-                        "build": 75,
-                        "toll": 110
-                    },
-                    "5": {
-                        "build": 75,
-                        "toll": 300
-                    }
-                }
-            },
-            "6": {
-                "color": 3,
-                "building": {
-                    "1": {
-                        "build": 36,
-                        "toll": 7
-                    },
-                    "2": {
-                        "build": 15,
-                        "toll": 16
-                    },
-                    "3": {
-                        "build": 45,
-                        "toll": 42
-                    },
-                    "4": {
-                        "build": 75,
-                        "toll": 110
-                    },
-                    "5": {
-                        "build": 75,
-                        "toll": 300
-                    }
-                }
-            },
-            "7": {
-                "color": 4,
-                "building": {
-                    "1": {
-                        "build": 47,
-                        "toll": 10
-                    },
-                    "2": {
-                        "build": 20,
-                        "toll": 23
-                    },
-                    "3": {
-                        "build": 60,
-                        "toll": 57
-                    },
-                    "4": {
-                        "build": 100,
-                        "toll": 135
-                    },
-                    "5": {
-                        "build": 100,
-                        "toll": 325
-                    }
-                }
-            },
-            "8": {
-                "color": 4,
-                "building": {
-                    "1": {
-                        "build": 50,
-                        "toll": 12
-                    },
-                    "2": {
-                        "build": 20,
-                        "toll": 24
-                    },
-                    "3": {
-                        "build": 60,
-                        "toll": 59
-                    },
-                    "4": {
-                        "build": 100,
-                        "toll": 140
-                    },
-                    "5": {
-                        "build": 100,
-                        "toll": 325
-                    }
-                }
-            },
-            "9": {
-                "color": 5,
-                "building": {
-                    "1": {
-                        "build": 59,
-                        "toll": 16
-                    },
-                    "2": {
-                        "build": 25,
-                        "toll": 35
-                    },
-                    "3": {
-                        "build": 75,
-                        "toll": 84
-                    },
-                    "4": {
-                        "build": 125,
-                        "toll": 190
-                    },
-                    "5": {
-                        "build": 125,
-                        "toll": 375
-                    }
-                }
-            },
-            "10": {
-                "color": 5,
-                "building": {
-                    "1": {
-                        "build": 62,
-                        "toll": 17
-                    },
-                    "2": {
-                        "build": 25,
-                        "toll": 37
-                    },
-                    "3": {
-                        "build": 75,
-                        "toll": 86
-                    },
-                    "4": {
-                        "build": 125,
-                        "toll": 195
-                    },
-                    "5": {
-                        "build": 125,
-                        "toll": 380
-                    }
-                }
-            },
-            "11": {
-                "color": 6,
-                "building": {
-                    "1": {
-                        "build": 70,
-                        "toll": 22
-                    },
-                    "2": {
-                        "build": 30,
-                        "toll": 43
-                    },
-                    "3": {
-                        "build": 90,
-                        "toll": 100
-                    },
-                    "4": {
-                        "build": 150,
-                        "toll": 230
-                    },
-                    "5": {
-                        "build": 150,
-                        "toll": 365
-                    }
-                }
-            },
-            "12": {
-                "color": 6,
-                "building": {
-                    "1": {
-                        "build": 73,
-                        "toll": 24
-                    },
-                    "2": {
-                        "build": 30,
-                        "toll": 46
-                    },
-                    "3": {
-                        "build": 90,
-                        "toll": 110
-                    },
-                    "4": {
-                        "build": 150,
-                        "toll": 235
-                    },
-                    "5": {
-                        "build": 150,
-                        "toll": 375
-                    }
-                }
-            },
-            "13": {
-                "color": 7,
-                "building": {
-                    "1": {
-                        "build": 82,
-                        "toll": 28
-                    },
-                    "2": {
-                        "build": 35,
-                        "toll": 62
-                    },
-                    "3": {
-                        "build": 105,
-                        "toll": 140
-                    },
-                    "4": {
-                        "build": 175,
-                        "toll": 300
-                    },
-                    "5": {
-                        "build": 175,
-                        "toll": 350
-                    }
-                }
-            },
-            "14": {
-                "color": 7,
-                "building": {
-                    "1": {
-                        "build": 85,
-                        "toll": 30
-                    },
-                    "2": {
-                        "build": 35,
-                        "toll": 65
-                    },
-                    "3": {
-                        "build": 105,
-                        "toll": 145
-                    },
-                    "4": {
-                        "build": 175,
-                        "toll": 310
-                    },
-                    "5": {
-                        "build": 175,
-                        "toll": 350
-                    }
-                }
-            },
-            "15": {
-                "color": 8,
-                "building": {
-                    "1": {
-                        "build": 96,
-                        "toll": 28
-                    },
-                    "2": {
-                        "build": 40,
-                        "toll": 62
-                    },
-                    "3": {
-                        "build": 120,
-                        "toll": 140
-                    },
-                    "4": {
-                        "build": 200,
-                        "toll": 300
-                    },
-                    "5": {
-                        "build": 200,
-                        "toll": 380
-                    }
-                }
-            },
-            "16": {
-                "color": 8,
-                "building": {
-                    "1": {
-                        "build": 100,
-                        "toll": 40
-                    },
-                    "2": {
-                        "build": 40,
-                        "toll": 80
-                    },
-                    "3": {
-                        "build": 120,
-                        "toll": 170
-                    },
-                    "4": {
-                        "build": 200,
-                        "toll": 350
-                    },
-                    "5": {
-                        "build": 200,
-                        "toll": 300
-                    }
-                }
-            }
-        },
-        "3": {
-            "1": {
-                "color": 1,
-                "building": {
-                    "1": {
-                        "build": 10,
-                        "toll": 1
-                    },
-                    "2": {
-                        "build": 5,
-                        "toll": 3
-                    },
-                    "3": {
-                        "build": 15,
-                        "toll": 10
-                    },
-                    "4": {
-                        "build": 25,
-                        "toll": 28
-                    },
-                    "5": {
-                        "build": 25,
-                        "toll": 125
-                    }
-                }
-            },
-            "2": {
-                "color": 1,
-                "building": {
-                    "1": {
-                        "build": 13,
-                        "toll": 1
-                    },
-                    "2": {
-                        "build": 5,
-                        "toll": 4
-                    },
-                    "3": {
-                        "build": 15,
-                        "toll": 11
-                    },
-                    "4": {
-                        "build": 25,
-                        "toll": 30
-                    },
-                    "5": {
-                        "build": 25,
-                        "toll": 135
-                    }
-                }
-            },
-            "3": {
-                "color": 2,
-                "building": {
-                    "1": {
-                        "build": 24,
-                        "toll": 3
-                    },
-                    "2": {
-                        "build": 10,
-                        "toll": 9
-                    },
-                    "3": {
-                        "build": 30,
-                        "toll": 23
-                    },
-                    "4": {
-                        "build": 50,
-                        "toll": 60
-                    },
-                    "5": {
-                        "build": 50,
-                        "toll": 225
-                    }
-                }
-            },
-            "4": {
-                "color": 2,
-                "building": {
-                    "1": {
-                        "build": 24,
-                        "toll": 3
-                    },
-                    "2": {
-                        "build": 10,
-                        "toll": 9
-                    },
-                    "3": {
-                        "build": 30,
-                        "toll": 23
-                    },
-                    "4": {
-                        "build": 50,
-                        "toll": 60
-                    },
-                    "5": {
-                        "build": 50,
-                        "toll": 225
-                    }
-                }
-            },
-            "5": {
-                "color": 3,
-                "building": {
-                    "1": {
-                        "build": 36,
-                        "toll": 7
-                    },
-                    "2": {
-                        "build": 15,
-                        "toll": 16
-                    },
-                    "3": {
-                        "build": 45,
-                        "toll": 42
-                    },
-                    "4": {
-                        "build": 75,
-                        "toll": 110
-                    },
-                    "5": {
-                        "build": 75,
-                        "toll": 300
-                    }
-                }
-            },
-            "6": {
-                "color": 3,
-                "building": {
-                    "1": {
-                        "build": 36,
-                        "toll": 7
-                    },
-                    "2": {
-                        "build": 15,
-                        "toll": 16
-                    },
-                    "3": {
-                        "build": 45,
-                        "toll": 42
-                    },
-                    "4": {
-                        "build": 75,
-                        "toll": 110
-                    },
-                    "5": {
-                        "build": 75,
-                        "toll": 300
-                    }
-                }
-            },
-            "7": {
-                "color": 4,
-                "building": {
-                    "1": {
-                        "build": 47,
-                        "toll": 10
-                    },
-                    "2": {
-                        "build": 20,
-                        "toll": 23
-                    },
-                    "3": {
-                        "build": 60,
-                        "toll": 57
-                    },
-                    "4": {
-                        "build": 100,
-                        "toll": 135
-                    },
-                    "5": {
-                        "build": 100,
-                        "toll": 325
-                    }
-                }
-            },
-            "8": {
-                "color": 4,
-                "building": {
-                    "1": {
-                        "build": 50,
-                        "toll": 12
-                    },
-                    "2": {
-                        "build": 20,
-                        "toll": 24
-                    },
-                    "3": {
-                        "build": 60,
-                        "toll": 59
-                    },
-                    "4": {
-                        "build": 100,
-                        "toll": 140
-                    },
-                    "5": {
-                        "build": 100,
-                        "toll": 325
-                    }
-                }
-            },
-            "9": {
-                "color": 5,
-                "building": {
-                    "1": {
-                        "build": 59,
-                        "toll": 16
-                    },
-                    "2": {
-                        "build": 25,
-                        "toll": 35
-                    },
-                    "3": {
-                        "build": 75,
-                        "toll": 84
-                    },
-                    "4": {
-                        "build": 125,
-                        "toll": 190
-                    },
-                    "5": {
-                        "build": 125,
-                        "toll": 375
-                    }
-                }
-            },
-            "10": {
-                "color": 5,
-                "building": {
-                    "1": {
-                        "build": 62,
-                        "toll": 17
-                    },
-                    "2": {
-                        "build": 25,
-                        "toll": 37
-                    },
-                    "3": {
-                        "build": 75,
-                        "toll": 86
-                    },
-                    "4": {
-                        "build": 125,
-                        "toll": 195
-                    },
-                    "5": {
-                        "build": 125,
-                        "toll": 380
-                    }
-                }
-            },
-            "11": {
-                "color": 6,
-                "building": {
-                    "1": {
-                        "build": 70,
-                        "toll": 22
-                    },
-                    "2": {
-                        "build": 30,
-                        "toll": 43
-                    },
-                    "3": {
-                        "build": 90,
-                        "toll": 100
-                    },
-                    "4": {
-                        "build": 150,
-                        "toll": 230
-                    },
-                    "5": {
-                        "build": 150,
-                        "toll": 365
-                    }
-                }
-            },
-            "12": {
-                "color": 6,
-                "building": {
-                    "1": {
-                        "build": 73,
-                        "toll": 24
-                    },
-                    "2": {
-                        "build": 30,
-                        "toll": 46
-                    },
-                    "3": {
-                        "build": 90,
-                        "toll": 110
-                    },
-                    "4": {
-                        "build": 150,
-                        "toll": 235
-                    },
-                    "5": {
-                        "build": 150,
-                        "toll": 375
-                    }
-                }
-            },
-            "13": {
-                "color": 7,
-                "building": {
-                    "1": {
-                        "build": 82,
-                        "toll": 28
-                    },
-                    "2": {
-                        "build": 35,
-                        "toll": 62
-                    },
-                    "3": {
-                        "build": 105,
-                        "toll": 140
-                    },
-                    "4": {
-                        "build": 175,
-                        "toll": 300
-                    },
-                    "5": {
-                        "build": 175,
-                        "toll": 350
-                    }
-                }
-            },
-            "14": {
-                "color": 7,
-                "building": {
-                    "1": {
-                        "build": 85,
-                        "toll": 30
-                    },
-                    "2": {
-                        "build": 35,
-                        "toll": 65
-                    },
-                    "3": {
-                        "build": 105,
-                        "toll": 145
-                    },
-                    "4": {
-                        "build": 175,
-                        "toll": 310
-                    },
-                    "5": {
-                        "build": 175,
-                        "toll": 350
-                    }
-                }
-            },
-            "15": {
-                "color": 8,
-                "building": {
-                    "1": {
-                        "build": 96,
-                        "toll": 28
-                    },
-                    "2": {
-                        "build": 40,
-                        "toll": 62
-                    },
-                    "3": {
-                        "build": 120,
-                        "toll": 140
-                    },
-                    "4": {
-                        "build": 200,
-                        "toll": 300
-                    },
-                    "5": {
-                        "build": 200,
-                        "toll": 380
-                    }
-                }
-            },
-            "16": {
-                "color": 8,
-                "building": {
-                    "1": {
-                        "build": 100,
-                        "toll": 40
-                    },
-                    "2": {
-                        "build": 40,
-                        "toll": 80
-                    },
-                    "3": {
-                        "build": 120,
-                        "toll": 170
-                    },
-                    "4": {
-                        "build": 200,
-                        "toll": 350
-                    },
-                    "5": {
-                        "build": 200,
-                        "toll": 300
-                    }
-                }
-            }
-        },
-        "4": {
-            "1": {
-                "color": -1,
-                "building": {
-                    "1": {
-                        "build": 0,
-                        "toll": 0
-                    },
-                    "2": {
-                        "build": 0,
-                        "toll": 0
-                    },
-                    "3": {
-                        "build": 0,
-                        "toll": 0
-                    },
-                    "4": {
-                        "build": 0,
-                        "toll": 0
-                    },
-                    "5": {
-                        "build": 0,
-                        "toll": 0
-                    }
-                }
-            }
-        },
-        "5": {
-            "1": {
-                "color": 1,
-                "building": {
-                    "1": {
-                        "build": 10,
-                        "toll": 1
-                    },
-                    "2": {
-                        "build": 5,
-                        "toll": 3
-                    },
-                    "3": {
-                        "build": 15,
-                        "toll": 10
-                    },
-                    "4": {
-                        "build": 25,
-                        "toll": 28
-                    },
-                    "5": {
-                        "build": 25,
-                        "toll": 125
-                    }
-                }
-            },
-            "2": {
-                "color": 1,
-                "building": {
-                    "1": {
-                        "build": 13,
-                        "toll": 1
-                    },
-                    "2": {
-                        "build": 5,
-                        "toll": 4
-                    },
-                    "3": {
-                        "build": 15,
-                        "toll": 11
-                    },
-                    "4": {
-                        "build": 25,
-                        "toll": 30
-                    },
-                    "5": {
-                        "build": 25,
-                        "toll": 135
-                    }
-                }
-            },
-            "3": {
-                "color": 1,
-                "building": {
-                    "1": {
-                        "build": 24,
-                        "toll": 3
-                    },
-                    "2": {
-                        "build": 10,
-                        "toll": 9
-                    },
-                    "3": {
-                        "build": 30,
-                        "toll": 23
-                    },
-                    "4": {
-                        "build": 50,
-                        "toll": 60
-                    },
-                    "5": {
-                        "build": 50,
-                        "toll": 225
-                    }
-                }
-            },
-            "4": {
-                "color": 2,
-                "building": {
-                    "1": {
-                        "build": 24,
-                        "toll": 3
-                    },
-                    "2": {
-                        "build": 10,
-                        "toll": 9
-                    },
-                    "3": {
-                        "build": 30,
-                        "toll": 23
-                    },
-                    "4": {
-                        "build": 50,
-                        "toll": 60
-                    },
-                    "5": {
-                        "build": 50,
-                        "toll": 225
-                    }
-                }
-            },
-            "5": {
-                "color": 2,
-                "building": {
-                    "1": {
-                        "build": 36,
-                        "toll": 7
-                    },
-                    "2": {
-                        "build": 15,
-                        "toll": 16
-                    },
-                    "3": {
-                        "build": 45,
-                        "toll": 42
-                    },
-                    "4": {
-                        "build": 75,
-                        "toll": 110
-                    },
-                    "5": {
-                        "build": 75,
-                        "toll": 300
-                    }
-                }
-            },
-            "6": {
-                "color": 3,
-                "building": {
-                    "1": {
-                        "build": 36,
-                        "toll": 7
-                    },
-                    "2": {
-                        "build": 15,
-                        "toll": 16
-                    },
-                    "3": {
-                        "build": 45,
-                        "toll": 42
-                    },
-                    "4": {
-                        "build": 75,
-                        "toll": 110
-                    },
-                    "5": {
-                        "build": 75,
-                        "toll": 300
-                    }
-                }
-            },
-            "7": {
-                "color": 3,
-                "building": {
-                    "1": {
-                        "build": 47,
-                        "toll": 10
-                    },
-                    "2": {
-                        "build": 20,
-                        "toll": 23
-                    },
-                    "3": {
-                        "build": 60,
-                        "toll": 57
-                    },
-                    "4": {
-                        "build": 100,
-                        "toll": 135
-                    },
-                    "5": {
-                        "build": 100,
-                        "toll": 325
-                    }
-                }
-            },
-            "8": {
-                "color": 4,
-                "building": {
-                    "1": {
-                        "build": 50,
-                        "toll": 12
-                    },
-                    "2": {
-                        "build": 20,
-                        "toll": 24
-                    },
-                    "3": {
-                        "build": 60,
-                        "toll": 59
-                    },
-                    "4": {
-                        "build": 100,
-                        "toll": 140
-                    },
-                    "5": {
-                        "build": 100,
-                        "toll": 325
-                    }
-                }
-            },
-            "9": {
-                "color": 4,
-                "building": {
-                    "1": {
-                        "build": 59,
-                        "toll": 16
-                    },
-                    "2": {
-                        "build": 25,
-                        "toll": 35
-                    },
-                    "3": {
-                        "build": 75,
-                        "toll": 84
-                    },
-                    "4": {
-                        "build": 125,
-                        "toll": 190
-                    },
-                    "5": {
-                        "build": 125,
-                        "toll": 375
-                    }
-                }
-            },
-            "10": {
-                "color": 5,
-                "building": {
-                    "1": {
-                        "build": 62,
-                        "toll": 17
-                    },
-                    "2": {
-                        "build": 25,
-                        "toll": 37
-                    },
-                    "3": {
-                        "build": 75,
-                        "toll": 86
-                    },
-                    "4": {
-                        "build": 125,
-                        "toll": 195
-                    },
-                    "5": {
-                        "build": 125,
-                        "toll": 380
-                    }
-                }
-            },
-            "11": {
-                "color": 5,
-                "building": {
-                    "1": {
-                        "build": 70,
-                        "toll": 22
-                    },
-                    "2": {
-                        "build": 30,
-                        "toll": 43
-                    },
-                    "3": {
-                        "build": 90,
-                        "toll": 100
-                    },
-                    "4": {
-                        "build": 150,
-                        "toll": 230
-                    },
-                    "5": {
-                        "build": 150,
-                        "toll": 365
-                    }
-                }
-            },
-            "12": {
-                "color": 6,
-                "building": {
-                    "1": {
-                        "build": 73,
-                        "toll": 24
-                    },
-                    "2": {
-                        "build": 30,
-                        "toll": 46
-                    },
-                    "3": {
-                        "build": 90,
-                        "toll": 110
-                    },
-                    "4": {
-                        "build": 150,
-                        "toll": 235
-                    },
-                    "5": {
-                        "build": 150,
-                        "toll": 375
-                    }
-                }
-            },
-            "13": {
-                "color": 6,
-                "building": {
-                    "1": {
-                        "build": 82,
-                        "toll": 28
-                    },
-                    "2": {
-                        "build": 35,
-                        "toll": 62
-                    },
-                    "3": {
-                        "build": 105,
-                        "toll": 140
-                    },
-                    "4": {
-                        "build": 175,
-                        "toll": 300
-                    },
-                    "5": {
-                        "build": 175,
-                        "toll": 350
-                    }
-                }
-            },
-            "14": {
-                "color": 6,
-                "building": {
-                    "1": {
-                        "build": 85,
-                        "toll": 30
-                    },
-                    "2": {
-                        "build": 35,
-                        "toll": 65
-                    },
-                    "3": {
-                        "build": 105,
-                        "toll": 145
-                    },
-                    "4": {
-                        "build": 175,
-                        "toll": 310
-                    },
-                    "5": {
-                        "build": 175,
-                        "toll": 350
-                    }
-                }
-            },
-            "15": {
-                "color": 7,
-                "building": {
-                    "1": {
-                        "build": 96,
-                        "toll": 28
-                    },
-                    "2": {
-                        "build": 40,
-                        "toll": 62
-                    },
-                    "3": {
-                        "build": 120,
-                        "toll": 140
-                    },
-                    "4": {
-                        "build": 200,
-                        "toll": 300
-                    },
-                    "5": {
-                        "build": 200,
-                        "toll": 380
-                    }
-                }
-            },
-            "16": {
-                "color": 7,
-                "building": {
-                    "1": {
-                        "build": 100,
-                        "toll": 40
-                    },
-                    "2": {
-                        "build": 40,
-                        "toll": 80
-                    },
-                    "3": {
-                        "build": 120,
-                        "toll": 170
-                    },
-                    "4": {
-                        "build": 200,
-                        "toll": 350
-                    },
-                    "5": {
-                        "build": 200,
-                        "toll": 300
-                    }
-                }
-            },
-            "17": {
-                "color": 8,
-                "building": {
-                    "1": {
-                        "build": 100,
-                        "toll": 40
-                    },
-                    "2": {
-                        "build": 40,
-                        "toll": 80
-                    },
-                    "3": {
-                        "build": 120,
-                        "toll": 170
-                    },
-                    "4": {
-                        "build": 200,
-                        "toll": 350
-                    },
-                    "5": {
-                        "build": 200,
-                        "toll": 300
-                    }
-                }
-            },
-            "18": {
-                "color": 8,
-                "building": {
-                    "1": {
-                        "build": 100,
-                        "toll": 40
-                    },
-                    "2": {
-                        "build": 40,
-                        "toll": 80
-                    },
-                    "3": {
-                        "build": 120,
-                        "toll": 170
-                    },
-                    "4": {
-                        "build": 200,
-                        "toll": 350
-                    },
-                    "5": {
-                        "build": 200,
-                        "toll": 300
-                    }
-                }
-            }
-        },
-        "7": {
-            "1": {
-                "color": 1,
-                "building": {
-                    "1": {
-                        "build": 10,
-                        "toll": 1
-                    },
-                    "2": {
-                        "build": 5,
-                        "toll": 3
-                    },
-                    "3": {
-                        "build": 15,
-                        "toll": 10
-                    },
-                    "4": {
-                        "build": 25,
-                        "toll": 28
-                    },
-                    "5": {
-                        "build": 25,
-                        "toll": 125
-                    }
-                }
-            },
-            "2": {
-                "color": 1,
-                "building": {
-                    "1": {
-                        "build": 13,
-                        "toll": 1
-                    },
-                    "2": {
-                        "build": 5,
-                        "toll": 4
-                    },
-                    "3": {
-                        "build": 15,
-                        "toll": 11
-                    },
-                    "4": {
-                        "build": 25,
-                        "toll": 30
-                    },
-                    "5": {
-                        "build": 25,
-                        "toll": 135
-                    }
-                }
-            },
-            "3": {
-                "color": 2,
-                "building": {
-                    "1": {
-                        "build": 24,
-                        "toll": 3
-                    },
-                    "2": {
-                        "build": 10,
-                        "toll": 9
-                    },
-                    "3": {
-                        "build": 30,
-                        "toll": 23
-                    },
-                    "4": {
-                        "build": 50,
-                        "toll": 60
-                    },
-                    "5": {
-                        "build": 50,
-                        "toll": 225
-                    }
-                }
-            },
-            "4": {
-                "color": 2,
-                "building": {
-                    "1": {
-                        "build": 24,
-                        "toll": 3
-                    },
-                    "2": {
-                        "build": 10,
-                        "toll": 9
-                    },
-                    "3": {
-                        "build": 30,
-                        "toll": 23
-                    },
-                    "4": {
-                        "build": 50,
-                        "toll": 60
-                    },
-                    "5": {
-                        "build": 50,
-                        "toll": 225
-                    }
-                }
-            },
-            "5": {
-                "color": 3,
-                "building": {
-                    "1": {
-                        "build": 36,
-                        "toll": 7
-                    },
-                    "2": {
-                        "build": 15,
-                        "toll": 16
-                    },
-                    "3": {
-                        "build": 45,
-                        "toll": 42
-                    },
-                    "4": {
-                        "build": 75,
-                        "toll": 110
-                    },
-                    "5": {
-                        "build": 75,
-                        "toll": 300
-                    }
-                }
-            },
-            "6": {
-                "color": 3,
-                "building": {
-                    "1": {
-                        "build": 36,
-                        "toll": 7
-                    },
-                    "2": {
-                        "build": 15,
-                        "toll": 16
-                    },
-                    "3": {
-                        "build": 45,
-                        "toll": 42
-                    },
-                    "4": {
-                        "build": 75,
-                        "toll": 110
-                    },
-                    "5": {
-                        "build": 75,
-                        "toll": 300
-                    }
-                }
-            },
-            "7": {
-                "color": 4,
-                "building": {
-                    "1": {
-                        "build": 47,
-                        "toll": 10
-                    },
-                    "2": {
-                        "build": 20,
-                        "toll": 23
-                    },
-                    "3": {
-                        "build": 60,
-                        "toll": 57
-                    },
-                    "4": {
-                        "build": 100,
-                        "toll": 135
-                    },
-                    "5": {
-                        "build": 100,
-                        "toll": 325
-                    }
-                }
-            },
-            "8": {
-                "color": 4,
-                "building": {
-                    "1": {
-                        "build": 50,
-                        "toll": 12
-                    },
-                    "2": {
-                        "build": 20,
-                        "toll": 24
-                    },
-                    "3": {
-                        "build": 60,
-                        "toll": 59
-                    },
-                    "4": {
-                        "build": 100,
-                        "toll": 140
-                    },
-                    "5": {
-                        "build": 100,
-                        "toll": 325
-                    }
-                }
-            },
-            "9": {
-                "color": 5,
-                "building": {
-                    "1": {
-                        "build": 59,
-                        "toll": 16
-                    },
-                    "2": {
-                        "build": 25,
-                        "toll": 35
-                    },
-                    "3": {
-                        "build": 75,
-                        "toll": 84
-                    },
-                    "4": {
-                        "build": 125,
-                        "toll": 190
-                    },
-                    "5": {
-                        "build": 125,
-                        "toll": 375
-                    }
-                }
-            },
-            "10": {
-                "color": 5,
-                "building": {
-                    "1": {
-                        "build": 62,
-                        "toll": 17
-                    },
-                    "2": {
-                        "build": 25,
-                        "toll": 37
-                    },
-                    "3": {
-                        "build": 75,
-                        "toll": 86
-                    },
-                    "4": {
-                        "build": 125,
-                        "toll": 195
-                    },
-                    "5": {
-                        "build": 125,
-                        "toll": 380
-                    }
-                }
-            },
-            "11": {
-                "color": 6,
-                "building": {
-                    "1": {
-                        "build": 70,
-                        "toll": 22
-                    },
-                    "2": {
-                        "build": 30,
-                        "toll": 43
-                    },
-                    "3": {
-                        "build": 90,
-                        "toll": 100
-                    },
-                    "4": {
-                        "build": 150,
-                        "toll": 230
-                    },
-                    "5": {
-                        "build": 150,
-                        "toll": 365
-                    }
-                }
-            },
-            "12": {
-                "color": 6,
-                "building": {
-                    "1": {
-                        "build": 73,
-                        "toll": 24
-                    },
-                    "2": {
-                        "build": 30,
-                        "toll": 46
-                    },
-                    "3": {
-                        "build": 90,
-                        "toll": 110
-                    },
-                    "4": {
-                        "build": 150,
-                        "toll": 235
-                    },
-                    "5": {
-                        "build": 150,
-                        "toll": 375
-                    }
-                }
-            },
-            "13": {
-                "color": 7,
-                "building": {
-                    "1": {
-                        "build": 82,
-                        "toll": 28
-                    },
-                    "2": {
-                        "build": 35,
-                        "toll": 62
-                    },
-                    "3": {
-                        "build": 105,
-                        "toll": 140
-                    },
-                    "4": {
-                        "build": 175,
-                        "toll": 300
-                    },
-                    "5": {
-                        "build": 175,
-                        "toll": 350
-                    }
-                }
-            },
-            "14": {
-                "color": 7,
-                "building": {
-                    "1": {
-                        "build": 85,
-                        "toll": 30
-                    },
-                    "2": {
-                        "build": 35,
-                        "toll": 65
-                    },
-                    "3": {
-                        "build": 105,
-                        "toll": 145
-                    },
-                    "4": {
-                        "build": 175,
-                        "toll": 310
-                    },
-                    "5": {
-                        "build": 175,
-                        "toll": 350
-                    }
-                }
-            },
-            "15": {
-                "color": 8,
-                "building": {
-                    "1": {
-                        "build": 96,
-                        "toll": 28
-                    },
-                    "2": {
-                        "build": 40,
-                        "toll": 62
-                    },
-                    "3": {
-                        "build": 120,
-                        "toll": 140
-                    },
-                    "4": {
-                        "build": 200,
-                        "toll": 300
-                    },
-                    "5": {
-                        "build": 200,
-                        "toll": 380
-                    }
-                }
-            },
-            "16": {
-                "color": 8,
-                "building": {
-                    "1": {
-                        "build": 100,
-                        "toll": 40
-                    },
-                    "2": {
-                        "build": 40,
-                        "toll": 80
-                    },
-                    "3": {
-                        "build": 120,
-                        "toll": 170
-                    },
-                    "4": {
-                        "build": 200,
-                        "toll": 350
-                    },
-                    "5": {
-                        "build": 200,
-                        "toll": 300
-                    }
-                }
-            }
-        },
-        "8": {
-            "1": {
-                "color": 1,
-                "building": {
-                    "1": {
-                        "build": 10,
-                        "toll": 1
-                    },
-                    "2": {
-                        "build": 5,
-                        "toll": 3
-                    },
-                    "3": {
-                        "build": 15,
-                        "toll": 10
-                    },
-                    "4": {
-                        "build": 25,
-                        "toll": 28
-                    },
-                    "5": {
-                        "build": 25,
-                        "toll": 125
-                    }
-                }
-            },
-            "2": {
-                "color": 1,
-                "building": {
-                    "1": {
-                        "build": 13,
-                        "toll": 1
-                    },
-                    "2": {
-                        "build": 5,
-                        "toll": 4
-                    },
-                    "3": {
-                        "build": 15,
-                        "toll": 11
-                    },
-                    "4": {
-                        "build": 25,
-                        "toll": 30
-                    },
-                    "5": {
-                        "build": 25,
-                        "toll": 135
-                    }
-                }
-            },
-            "3": {
-                "color": 2,
-                "building": {
-                    "1": {
-                        "build": 24,
-                        "toll": 3
-                    },
-                    "2": {
-                        "build": 10,
-                        "toll": 9
-                    },
-                    "3": {
-                        "build": 30,
-                        "toll": 23
-                    },
-                    "4": {
-                        "build": 50,
-                        "toll": 60
-                    },
-                    "5": {
-                        "build": 50,
-                        "toll": 225
-                    }
-                }
-            },
-            "4": {
-                "color": 2,
-                "building": {
-                    "1": {
-                        "build": 24,
-                        "toll": 3
-                    },
-                    "2": {
-                        "build": 10,
-                        "toll": 9
-                    },
-                    "3": {
-                        "build": 30,
-                        "toll": 23
-                    },
-                    "4": {
-                        "build": 50,
-                        "toll": 60
-                    },
-                    "5": {
-                        "build": 50,
-                        "toll": 225
-                    }
-                }
-            },
-            "5": {
-                "color": 2,
-                "building": {
-                    "1": {
-                        "build": 27,
-                        "toll": 4
-                    },
-                    "2": {
-                        "build": 10,
-                        "toll": 10
-                    },
-                    "3": {
-                        "build": 30,
-                        "toll": 24
-                    },
-                    "4": {
-                        "build": 50,
-                        "toll": 62
-                    },
-                    "5": {
-                        "build": 50,
-                        "toll": 225
-                    }
-                }
-            },
-            "6": {
-                "color": 3,
-                "building": {
-                    "1": {
-                        "build": 36,
-                        "toll": 7
-                    },
-                    "2": {
-                        "build": 15,
-                        "toll": 16
-                    },
-                    "3": {
-                        "build": 45,
-                        "toll": 42
-                    },
-                    "4": {
-                        "build": 75,
-                        "toll": 110
-                    },
-                    "5": {
-                        "build": 75,
-                        "toll": 300
-                    }
-                }
-            },
-            "7": {
-                "color": 3,
-                "building": {
-                    "1": {
-                        "build": 36,
-                        "toll": 7
-                    },
-                    "2": {
-                        "build": 15,
-                        "toll": 16
-                    },
-                    "3": {
-                        "build": 45,
-                        "toll": 42
-                    },
-                    "4": {
-                        "build": 75,
-                        "toll": 110
-                    },
-                    "5": {
-                        "build": 75,
-                        "toll": 300
-                    }
-                }
-            },
-            "8": {
-                "color": 4,
-                "building": {
-                    "1": {
-                        "build": 47,
-                        "toll": 10
-                    },
-                    "2": {
-                        "build": 20,
-                        "toll": 23
-                    },
-                    "3": {
-                        "build": 60,
-                        "toll": 57
-                    },
-                    "4": {
-                        "build": 100,
-                        "toll": 135
-                    },
-                    "5": {
-                        "build": 100,
-                        "toll": 325
-                    }
-                }
-            },
-            "9": {
-                "color": 4,
-                "building": {
-                    "1": {
-                        "build": 50,
-                        "toll": 12
-                    },
-                    "2": {
-                        "build": 20,
-                        "toll": 24
-                    },
-                    "3": {
-                        "build": 60,
-                        "toll": 59
-                    },
-                    "4": {
-                        "build": 100,
-                        "toll": 140
-                    },
-                    "5": {
-                        "build": 100,
-                        "toll": 325
-                    }
-                }
-            },
-            "10": {
-                "color": 5,
-                "building": {
-                    "1": {
-                        "build": 59,
-                        "toll": 16
-                    },
-                    "2": {
-                        "build": 25,
-                        "toll": 35
-                    },
-                    "3": {
-                        "build": 75,
-                        "toll": 84
-                    },
-                    "4": {
-                        "build": 125,
-                        "toll": 190
-                    },
-                    "5": {
-                        "build": 125,
-                        "toll": 375
-                    }
-                }
-            },
-            "11": {
-                "color": 5,
-                "building": {
-                    "1": {
-                        "build": 62,
-                        "toll": 17
-                    },
-                    "2": {
-                        "build": 25,
-                        "toll": 37
-                    },
-                    "3": {
-                        "build": 75,
-                        "toll": 86
-                    },
-                    "4": {
-                        "build": 125,
-                        "toll": 195
-                    },
-                    "5": {
-                        "build": 125,
-                        "toll": 380
-                    }
-                }
-            },
-            "12": {
-                "color": 6,
-                "building": {
-                    "1": {
-                        "build": 70,
-                        "toll": 22
-                    },
-                    "2": {
-                        "build": 30,
-                        "toll": 43
-                    },
-                    "3": {
-                        "build": 90,
-                        "toll": 100
-                    },
-                    "4": {
-                        "build": 150,
-                        "toll": 230
-                    },
-                    "5": {
-                        "build": 150,
-                        "toll": 365
-                    }
-                }
-            },
-            "13": {
-                "color": 6,
-                "building": {
-                    "1": {
-                        "build": 73,
-                        "toll": 24
-                    },
-                    "2": {
-                        "build": 30,
-                        "toll": 46
-                    },
-                    "3": {
-                        "build": 90,
-                        "toll": 110
-                    },
-                    "4": {
-                        "build": 150,
-                        "toll": 235
-                    },
-                    "5": {
-                        "build": 150,
-                        "toll": 375
-                    }
-                }
-            },
-            "14": {
-                "color": 6,
-                "building": {
-                    "1": {
-                        "build": 73,
-                        "toll": 24
-                    },
-                    "2": {
-                        "build": 30,
-                        "toll": 46
-                    },
-                    "3": {
-                        "build": 90,
-                        "toll": 110
-                    },
-                    "4": {
-                        "build": 150,
-                        "toll": 235
-                    },
-                    "5": {
-                        "build": 150,
-                        "toll": 375
-                    }
-                }
-            },
-            "15": {
-                "color": 7,
-                "building": {
-                    "1": {
-                        "build": 82,
-                        "toll": 28
-                    },
-                    "2": {
-                        "build": 35,
-                        "toll": 62
-                    },
-                    "3": {
-                        "build": 105,
-                        "toll": 140
-                    },
-                    "4": {
-                        "build": 175,
-                        "toll": 300
-                    },
-                    "5": {
-                        "build": 175,
-                        "toll": 350
-                    }
-                }
-            },
-            "16": {
-                "color": 7,
-                "building": {
-                    "1": {
-                        "build": 85,
-                        "toll": 30
-                    },
-                    "2": {
-                        "build": 35,
-                        "toll": 65
-                    },
-                    "3": {
-                        "build": 105,
-                        "toll": 145
-                    },
-                    "4": {
-                        "build": 175,
-                        "toll": 310
-                    },
-                    "5": {
-                        "build": 175,
-                        "toll": 350
-                    }
-                }
-            },
-            "17": {
-                "color": 8,
-                "building": {
-                    "1": {
-                        "build": 96,
-                        "toll": 28
-                    },
-                    "2": {
-                        "build": 40,
-                        "toll": 62
-                    },
-                    "3": {
-                        "build": 120,
-                        "toll": 140
-                    },
-                    "4": {
-                        "build": 200,
-                        "toll": 300
-                    },
-                    "5": {
-                        "build": 200,
-                        "toll": 380
-                    }
-                }
-            },
-            "18": {
-                "color": 8,
-                "building": {
-                    "1": {
-                        "build": 100,
-                        "toll": 40
-                    },
-                    "2": {
-                        "build": 40,
-                        "toll": 80
-                    },
-                    "3": {
-                        "build": 120,
-                        "toll": 170
-                    },
-                    "4": {
-                        "build": 200,
-                        "toll": 350
-                    },
-                    "5": {
-                        "build": 200,
-                        "toll": 300
-                    }
-                }
-            }
-        }
-    },
-    "MiniGame": {
-        "maxChance": 3,
-        "costOptions": [
-            0.05,
-            0.1,
-            0.15
-        ],
-        "increaseRate": 2
-    },
-    "PrisonSpace": {
-        "escapeCostRate": 0.1,
-        "limitTurnByMapId": {
-            "1": 2,
-            "2": 2,
-            "3": 2,
-            "4": 1,
-            "5": 2,
-            "6": 2,
-            "7": 2
-        }
-    },
-    "ResortSpace": {
-        "maxUpgrade": 3,
-        "initCostRate": 0.1,
-        "increaseRate": 2,
-        "initCost": 50,
-        "tollCost": 40
-    },
-    "StartSpace": {
-        "passingBonusRate": 0.15
-    },
-    "TaxSpace": {
-        "taxRate": 0.1
-    },
-    "TravelSpace": {
-        "travelCostRate": 0.02
-    },
-    "GodSpace": {
-        "turnLiftActive": 2
-    },
-    "BankSpace": {
-        "tollTaxRate": 10
+    "cardKeepLimit": {
+      "1": 1,
+      "2": 1,
+      "3": 1,
+      "4": 3,
+      "5": 1,
+      "6": 1,
+      "7": 1
     }
+  },
+  "SpacePositionNote": "SpacePosition index = GAME_CUSTOM - 1, spaceId - an id of SlotType - GameConfig.js",
+  "SpacePosition0": {
+    "1": {
+      "spaceId": 7,
+      "opt": 0
+    },
+    "2": {
+      "spaceId": 3,
+      "opt": 1
+    },
+    "3": {
+      "spaceId": 4,
+      "opt": 0
+    },
+    "4": {
+      "spaceId": 3,
+      "opt": 2
+    },
+    "5": {
+      "spaceId": 6,
+      "opt": 101
+    },
+    "6": {
+      "spaceId": 3,
+      "opt": 3
+    },
+    "7": {
+      "spaceId": 3,
+      "opt": 4
+    },
+    "8": {
+      "spaceId": 3,
+      "opt": 5
+    },
+    "9": {
+      "spaceId": 5,
+      "opt": 0
+    },
+    "10": {
+      "spaceId": 6,
+      "opt": 102
+    },
+    "11": {
+      "spaceId": 3,
+      "opt": 6
+    },
+    "12": {
+      "spaceId": 3,
+      "opt": 7
+    },
+    "13": {
+      "spaceId": 2,
+      "opt": 0
+    },
+    "14": {
+      "spaceId": 3,
+      "opt": 8
+    },
+    "15": {
+      "spaceId": 6,
+      "opt": 101
+    },
+    "16": {
+      "spaceId": 3,
+      "opt": 9
+    },
+    "17": {
+      "spaceId": 1,
+      "opt": 0
+    },
+    "18": {
+      "spaceId": 3,
+      "opt": 10
+    },
+    "19": {
+      "spaceId": 6,
+      "opt": 101
+    },
+    "20": {
+      "spaceId": 3,
+      "opt": 11
+    },
+    "21": {
+      "spaceId": 2,
+      "opt": 0
+    },
+    "22": {
+      "spaceId": 3,
+      "opt": 12
+    },
+    "23": {
+      "spaceId": 3,
+      "opt": 13
+    },
+    "24": {
+      "spaceId": 3,
+      "opt": 14
+    },
+    "25": {
+      "spaceId": 9,
+      "opt": 0
+    },
+    "26": {
+      "spaceId": 6,
+      "opt": 102
+    },
+    "27": {
+      "spaceId": 3,
+      "opt": 15
+    },
+    "28": {
+      "spaceId": 3,
+      "opt": 16
+    },
+    "29": {
+      "spaceId": 2,
+      "opt": 0
+    },
+    "30": {
+      "spaceId": 3,
+      "opt": 17
+    },
+    "31": {
+      "spaceId": 8,
+      "opt": 0
+    },
+    "32": {
+      "spaceId": 3,
+      "opt": 18
+    }
+  },
+  "SpacePosition1": {
+    "1": {
+      "spaceId": 7,
+      "opt": 0
+    },
+    "2": {
+      "spaceId": 3,
+      "opt": 1
+    },
+    "3": {
+      "spaceId": 4,
+      "opt": 2
+    },
+    "4": {
+      "spaceId": 3,
+      "opt": 2
+    },
+    "5": {
+      "spaceId": 10,
+      "opt": 1
+    },
+    "6": {
+      "spaceId": 3,
+      "opt": 3
+    },
+    "7": {
+      "spaceId": 3,
+      "opt": 4
+    },
+    "8": {
+      "spaceId": 6,
+      "opt": 101
+    },
+    "9": {
+      "spaceId": 5,
+      "opt": 0
+    },
+    "10": {
+      "spaceId": 2,
+      "opt": 0
+    },
+    "11": {
+      "spaceId": 3,
+      "opt": 5
+    },
+    "12": {
+      "spaceId": 3,
+      "opt": 6
+    },
+    "13": {
+      "spaceId": 10,
+      "opt": 2
+    },
+    "14": {
+      "spaceId": 3,
+      "opt": 7
+    },
+    "15": {
+      "spaceId": 6,
+      "opt": 101
+    },
+    "16": {
+      "spaceId": 3,
+      "opt": 8
+    },
+    "17": {
+      "spaceId": 1,
+      "opt": 0
+    },
+    "18": {
+      "spaceId": 3,
+      "opt": 9
+    },
+    "19": {
+      "spaceId": 2,
+      "opt": 0
+    },
+    "20": {
+      "spaceId": 3,
+      "opt": 10
+    },
+    "21": {
+      "spaceId": 10,
+      "opt": 3
+    },
+    "22": {
+      "spaceId": 3,
+      "opt": 11
+    },
+    "23": {
+      "spaceId": 3,
+      "opt": 12
+    },
+    "24": {
+      "spaceId": 6,
+      "opt": 101
+    },
+    "25": {
+      "spaceId": 9,
+      "opt": 0
+    },
+    "26": {
+      "spaceId": 3,
+      "opt": 13
+    },
+    "27": {
+      "spaceId": 2,
+      "opt": 0
+    },
+    "28": {
+      "spaceId": 3,
+      "opt": 14
+    },
+    "29": {
+      "spaceId": 10,
+      "opt": 4
+    },
+    "30": {
+      "spaceId": 3,
+      "opt": 15
+    },
+    "31": {
+      "spaceId": 6,
+      "opt": 102
+    },
+    "32": {
+      "spaceId": 3,
+      "opt": 16
+    }
+  },
+  "SpacePosition2": {
+    "1": {
+      "spaceId": 7,
+      "opt": 0
+    },
+    "2": {
+      "spaceId": 3,
+      "opt": 1
+    },
+    "3": {
+      "spaceId": 13,
+      "opt": 0
+    },
+    "4": {
+      "spaceId": 3,
+      "opt": 2
+    },
+    "5": {
+      "spaceId": 6,
+      "opt": 101
+    },
+    "6": {
+      "spaceId": 3,
+      "opt": 3
+    },
+    "7": {
+      "spaceId": 3,
+      "opt": 4
+    },
+    "8": {
+      "spaceId": 8,
+      "opt": 0
+    },
+    "9": {
+      "spaceId": 5,
+      "opt": 0
+    },
+    "10": {
+      "spaceId": 6,
+      "opt": 101
+    },
+    "11": {
+      "spaceId": 3,
+      "opt": 5
+    },
+    "12": {
+      "spaceId": 3,
+      "opt": 6
+    },
+    "13": {
+      "spaceId": 12,
+      "opt": 0
+    },
+    "14": {
+      "spaceId": 3,
+      "opt": 7
+    },
+    "15": {
+      "spaceId": 2,
+      "opt": 0
+    },
+    "16": {
+      "spaceId": 3,
+      "opt": 8
+    },
+    "17": {
+      "spaceId": 1,
+      "opt": 0
+    },
+    "18": {
+      "spaceId": 3,
+      "opt": 9
+    },
+    "19": {
+      "spaceId": 6,
+      "opt": 101
+    },
+    "20": {
+      "spaceId": 3,
+      "opt": 10
+    },
+    "21": {
+      "spaceId": 2,
+      "opt": 0
+    },
+    "22": {
+      "spaceId": 3,
+      "opt": 11
+    },
+    "23": {
+      "spaceId": 3,
+      "opt": 12
+    },
+    "24": {
+      "spaceId": 8,
+      "opt": 0
+    },
+    "25": {
+      "spaceId": 9,
+      "opt": 0
+    },
+    "26": {
+      "spaceId": 6,
+      "opt": 102
+    },
+    "27": {
+      "spaceId": 3,
+      "opt": 13
+    },
+    "28": {
+      "spaceId": 3,
+      "opt": 14
+    },
+    "29": {
+      "spaceId": 11,
+      "opt": 0
+    },
+    "30": {
+      "spaceId": 3,
+      "opt": 15
+    },
+    "31": {
+      "spaceId": 8,
+      "opt": 0
+    },
+    "32": {
+      "spaceId": 3,
+      "opt": 16
+    }
+  },
+  "SpacePosition3": {
+    "1": {
+      "spaceId": 31,
+      "opt": 0
+    },
+    "2": {
+      "spaceId": 21,
+      "opt": 0
+    },
+    "3": {
+      "spaceId": 14,
+      "opt": 1
+    },
+    "4": {
+      "spaceId": 19,
+      "opt": 6
+    },
+    "5": {
+      "spaceId": 22,
+      "opt": 20
+    },
+    "6": {
+      "spaceId": 16,
+      "opt": 0
+    },
+    "7": {
+      "spaceId": 14,
+      "opt": 3
+    },
+    "8": {
+      "spaceId": 14,
+      "opt": 4
+    },
+    "9": {
+      "spaceId": 5,
+      "opt": 0
+    },
+    "10": {
+      "spaceId": 14,
+      "opt": 5
+    },
+    "11": {
+      "spaceId": 14,
+      "opt": 6
+    },
+    "12": {
+      "spaceId": 18,
+      "opt": 1
+    },
+    "13": {
+      "spaceId": 22,
+      "opt": 28
+    },
+    "14": {
+      "spaceId": 19,
+      "opt": -6
+    },
+    "15": {
+      "spaceId": 14,
+      "opt": 7
+    },
+    "16": {
+      "spaceId": 14,
+      "opt": 8
+    },
+    "17": {
+      "spaceId": 20,
+      "opt": 0
+    },
+    "18": {
+      "spaceId": 14,
+      "opt": 9
+    },
+    "19": {
+      "spaceId": 14,
+      "opt": 10
+    },
+    "20": {
+      "spaceId": 19,
+      "opt": 6
+    },
+    "21": {
+      "spaceId": 24,
+      "opt": 0
+    },
+    "22": {
+      "spaceId": 17,
+      "opt": 0
+    },
+    "23": {
+      "spaceId": 14,
+      "opt": 11
+    },
+    "24": {
+      "spaceId": 14,
+      "opt": 12
+    },
+    "25": {
+      "spaceId": 15,
+      "opt": 0
+    },
+    "26": {
+      "spaceId": 14,
+      "opt": 13
+    },
+    "27": {
+      "spaceId": 14,
+      "opt": 14
+    },
+    "28": {
+      "spaceId": 18,
+      "opt": 2
+    },
+    "29": {
+      "spaceId": 24,
+      "opt": 0
+    },
+    "30": {
+      "spaceId": 19,
+      "opt": -6
+    },
+    "31": {
+      "spaceId": 23,
+      "opt": 0
+    },
+    "32": {
+      "spaceId": 14,
+      "opt": 15
+    }
+  },
+  "SpacePosition4": {
+    "1": {
+      "spaceId": 7,
+      "opt": 0
+    },
+    "2": {
+      "spaceId": 3,
+      "opt": 1
+    },
+    "3": {
+      "spaceId": 3,
+      "opt": 2
+    },
+    "4": {
+      "spaceId": 3,
+      "opt": 3
+    },
+    "5": {
+      "spaceId": 6,
+      "opt": 101
+    },
+    "6": {
+      "spaceId": 3,
+      "opt": 4
+    },
+    "7": {
+      "spaceId": 3,
+      "opt": 5
+    },
+    "8": {
+      "spaceId": 2,
+      "opt": 0
+    },
+    "9": {
+      "spaceId": 5,
+      "opt": 0
+    },
+    "10": {
+      "spaceId": 6,
+      "opt": 101
+    },
+    "11": {
+      "spaceId": 3,
+      "opt": 6
+    },
+    "12": {
+      "spaceId": 3,
+      "opt": 7
+    },
+    "13": {
+      "spaceId": 25,
+      "opt": 2
+    },
+    "14": {
+      "spaceId": 3,
+      "opt": 8
+    },
+    "15": {
+      "spaceId": 2,
+      "opt": 0
+    },
+    "16": {
+      "spaceId": 3,
+      "opt": 9
+    },
+    "17": {
+      "spaceId": 1,
+      "opt": 0
+    },
+    "18": {
+      "spaceId": 3,
+      "opt": 10
+    },
+    "19": {
+      "spaceId": 6,
+      "opt": 101
+    },
+    "20": {
+      "spaceId": 3,
+      "opt": 11
+    },
+    "21": {
+      "spaceId": 25,
+      "opt": 3
+    },
+    "22": {
+      "spaceId": 3,
+      "opt": 12
+    },
+    "23": {
+      "spaceId": 3,
+      "opt": 13
+    },
+    "24": {
+      "spaceId": 3,
+      "opt": 14
+    },
+    "25": {
+      "spaceId": 9,
+      "opt": 0
+    },
+    "26": {
+      "spaceId": 6,
+      "opt": 102
+    },
+    "27": {
+      "spaceId": 3,
+      "opt": 15
+    },
+    "28": {
+      "spaceId": 3,
+      "opt": 16
+    },
+    "29": {
+      "spaceId": 2,
+      "opt": 0
+    },
+    "30": {
+      "spaceId": 3,
+      "opt": 17
+    },
+    "31": {
+      "spaceId": 8,
+      "opt": 0
+    },
+    "32": {
+      "spaceId": 3,
+      "opt": 18
+    }
+  },
+  "SpacePosition5": {
+    "1": {
+      "spaceId": 26,
+      "opt": 0
+    },
+    "2": {
+      "spaceId": 3,
+      "opt": 1
+    },
+    "3": {
+      "spaceId": 3,
+      "opt": 2
+    },
+    "4": {
+      "spaceId": 27,
+      "opt": 0
+    },
+    "5": {
+      "spaceId": 28,
+      "opt": 0
+    },
+    "6": {
+      "spaceId": 3,
+      "opt": 3
+    },
+    "7": {
+      "spaceId": 3,
+      "opt": 4
+    },
+    "8": {
+      "spaceId": 9,
+      "opt": 0
+    },
+    "9": {
+      "spaceId": 3,
+      "opt": 5
+    },
+    "10": {
+      "spaceId": 3,
+      "opt": 6
+    },
+    "11": {
+      "spaceId": 28,
+      "opt": 6
+    },
+    "12": {
+      "spaceId": 27,
+      "opt": 7
+    },
+    "13": {
+      "spaceId": 3,
+      "opt": 7
+    },
+    "14": {
+      "spaceId": 3,
+      "opt": 8
+    },
+    "15": {
+      "spaceId": 26,
+      "opt": 0
+    },
+    "16": {
+      "spaceId": 26,
+      "opt": 0
+    },
+    "17": {
+      "spaceId": 3,
+      "opt": 9
+    },
+    "18": {
+      "spaceId": 3,
+      "opt": 10
+    },
+    "19": {
+      "spaceId": 27,
+      "opt": 0
+    },
+    "20": {
+      "spaceId": 3,
+      "opt": 11
+    },
+    "21": {
+      "spaceId": 3,
+      "opt": 12
+    },
+    "22": {
+      "spaceId": 28,
+      "opt": 4
+    },
+    "23": {
+      "spaceId": 3,
+      "opt": 13
+    },
+    "24": {
+      "spaceId": 3,
+      "opt": 14
+    },
+    "25": {
+      "spaceId": 27,
+      "opt": 6
+    },
+    "26": {
+      "spaceId": 3,
+      "opt": 15
+    },
+    "27": {
+      "spaceId": 3,
+      "opt": 16
+    },
+    "28": {
+      "spaceId": 26,
+      "opt": 0
+    },
+    "29": {
+      "spaceId": 26,
+      "opt": 0
+    },
+    "30": {
+      "spaceId": 3,
+      "opt": 17
+    },
+    "31": {
+      "spaceId": 3,
+      "opt": 18
+    },
+    "32": {
+      "spaceId": 27,
+      "opt": 0
+    },
+    "33": {
+      "spaceId": 28,
+      "opt": 0
+    },
+    "34": {
+      "spaceId": 3,
+      "opt": 19
+    },
+    "35": {
+      "spaceId": 3,
+      "opt": 20
+    },
+    "36": {
+      "spaceId": 9,
+      "opt": 0
+    },
+    "37": {
+      "spaceId": 3,
+      "opt": 21
+    },
+    "38": {
+      "spaceId": 3,
+      "opt": 22
+    },
+    "39": {
+      "spaceId": 28,
+      "opt": 6
+    },
+    "40": {
+      "spaceId": 27,
+      "opt": 0
+    },
+    "41": {
+      "spaceId": 3,
+      "opt": 23
+    },
+    "42": {
+      "spaceId": 3,
+      "opt": 24
+    },
+    "43": {
+      "spaceId": 26,
+      "opt": 0
+    }
+  },
+  "SpacePosition6": {
+    "1": {
+      "spaceId": 7,
+      "opt": 0
+    },
+    "2": {
+      "spaceId": 40,
+      "opt": 1
+    },
+    "3": {
+      "spaceId": 3,
+      "opt": 1
+    },
+    "4": {
+      "spaceId": 4,
+      "opt": 2
+    },
+    "5": {
+      "spaceId": 3,
+      "opt": 2
+    },
+    "6": {
+      "spaceId": 3,
+      "opt": 3
+    },
+    "7": {
+      "spaceId": 3,
+      "opt": 4
+    },
+    "8": {
+      "spaceId": 6,
+      "opt": 101
+    },
+    "9": {
+      "spaceId": 1,
+      "opt": 0
+    },
+    "10": {
+      "spaceId": 40,
+      "opt": 2
+    },
+    "11": {
+      "spaceId": 2,
+      "opt": 0
+    },
+    "12": {
+      "spaceId": 3,
+      "opt": 5
+    },
+    "13": {
+      "spaceId": 3,
+      "opt": 6
+    },
+    "14": {
+      "spaceId": 3,
+      "opt": 7
+    },
+    "15": {
+      "spaceId": 6,
+      "opt": 101
+    },
+    "16": {
+      "spaceId": 3,
+      "opt": 8
+    },
+    "17": {
+      "spaceId": 5,
+      "opt": 0
+    },
+    "18": {
+      "spaceId": 40,
+      "opt": 3
+    },
+    "19": {
+      "spaceId": 3,
+      "opt": 9
+    },
+    "20": {
+      "spaceId": 2,
+      "opt": 0
+    },
+    "21": {
+      "spaceId": 3,
+      "opt": 10
+    },
+    "22": {
+      "spaceId": 3,
+      "opt": 11
+    },
+    "23": {
+      "spaceId": 3,
+      "opt": 12
+    },
+    "24": {
+      "spaceId": 6,
+      "opt": 101
+    },
+    "25": {
+      "spaceId": 9,
+      "opt": 0
+    },
+    "26": {
+      "spaceId": 40,
+      "opt": 4
+    },
+    "27": {
+      "spaceId": 3,
+      "opt": 13
+    },
+    "28": {
+      "spaceId": 2,
+      "opt": 0
+    },
+    "29": {
+      "spaceId": 3,
+      "opt": 14
+    },
+    "30": {
+      "spaceId": 3,
+      "opt": 15
+    },
+    "31": {
+      "spaceId": 6,
+      "opt": 102
+    },
+    "32": {
+      "spaceId": 3,
+      "opt": 16
+    }
+  },
+  "SpacePosition7": {
+    "1": {
+      "spaceId": 7,
+      "opt": 0
+    },
+    "2": {
+      "spaceId": 3,
+      "opt": 1
+    },
+    "3": {
+      "spaceId": 4,
+      "opt": 0
+    },
+    "4": {
+      "spaceId": 3,
+      "opt": 2
+    },
+    "5": {
+      "spaceId": 6,
+      "opt": 101
+    },
+    "6": {
+      "spaceId": 3,
+      "opt": 3
+    },
+    "7": {
+      "spaceId": 3,
+      "opt": 4
+    },
+    "8": {
+      "spaceId": 3,
+      "opt": 5
+    },
+    "9": {
+      "spaceId": 5,
+      "opt": 0
+    },
+    "10": {
+      "spaceId": 6,
+      "opt": 102
+    },
+    "11": {
+      "spaceId": 3,
+      "opt": 6
+    },
+    "12": {
+      "spaceId": 3,
+      "opt": 7
+    },
+    "13": {
+      "spaceId": 2,
+      "opt": 0
+    },
+    "14": {
+      "spaceId": 3,
+      "opt": 8
+    },
+    "15": {
+      "spaceId": 6,
+      "opt": 101
+    },
+    "16": {
+      "spaceId": 3,
+      "opt": 9
+    },
+    "17": {
+      "spaceId": 1,
+      "opt": 0
+    },
+    "18": {
+      "spaceId": 3,
+      "opt": 10
+    },
+    "19": {
+      "spaceId": 6,
+      "opt": 101
+    },
+    "20": {
+      "spaceId": 3,
+      "opt": 11
+    },
+    "21": {
+      "spaceId": 2,
+      "opt": 0
+    },
+    "22": {
+      "spaceId": 3,
+      "opt": 12
+    },
+    "23": {
+      "spaceId": 3,
+      "opt": 13
+    },
+    "24": {
+      "spaceId": 3,
+      "opt": 14
+    },
+    "25": {
+      "spaceId": 9,
+      "opt": 0
+    },
+    "26": {
+      "spaceId": 6,
+      "opt": 102
+    },
+    "27": {
+      "spaceId": 3,
+      "opt": 15
+    },
+    "28": {
+      "spaceId": 3,
+      "opt": 16
+    },
+    "29": {
+      "spaceId": 2,
+      "opt": 0
+    },
+    "30": {
+      "spaceId": 3,
+      "opt": 17
+    },
+    "31": {
+      "spaceId": 8,
+      "opt": 0
+    },
+    "32": {
+      "spaceId": 3,
+      "opt": 18
+    }
+  },
+  "FestivalSpace": {
+    "holdCostRate": 0.02,
+    "increaseRate": 2,
+    "maxFestival": 1
+  },
+  "FortuneSpace": {
+    "deckSet": [
+      "IT_CA_21",
+      "IT_CA_20",
+      "IT_CA_19",
+      "IT_CA_18",
+      "IT_CA_17",
+      "IT_CA_16",
+      "IT_CA_15",
+      "IT_CA_14",
+      "IT_CA_13",
+      "IT_CA_12",
+      "IT_CA_11",
+      "IT_CA_10",
+      "IT_CA_9",
+      "IT_CA_8",
+      "IT_CA_7",
+      "IT_CA_6",
+      "IT_CA_5",
+      "IT_CA_4",
+      "IT_CA_3",
+      "IT_CA_2",
+      "IT_CA_1"
+    ]
+  },
+  "LandSpaceNote": "LandSpace index = GAME_CUSTOM, define list citySlot in SpacePosition config, index = citySlot.opt",
+  "LandSpace": {
+    "1": {
+      "1": {
+        "color": 1,
+        "building": {
+          "1": {
+            "build": 10,
+            "toll": 1
+          },
+          "2": {
+            "build": 5,
+            "toll": 3
+          },
+          "3": {
+            "build": 15,
+            "toll": 10
+          },
+          "4": {
+            "build": 25,
+            "toll": 28
+          },
+          "5": {
+            "build": 25,
+            "toll": 125
+          }
+        }
+      },
+      "2": {
+        "color": 1,
+        "building": {
+          "1": {
+            "build": 13,
+            "toll": 1
+          },
+          "2": {
+            "build": 5,
+            "toll": 4
+          },
+          "3": {
+            "build": 15,
+            "toll": 11
+          },
+          "4": {
+            "build": 25,
+            "toll": 30
+          },
+          "5": {
+            "build": 25,
+            "toll": 135
+          }
+        }
+      },
+      "3": {
+        "color": 2,
+        "building": {
+          "1": {
+            "build": 24,
+            "toll": 3
+          },
+          "2": {
+            "build": 10,
+            "toll": 9
+          },
+          "3": {
+            "build": 30,
+            "toll": 23
+          },
+          "4": {
+            "build": 50,
+            "toll": 60
+          },
+          "5": {
+            "build": 50,
+            "toll": 225
+          }
+        }
+      },
+      "4": {
+        "color": 2,
+        "building": {
+          "1": {
+            "build": 24,
+            "toll": 3
+          },
+          "2": {
+            "build": 10,
+            "toll": 9
+          },
+          "3": {
+            "build": 30,
+            "toll": 23
+          },
+          "4": {
+            "build": 50,
+            "toll": 60
+          },
+          "5": {
+            "build": 50,
+            "toll": 225
+          }
+        }
+      },
+      "5": {
+        "color": 2,
+        "building": {
+          "1": {
+            "build": 27,
+            "toll": 4
+          },
+          "2": {
+            "build": 10,
+            "toll": 10
+          },
+          "3": {
+            "build": 30,
+            "toll": 24
+          },
+          "4": {
+            "build": 50,
+            "toll": 62
+          },
+          "5": {
+            "build": 50,
+            "toll": 225
+          }
+        }
+      },
+      "6": {
+        "color": 3,
+        "building": {
+          "1": {
+            "build": 36,
+            "toll": 7
+          },
+          "2": {
+            "build": 15,
+            "toll": 16
+          },
+          "3": {
+            "build": 45,
+            "toll": 42
+          },
+          "4": {
+            "build": 75,
+            "toll": 110
+          },
+          "5": {
+            "build": 75,
+            "toll": 300
+          }
+        }
+      },
+      "7": {
+        "color": 3,
+        "building": {
+          "1": {
+            "build": 36,
+            "toll": 7
+          },
+          "2": {
+            "build": 15,
+            "toll": 16
+          },
+          "3": {
+            "build": 45,
+            "toll": 42
+          },
+          "4": {
+            "build": 75,
+            "toll": 110
+          },
+          "5": {
+            "build": 75,
+            "toll": 300
+          }
+        }
+      },
+      "8": {
+        "color": 4,
+        "building": {
+          "1": {
+            "build": 47,
+            "toll": 10
+          },
+          "2": {
+            "build": 20,
+            "toll": 23
+          },
+          "3": {
+            "build": 60,
+            "toll": 57
+          },
+          "4": {
+            "build": 100,
+            "toll": 135
+          },
+          "5": {
+            "build": 100,
+            "toll": 325
+          }
+        }
+      },
+      "9": {
+        "color": 4,
+        "building": {
+          "1": {
+            "build": 50,
+            "toll": 12
+          },
+          "2": {
+            "build": 20,
+            "toll": 24
+          },
+          "3": {
+            "build": 60,
+            "toll": 59
+          },
+          "4": {
+            "build": 100,
+            "toll": 140
+          },
+          "5": {
+            "build": 100,
+            "toll": 325
+          }
+        }
+      },
+      "10": {
+        "color": 5,
+        "building": {
+          "1": {
+            "build": 59,
+            "toll": 16
+          },
+          "2": {
+            "build": 25,
+            "toll": 35
+          },
+          "3": {
+            "build": 75,
+            "toll": 84
+          },
+          "4": {
+            "build": 125,
+            "toll": 190
+          },
+          "5": {
+            "build": 125,
+            "toll": 375
+          }
+        }
+      },
+      "11": {
+        "color": 5,
+        "building": {
+          "1": {
+            "build": 62,
+            "toll": 17
+          },
+          "2": {
+            "build": 25,
+            "toll": 37
+          },
+          "3": {
+            "build": 75,
+            "toll": 86
+          },
+          "4": {
+            "build": 125,
+            "toll": 195
+          },
+          "5": {
+            "build": 125,
+            "toll": 380
+          }
+        }
+      },
+      "12": {
+        "color": 6,
+        "building": {
+          "1": {
+            "build": 70,
+            "toll": 22
+          },
+          "2": {
+            "build": 30,
+            "toll": 43
+          },
+          "3": {
+            "build": 90,
+            "toll": 100
+          },
+          "4": {
+            "build": 150,
+            "toll": 230
+          },
+          "5": {
+            "build": 150,
+            "toll": 365
+          }
+        }
+      },
+      "13": {
+        "color": 6,
+        "building": {
+          "1": {
+            "build": 73,
+            "toll": 24
+          },
+          "2": {
+            "build": 30,
+            "toll": 46
+          },
+          "3": {
+            "build": 90,
+            "toll": 110
+          },
+          "4": {
+            "build": 150,
+            "toll": 235
+          },
+          "5": {
+            "build": 150,
+            "toll": 375
+          }
+        }
+      },
+      "14": {
+        "color": 6,
+        "building": {
+          "1": {
+            "build": 73,
+            "toll": 24
+          },
+          "2": {
+            "build": 30,
+            "toll": 46
+          },
+          "3": {
+            "build": 90,
+            "toll": 110
+          },
+          "4": {
+            "build": 150,
+            "toll": 235
+          },
+          "5": {
+            "build": 150,
+            "toll": 375
+          }
+        }
+      },
+      "15": {
+        "color": 7,
+        "building": {
+          "1": {
+            "build": 82,
+            "toll": 28
+          },
+          "2": {
+            "build": 35,
+            "toll": 62
+          },
+          "3": {
+            "build": 105,
+            "toll": 140
+          },
+          "4": {
+            "build": 175,
+            "toll": 300
+          },
+          "5": {
+            "build": 175,
+            "toll": 350
+          }
+        }
+      },
+      "16": {
+        "color": 7,
+        "building": {
+          "1": {
+            "build": 85,
+            "toll": 30
+          },
+          "2": {
+            "build": 35,
+            "toll": 65
+          },
+          "3": {
+            "build": 105,
+            "toll": 145
+          },
+          "4": {
+            "build": 175,
+            "toll": 310
+          },
+          "5": {
+            "build": 175,
+            "toll": 350
+          }
+        }
+      },
+      "17": {
+        "color": 8,
+        "building": {
+          "1": {
+            "build": 96,
+            "toll": 28
+          },
+          "2": {
+            "build": 40,
+            "toll": 62
+          },
+          "3": {
+            "build": 120,
+            "toll": 140
+          },
+          "4": {
+            "build": 200,
+            "toll": 300
+          },
+          "5": {
+            "build": 200,
+            "toll": 380
+          }
+        }
+      },
+      "18": {
+        "color": 8,
+        "building": {
+          "1": {
+            "build": 100,
+            "toll": 40
+          },
+          "2": {
+            "build": 40,
+            "toll": 80
+          },
+          "3": {
+            "build": 120,
+            "toll": 170
+          },
+          "4": {
+            "build": 200,
+            "toll": 350
+          },
+          "5": {
+            "build": 200,
+            "toll": 300
+          }
+        }
+      }
+    },
+    "2": {
+      "1": {
+        "color": 1,
+        "building": {
+          "1": {
+            "build": 10,
+            "toll": 1
+          },
+          "2": {
+            "build": 5,
+            "toll": 3
+          },
+          "3": {
+            "build": 15,
+            "toll": 10
+          },
+          "4": {
+            "build": 25,
+            "toll": 28
+          },
+          "5": {
+            "build": 25,
+            "toll": 125
+          }
+        }
+      },
+      "2": {
+        "color": 1,
+        "building": {
+          "1": {
+            "build": 13,
+            "toll": 1
+          },
+          "2": {
+            "build": 5,
+            "toll": 4
+          },
+          "3": {
+            "build": 15,
+            "toll": 11
+          },
+          "4": {
+            "build": 25,
+            "toll": 30
+          },
+          "5": {
+            "build": 25,
+            "toll": 135
+          }
+        }
+      },
+      "3": {
+        "color": 2,
+        "building": {
+          "1": {
+            "build": 24,
+            "toll": 3
+          },
+          "2": {
+            "build": 10,
+            "toll": 9
+          },
+          "3": {
+            "build": 30,
+            "toll": 23
+          },
+          "4": {
+            "build": 50,
+            "toll": 60
+          },
+          "5": {
+            "build": 50,
+            "toll": 225
+          }
+        }
+      },
+      "4": {
+        "color": 2,
+        "building": {
+          "1": {
+            "build": 24,
+            "toll": 3
+          },
+          "2": {
+            "build": 10,
+            "toll": 9
+          },
+          "3": {
+            "build": 30,
+            "toll": 23
+          },
+          "4": {
+            "build": 50,
+            "toll": 60
+          },
+          "5": {
+            "build": 50,
+            "toll": 225
+          }
+        }
+      },
+      "5": {
+        "color": 3,
+        "building": {
+          "1": {
+            "build": 36,
+            "toll": 7
+          },
+          "2": {
+            "build": 15,
+            "toll": 16
+          },
+          "3": {
+            "build": 45,
+            "toll": 42
+          },
+          "4": {
+            "build": 75,
+            "toll": 110
+          },
+          "5": {
+            "build": 75,
+            "toll": 300
+          }
+        }
+      },
+      "6": {
+        "color": 3,
+        "building": {
+          "1": {
+            "build": 36,
+            "toll": 7
+          },
+          "2": {
+            "build": 15,
+            "toll": 16
+          },
+          "3": {
+            "build": 45,
+            "toll": 42
+          },
+          "4": {
+            "build": 75,
+            "toll": 110
+          },
+          "5": {
+            "build": 75,
+            "toll": 300
+          }
+        }
+      },
+      "7": {
+        "color": 4,
+        "building": {
+          "1": {
+            "build": 47,
+            "toll": 10
+          },
+          "2": {
+            "build": 20,
+            "toll": 23
+          },
+          "3": {
+            "build": 60,
+            "toll": 57
+          },
+          "4": {
+            "build": 100,
+            "toll": 135
+          },
+          "5": {
+            "build": 100,
+            "toll": 325
+          }
+        }
+      },
+      "8": {
+        "color": 4,
+        "building": {
+          "1": {
+            "build": 50,
+            "toll": 12
+          },
+          "2": {
+            "build": 20,
+            "toll": 24
+          },
+          "3": {
+            "build": 60,
+            "toll": 59
+          },
+          "4": {
+            "build": 100,
+            "toll": 140
+          },
+          "5": {
+            "build": 100,
+            "toll": 325
+          }
+        }
+      },
+      "9": {
+        "color": 5,
+        "building": {
+          "1": {
+            "build": 59,
+            "toll": 16
+          },
+          "2": {
+            "build": 25,
+            "toll": 35
+          },
+          "3": {
+            "build": 75,
+            "toll": 84
+          },
+          "4": {
+            "build": 125,
+            "toll": 190
+          },
+          "5": {
+            "build": 125,
+            "toll": 375
+          }
+        }
+      },
+      "10": {
+        "color": 5,
+        "building": {
+          "1": {
+            "build": 62,
+            "toll": 17
+          },
+          "2": {
+            "build": 25,
+            "toll": 37
+          },
+          "3": {
+            "build": 75,
+            "toll": 86
+          },
+          "4": {
+            "build": 125,
+            "toll": 195
+          },
+          "5": {
+            "build": 125,
+            "toll": 380
+          }
+        }
+      },
+      "11": {
+        "color": 6,
+        "building": {
+          "1": {
+            "build": 70,
+            "toll": 22
+          },
+          "2": {
+            "build": 30,
+            "toll": 43
+          },
+          "3": {
+            "build": 90,
+            "toll": 100
+          },
+          "4": {
+            "build": 150,
+            "toll": 230
+          },
+          "5": {
+            "build": 150,
+            "toll": 365
+          }
+        }
+      },
+      "12": {
+        "color": 6,
+        "building": {
+          "1": {
+            "build": 73,
+            "toll": 24
+          },
+          "2": {
+            "build": 30,
+            "toll": 46
+          },
+          "3": {
+            "build": 90,
+            "toll": 110
+          },
+          "4": {
+            "build": 150,
+            "toll": 235
+          },
+          "5": {
+            "build": 150,
+            "toll": 375
+          }
+        }
+      },
+      "13": {
+        "color": 7,
+        "building": {
+          "1": {
+            "build": 82,
+            "toll": 28
+          },
+          "2": {
+            "build": 35,
+            "toll": 62
+          },
+          "3": {
+            "build": 105,
+            "toll": 140
+          },
+          "4": {
+            "build": 175,
+            "toll": 300
+          },
+          "5": {
+            "build": 175,
+            "toll": 350
+          }
+        }
+      },
+      "14": {
+        "color": 7,
+        "building": {
+          "1": {
+            "build": 85,
+            "toll": 30
+          },
+          "2": {
+            "build": 35,
+            "toll": 65
+          },
+          "3": {
+            "build": 105,
+            "toll": 145
+          },
+          "4": {
+            "build": 175,
+            "toll": 310
+          },
+          "5": {
+            "build": 175,
+            "toll": 350
+          }
+        }
+      },
+      "15": {
+        "color": 8,
+        "building": {
+          "1": {
+            "build": 96,
+            "toll": 28
+          },
+          "2": {
+            "build": 40,
+            "toll": 62
+          },
+          "3": {
+            "build": 120,
+            "toll": 140
+          },
+          "4": {
+            "build": 200,
+            "toll": 300
+          },
+          "5": {
+            "build": 200,
+            "toll": 380
+          }
+        }
+      },
+      "16": {
+        "color": 8,
+        "building": {
+          "1": {
+            "build": 100,
+            "toll": 40
+          },
+          "2": {
+            "build": 40,
+            "toll": 80
+          },
+          "3": {
+            "build": 120,
+            "toll": 170
+          },
+          "4": {
+            "build": 200,
+            "toll": 350
+          },
+          "5": {
+            "build": 200,
+            "toll": 300
+          }
+        }
+      }
+    },
+    "3": {
+      "1": {
+        "color": 1,
+        "building": {
+          "1": {
+            "build": 10,
+            "toll": 1
+          },
+          "2": {
+            "build": 5,
+            "toll": 3
+          },
+          "3": {
+            "build": 15,
+            "toll": 10
+          },
+          "4": {
+            "build": 25,
+            "toll": 28
+          },
+          "5": {
+            "build": 25,
+            "toll": 125
+          }
+        }
+      },
+      "2": {
+        "color": 1,
+        "building": {
+          "1": {
+            "build": 13,
+            "toll": 1
+          },
+          "2": {
+            "build": 5,
+            "toll": 4
+          },
+          "3": {
+            "build": 15,
+            "toll": 11
+          },
+          "4": {
+            "build": 25,
+            "toll": 30
+          },
+          "5": {
+            "build": 25,
+            "toll": 135
+          }
+        }
+      },
+      "3": {
+        "color": 2,
+        "building": {
+          "1": {
+            "build": 24,
+            "toll": 3
+          },
+          "2": {
+            "build": 10,
+            "toll": 9
+          },
+          "3": {
+            "build": 30,
+            "toll": 23
+          },
+          "4": {
+            "build": 50,
+            "toll": 60
+          },
+          "5": {
+            "build": 50,
+            "toll": 225
+          }
+        }
+      },
+      "4": {
+        "color": 2,
+        "building": {
+          "1": {
+            "build": 24,
+            "toll": 3
+          },
+          "2": {
+            "build": 10,
+            "toll": 9
+          },
+          "3": {
+            "build": 30,
+            "toll": 23
+          },
+          "4": {
+            "build": 50,
+            "toll": 60
+          },
+          "5": {
+            "build": 50,
+            "toll": 225
+          }
+        }
+      },
+      "5": {
+        "color": 3,
+        "building": {
+          "1": {
+            "build": 36,
+            "toll": 7
+          },
+          "2": {
+            "build": 15,
+            "toll": 16
+          },
+          "3": {
+            "build": 45,
+            "toll": 42
+          },
+          "4": {
+            "build": 75,
+            "toll": 110
+          },
+          "5": {
+            "build": 75,
+            "toll": 300
+          }
+        }
+      },
+      "6": {
+        "color": 3,
+        "building": {
+          "1": {
+            "build": 36,
+            "toll": 7
+          },
+          "2": {
+            "build": 15,
+            "toll": 16
+          },
+          "3": {
+            "build": 45,
+            "toll": 42
+          },
+          "4": {
+            "build": 75,
+            "toll": 110
+          },
+          "5": {
+            "build": 75,
+            "toll": 300
+          }
+        }
+      },
+      "7": {
+        "color": 4,
+        "building": {
+          "1": {
+            "build": 47,
+            "toll": 10
+          },
+          "2": {
+            "build": 20,
+            "toll": 23
+          },
+          "3": {
+            "build": 60,
+            "toll": 57
+          },
+          "4": {
+            "build": 100,
+            "toll": 135
+          },
+          "5": {
+            "build": 100,
+            "toll": 325
+          }
+        }
+      },
+      "8": {
+        "color": 4,
+        "building": {
+          "1": {
+            "build": 50,
+            "toll": 12
+          },
+          "2": {
+            "build": 20,
+            "toll": 24
+          },
+          "3": {
+            "build": 60,
+            "toll": 59
+          },
+          "4": {
+            "build": 100,
+            "toll": 140
+          },
+          "5": {
+            "build": 100,
+            "toll": 325
+          }
+        }
+      },
+      "9": {
+        "color": 5,
+        "building": {
+          "1": {
+            "build": 59,
+            "toll": 16
+          },
+          "2": {
+            "build": 25,
+            "toll": 35
+          },
+          "3": {
+            "build": 75,
+            "toll": 84
+          },
+          "4": {
+            "build": 125,
+            "toll": 190
+          },
+          "5": {
+            "build": 125,
+            "toll": 375
+          }
+        }
+      },
+      "10": {
+        "color": 5,
+        "building": {
+          "1": {
+            "build": 62,
+            "toll": 17
+          },
+          "2": {
+            "build": 25,
+            "toll": 37
+          },
+          "3": {
+            "build": 75,
+            "toll": 86
+          },
+          "4": {
+            "build": 125,
+            "toll": 195
+          },
+          "5": {
+            "build": 125,
+            "toll": 380
+          }
+        }
+      },
+      "11": {
+        "color": 6,
+        "building": {
+          "1": {
+            "build": 70,
+            "toll": 22
+          },
+          "2": {
+            "build": 30,
+            "toll": 43
+          },
+          "3": {
+            "build": 90,
+            "toll": 100
+          },
+          "4": {
+            "build": 150,
+            "toll": 230
+          },
+          "5": {
+            "build": 150,
+            "toll": 365
+          }
+        }
+      },
+      "12": {
+        "color": 6,
+        "building": {
+          "1": {
+            "build": 73,
+            "toll": 24
+          },
+          "2": {
+            "build": 30,
+            "toll": 46
+          },
+          "3": {
+            "build": 90,
+            "toll": 110
+          },
+          "4": {
+            "build": 150,
+            "toll": 235
+          },
+          "5": {
+            "build": 150,
+            "toll": 375
+          }
+        }
+      },
+      "13": {
+        "color": 7,
+        "building": {
+          "1": {
+            "build": 82,
+            "toll": 28
+          },
+          "2": {
+            "build": 35,
+            "toll": 62
+          },
+          "3": {
+            "build": 105,
+            "toll": 140
+          },
+          "4": {
+            "build": 175,
+            "toll": 300
+          },
+          "5": {
+            "build": 175,
+            "toll": 350
+          }
+        }
+      },
+      "14": {
+        "color": 7,
+        "building": {
+          "1": {
+            "build": 85,
+            "toll": 30
+          },
+          "2": {
+            "build": 35,
+            "toll": 65
+          },
+          "3": {
+            "build": 105,
+            "toll": 145
+          },
+          "4": {
+            "build": 175,
+            "toll": 310
+          },
+          "5": {
+            "build": 175,
+            "toll": 350
+          }
+        }
+      },
+      "15": {
+        "color": 8,
+        "building": {
+          "1": {
+            "build": 96,
+            "toll": 28
+          },
+          "2": {
+            "build": 40,
+            "toll": 62
+          },
+          "3": {
+            "build": 120,
+            "toll": 140
+          },
+          "4": {
+            "build": 200,
+            "toll": 300
+          },
+          "5": {
+            "build": 200,
+            "toll": 380
+          }
+        }
+      },
+      "16": {
+        "color": 8,
+        "building": {
+          "1": {
+            "build": 100,
+            "toll": 40
+          },
+          "2": {
+            "build": 40,
+            "toll": 80
+          },
+          "3": {
+            "build": 120,
+            "toll": 170
+          },
+          "4": {
+            "build": 200,
+            "toll": 350
+          },
+          "5": {
+            "build": 200,
+            "toll": 300
+          }
+        }
+      }
+    },
+    "4": {
+      "1": {
+        "color": -1,
+        "building": {
+          "1": {
+            "build": 0,
+            "toll": 0
+          },
+          "2": {
+            "build": 0,
+            "toll": 0
+          },
+          "3": {
+            "build": 0,
+            "toll": 0
+          },
+          "4": {
+            "build": 0,
+            "toll": 0
+          },
+          "5": {
+            "build": 0,
+            "toll": 0
+          }
+        }
+      }
+    },
+    "5": {
+      "1": {
+        "color": 1,
+        "building": {
+          "1": {
+            "build": 10,
+            "toll": 1
+          },
+          "2": {
+            "build": 5,
+            "toll": 3
+          },
+          "3": {
+            "build": 15,
+            "toll": 10
+          },
+          "4": {
+            "build": 25,
+            "toll": 28
+          },
+          "5": {
+            "build": 25,
+            "toll": 125
+          }
+        }
+      },
+      "2": {
+        "color": 1,
+        "building": {
+          "1": {
+            "build": 13,
+            "toll": 1
+          },
+          "2": {
+            "build": 5,
+            "toll": 4
+          },
+          "3": {
+            "build": 15,
+            "toll": 11
+          },
+          "4": {
+            "build": 25,
+            "toll": 30
+          },
+          "5": {
+            "build": 25,
+            "toll": 135
+          }
+        }
+      },
+      "3": {
+        "color": 1,
+        "building": {
+          "1": {
+            "build": 24,
+            "toll": 3
+          },
+          "2": {
+            "build": 10,
+            "toll": 9
+          },
+          "3": {
+            "build": 30,
+            "toll": 23
+          },
+          "4": {
+            "build": 50,
+            "toll": 60
+          },
+          "5": {
+            "build": 50,
+            "toll": 225
+          }
+        }
+      },
+      "4": {
+        "color": 2,
+        "building": {
+          "1": {
+            "build": 24,
+            "toll": 3
+          },
+          "2": {
+            "build": 10,
+            "toll": 9
+          },
+          "3": {
+            "build": 30,
+            "toll": 23
+          },
+          "4": {
+            "build": 50,
+            "toll": 60
+          },
+          "5": {
+            "build": 50,
+            "toll": 225
+          }
+        }
+      },
+      "5": {
+        "color": 2,
+        "building": {
+          "1": {
+            "build": 36,
+            "toll": 7
+          },
+          "2": {
+            "build": 15,
+            "toll": 16
+          },
+          "3": {
+            "build": 45,
+            "toll": 42
+          },
+          "4": {
+            "build": 75,
+            "toll": 110
+          },
+          "5": {
+            "build": 75,
+            "toll": 300
+          }
+        }
+      },
+      "6": {
+        "color": 3,
+        "building": {
+          "1": {
+            "build": 36,
+            "toll": 7
+          },
+          "2": {
+            "build": 15,
+            "toll": 16
+          },
+          "3": {
+            "build": 45,
+            "toll": 42
+          },
+          "4": {
+            "build": 75,
+            "toll": 110
+          },
+          "5": {
+            "build": 75,
+            "toll": 300
+          }
+        }
+      },
+      "7": {
+        "color": 3,
+        "building": {
+          "1": {
+            "build": 47,
+            "toll": 10
+          },
+          "2": {
+            "build": 20,
+            "toll": 23
+          },
+          "3": {
+            "build": 60,
+            "toll": 57
+          },
+          "4": {
+            "build": 100,
+            "toll": 135
+          },
+          "5": {
+            "build": 100,
+            "toll": 325
+          }
+        }
+      },
+      "8": {
+        "color": 4,
+        "building": {
+          "1": {
+            "build": 50,
+            "toll": 12
+          },
+          "2": {
+            "build": 20,
+            "toll": 24
+          },
+          "3": {
+            "build": 60,
+            "toll": 59
+          },
+          "4": {
+            "build": 100,
+            "toll": 140
+          },
+          "5": {
+            "build": 100,
+            "toll": 325
+          }
+        }
+      },
+      "9": {
+        "color": 4,
+        "building": {
+          "1": {
+            "build": 59,
+            "toll": 16
+          },
+          "2": {
+            "build": 25,
+            "toll": 35
+          },
+          "3": {
+            "build": 75,
+            "toll": 84
+          },
+          "4": {
+            "build": 125,
+            "toll": 190
+          },
+          "5": {
+            "build": 125,
+            "toll": 375
+          }
+        }
+      },
+      "10": {
+        "color": 5,
+        "building": {
+          "1": {
+            "build": 62,
+            "toll": 17
+          },
+          "2": {
+            "build": 25,
+            "toll": 37
+          },
+          "3": {
+            "build": 75,
+            "toll": 86
+          },
+          "4": {
+            "build": 125,
+            "toll": 195
+          },
+          "5": {
+            "build": 125,
+            "toll": 380
+          }
+        }
+      },
+      "11": {
+        "color": 5,
+        "building": {
+          "1": {
+            "build": 70,
+            "toll": 22
+          },
+          "2": {
+            "build": 30,
+            "toll": 43
+          },
+          "3": {
+            "build": 90,
+            "toll": 100
+          },
+          "4": {
+            "build": 150,
+            "toll": 230
+          },
+          "5": {
+            "build": 150,
+            "toll": 365
+          }
+        }
+      },
+      "12": {
+        "color": 6,
+        "building": {
+          "1": {
+            "build": 73,
+            "toll": 24
+          },
+          "2": {
+            "build": 30,
+            "toll": 46
+          },
+          "3": {
+            "build": 90,
+            "toll": 110
+          },
+          "4": {
+            "build": 150,
+            "toll": 235
+          },
+          "5": {
+            "build": 150,
+            "toll": 375
+          }
+        }
+      },
+      "13": {
+        "color": 6,
+        "building": {
+          "1": {
+            "build": 82,
+            "toll": 28
+          },
+          "2": {
+            "build": 35,
+            "toll": 62
+          },
+          "3": {
+            "build": 105,
+            "toll": 140
+          },
+          "4": {
+            "build": 175,
+            "toll": 300
+          },
+          "5": {
+            "build": 175,
+            "toll": 350
+          }
+        }
+      },
+      "14": {
+        "color": 6,
+        "building": {
+          "1": {
+            "build": 85,
+            "toll": 30
+          },
+          "2": {
+            "build": 35,
+            "toll": 65
+          },
+          "3": {
+            "build": 105,
+            "toll": 145
+          },
+          "4": {
+            "build": 175,
+            "toll": 310
+          },
+          "5": {
+            "build": 175,
+            "toll": 350
+          }
+        }
+      },
+      "15": {
+        "color": 7,
+        "building": {
+          "1": {
+            "build": 96,
+            "toll": 28
+          },
+          "2": {
+            "build": 40,
+            "toll": 62
+          },
+          "3": {
+            "build": 120,
+            "toll": 140
+          },
+          "4": {
+            "build": 200,
+            "toll": 300
+          },
+          "5": {
+            "build": 200,
+            "toll": 380
+          }
+        }
+      },
+      "16": {
+        "color": 7,
+        "building": {
+          "1": {
+            "build": 100,
+            "toll": 40
+          },
+          "2": {
+            "build": 40,
+            "toll": 80
+          },
+          "3": {
+            "build": 120,
+            "toll": 170
+          },
+          "4": {
+            "build": 200,
+            "toll": 350
+          },
+          "5": {
+            "build": 200,
+            "toll": 300
+          }
+        }
+      },
+      "17": {
+        "color": 8,
+        "building": {
+          "1": {
+            "build": 100,
+            "toll": 40
+          },
+          "2": {
+            "build": 40,
+            "toll": 80
+          },
+          "3": {
+            "build": 120,
+            "toll": 170
+          },
+          "4": {
+            "build": 200,
+            "toll": 350
+          },
+          "5": {
+            "build": 200,
+            "toll": 300
+          }
+        }
+      },
+      "18": {
+        "color": 8,
+        "building": {
+          "1": {
+            "build": 100,
+            "toll": 40
+          },
+          "2": {
+            "build": 40,
+            "toll": 80
+          },
+          "3": {
+            "build": 120,
+            "toll": 170
+          },
+          "4": {
+            "build": 200,
+            "toll": 350
+          },
+          "5": {
+            "build": 200,
+            "toll": 300
+          }
+        }
+      }
+    },
+    "7": {
+      "1": {
+        "color": 1,
+        "building": {
+          "1": {
+            "build": 10,
+            "toll": 1
+          },
+          "2": {
+            "build": 5,
+            "toll": 3
+          },
+          "3": {
+            "build": 15,
+            "toll": 10
+          },
+          "4": {
+            "build": 25,
+            "toll": 28
+          },
+          "5": {
+            "build": 25,
+            "toll": 125
+          }
+        }
+      },
+      "2": {
+        "color": 1,
+        "building": {
+          "1": {
+            "build": 13,
+            "toll": 1
+          },
+          "2": {
+            "build": 5,
+            "toll": 4
+          },
+          "3": {
+            "build": 15,
+            "toll": 11
+          },
+          "4": {
+            "build": 25,
+            "toll": 30
+          },
+          "5": {
+            "build": 25,
+            "toll": 135
+          }
+        }
+      },
+      "3": {
+        "color": 2,
+        "building": {
+          "1": {
+            "build": 24,
+            "toll": 3
+          },
+          "2": {
+            "build": 10,
+            "toll": 9
+          },
+          "3": {
+            "build": 30,
+            "toll": 23
+          },
+          "4": {
+            "build": 50,
+            "toll": 60
+          },
+          "5": {
+            "build": 50,
+            "toll": 225
+          }
+        }
+      },
+      "4": {
+        "color": 2,
+        "building": {
+          "1": {
+            "build": 24,
+            "toll": 3
+          },
+          "2": {
+            "build": 10,
+            "toll": 9
+          },
+          "3": {
+            "build": 30,
+            "toll": 23
+          },
+          "4": {
+            "build": 50,
+            "toll": 60
+          },
+          "5": {
+            "build": 50,
+            "toll": 225
+          }
+        }
+      },
+      "5": {
+        "color": 3,
+        "building": {
+          "1": {
+            "build": 36,
+            "toll": 7
+          },
+          "2": {
+            "build": 15,
+            "toll": 16
+          },
+          "3": {
+            "build": 45,
+            "toll": 42
+          },
+          "4": {
+            "build": 75,
+            "toll": 110
+          },
+          "5": {
+            "build": 75,
+            "toll": 300
+          }
+        }
+      },
+      "6": {
+        "color": 3,
+        "building": {
+          "1": {
+            "build": 36,
+            "toll": 7
+          },
+          "2": {
+            "build": 15,
+            "toll": 16
+          },
+          "3": {
+            "build": 45,
+            "toll": 42
+          },
+          "4": {
+            "build": 75,
+            "toll": 110
+          },
+          "5": {
+            "build": 75,
+            "toll": 300
+          }
+        }
+      },
+      "7": {
+        "color": 4,
+        "building": {
+          "1": {
+            "build": 47,
+            "toll": 10
+          },
+          "2": {
+            "build": 20,
+            "toll": 23
+          },
+          "3": {
+            "build": 60,
+            "toll": 57
+          },
+          "4": {
+            "build": 100,
+            "toll": 135
+          },
+          "5": {
+            "build": 100,
+            "toll": 325
+          }
+        }
+      },
+      "8": {
+        "color": 4,
+        "building": {
+          "1": {
+            "build": 50,
+            "toll": 12
+          },
+          "2": {
+            "build": 20,
+            "toll": 24
+          },
+          "3": {
+            "build": 60,
+            "toll": 59
+          },
+          "4": {
+            "build": 100,
+            "toll": 140
+          },
+          "5": {
+            "build": 100,
+            "toll": 325
+          }
+        }
+      },
+      "9": {
+        "color": 5,
+        "building": {
+          "1": {
+            "build": 59,
+            "toll": 16
+          },
+          "2": {
+            "build": 25,
+            "toll": 35
+          },
+          "3": {
+            "build": 75,
+            "toll": 84
+          },
+          "4": {
+            "build": 125,
+            "toll": 190
+          },
+          "5": {
+            "build": 125,
+            "toll": 375
+          }
+        }
+      },
+      "10": {
+        "color": 5,
+        "building": {
+          "1": {
+            "build": 62,
+            "toll": 17
+          },
+          "2": {
+            "build": 25,
+            "toll": 37
+          },
+          "3": {
+            "build": 75,
+            "toll": 86
+          },
+          "4": {
+            "build": 125,
+            "toll": 195
+          },
+          "5": {
+            "build": 125,
+            "toll": 380
+          }
+        }
+      },
+      "11": {
+        "color": 6,
+        "building": {
+          "1": {
+            "build": 70,
+            "toll": 22
+          },
+          "2": {
+            "build": 30,
+            "toll": 43
+          },
+          "3": {
+            "build": 90,
+            "toll": 100
+          },
+          "4": {
+            "build": 150,
+            "toll": 230
+          },
+          "5": {
+            "build": 150,
+            "toll": 365
+          }
+        }
+      },
+      "12": {
+        "color": 6,
+        "building": {
+          "1": {
+            "build": 73,
+            "toll": 24
+          },
+          "2": {
+            "build": 30,
+            "toll": 46
+          },
+          "3": {
+            "build": 90,
+            "toll": 110
+          },
+          "4": {
+            "build": 150,
+            "toll": 235
+          },
+          "5": {
+            "build": 150,
+            "toll": 375
+          }
+        }
+      },
+      "13": {
+        "color": 7,
+        "building": {
+          "1": {
+            "build": 82,
+            "toll": 28
+          },
+          "2": {
+            "build": 35,
+            "toll": 62
+          },
+          "3": {
+            "build": 105,
+            "toll": 140
+          },
+          "4": {
+            "build": 175,
+            "toll": 300
+          },
+          "5": {
+            "build": 175,
+            "toll": 350
+          }
+        }
+      },
+      "14": {
+        "color": 7,
+        "building": {
+          "1": {
+            "build": 85,
+            "toll": 30
+          },
+          "2": {
+            "build": 35,
+            "toll": 65
+          },
+          "3": {
+            "build": 105,
+            "toll": 145
+          },
+          "4": {
+            "build": 175,
+            "toll": 310
+          },
+          "5": {
+            "build": 175,
+            "toll": 350
+          }
+        }
+      },
+      "15": {
+        "color": 8,
+        "building": {
+          "1": {
+            "build": 96,
+            "toll": 28
+          },
+          "2": {
+            "build": 40,
+            "toll": 62
+          },
+          "3": {
+            "build": 120,
+            "toll": 140
+          },
+          "4": {
+            "build": 200,
+            "toll": 300
+          },
+          "5": {
+            "build": 200,
+            "toll": 380
+          }
+        }
+      },
+      "16": {
+        "color": 8,
+        "building": {
+          "1": {
+            "build": 100,
+            "toll": 40
+          },
+          "2": {
+            "build": 40,
+            "toll": 80
+          },
+          "3": {
+            "build": 120,
+            "toll": 170
+          },
+          "4": {
+            "build": 200,
+            "toll": 350
+          },
+          "5": {
+            "build": 200,
+            "toll": 300
+          }
+        }
+      }
+    },
+    "8": {
+      "1": {
+        "color": 1,
+        "building": {
+          "1": {
+            "build": 10,
+            "toll": 1
+          },
+          "2": {
+            "build": 5,
+            "toll": 3
+          },
+          "3": {
+            "build": 15,
+            "toll": 10
+          },
+          "4": {
+            "build": 25,
+            "toll": 28
+          },
+          "5": {
+            "build": 25,
+            "toll": 125
+          }
+        }
+      },
+      "2": {
+        "color": 1,
+        "building": {
+          "1": {
+            "build": 13,
+            "toll": 1
+          },
+          "2": {
+            "build": 5,
+            "toll": 4
+          },
+          "3": {
+            "build": 15,
+            "toll": 11
+          },
+          "4": {
+            "build": 25,
+            "toll": 30
+          },
+          "5": {
+            "build": 25,
+            "toll": 135
+          }
+        }
+      },
+      "3": {
+        "color": 2,
+        "building": {
+          "1": {
+            "build": 24,
+            "toll": 3
+          },
+          "2": {
+            "build": 10,
+            "toll": 9
+          },
+          "3": {
+            "build": 30,
+            "toll": 23
+          },
+          "4": {
+            "build": 50,
+            "toll": 60
+          },
+          "5": {
+            "build": 50,
+            "toll": 225
+          }
+        }
+      },
+      "4": {
+        "color": 2,
+        "building": {
+          "1": {
+            "build": 24,
+            "toll": 3
+          },
+          "2": {
+            "build": 10,
+            "toll": 9
+          },
+          "3": {
+            "build": 30,
+            "toll": 23
+          },
+          "4": {
+            "build": 50,
+            "toll": 60
+          },
+          "5": {
+            "build": 50,
+            "toll": 225
+          }
+        }
+      },
+      "5": {
+        "color": 2,
+        "building": {
+          "1": {
+            "build": 27,
+            "toll": 4
+          },
+          "2": {
+            "build": 10,
+            "toll": 10
+          },
+          "3": {
+            "build": 30,
+            "toll": 24
+          },
+          "4": {
+            "build": 50,
+            "toll": 62
+          },
+          "5": {
+            "build": 50,
+            "toll": 225
+          }
+        }
+      },
+      "6": {
+        "color": 3,
+        "building": {
+          "1": {
+            "build": 36,
+            "toll": 7
+          },
+          "2": {
+            "build": 15,
+            "toll": 16
+          },
+          "3": {
+            "build": 45,
+            "toll": 42
+          },
+          "4": {
+            "build": 75,
+            "toll": 110
+          },
+          "5": {
+            "build": 75,
+            "toll": 300
+          }
+        }
+      },
+      "7": {
+        "color": 3,
+        "building": {
+          "1": {
+            "build": 36,
+            "toll": 7
+          },
+          "2": {
+            "build": 15,
+            "toll": 16
+          },
+          "3": {
+            "build": 45,
+            "toll": 42
+          },
+          "4": {
+            "build": 75,
+            "toll": 110
+          },
+          "5": {
+            "build": 75,
+            "toll": 300
+          }
+        }
+      },
+      "8": {
+        "color": 4,
+        "building": {
+          "1": {
+            "build": 47,
+            "toll": 10
+          },
+          "2": {
+            "build": 20,
+            "toll": 23
+          },
+          "3": {
+            "build": 60,
+            "toll": 57
+          },
+          "4": {
+            "build": 100,
+            "toll": 135
+          },
+          "5": {
+            "build": 100,
+            "toll": 325
+          }
+        }
+      },
+      "9": {
+        "color": 4,
+        "building": {
+          "1": {
+            "build": 50,
+            "toll": 12
+          },
+          "2": {
+            "build": 20,
+            "toll": 24
+          },
+          "3": {
+            "build": 60,
+            "toll": 59
+          },
+          "4": {
+            "build": 100,
+            "toll": 140
+          },
+          "5": {
+            "build": 100,
+            "toll": 325
+          }
+        }
+      },
+      "10": {
+        "color": 5,
+        "building": {
+          "1": {
+            "build": 59,
+            "toll": 16
+          },
+          "2": {
+            "build": 25,
+            "toll": 35
+          },
+          "3": {
+            "build": 75,
+            "toll": 84
+          },
+          "4": {
+            "build": 125,
+            "toll": 190
+          },
+          "5": {
+            "build": 125,
+            "toll": 375
+          }
+        }
+      },
+      "11": {
+        "color": 5,
+        "building": {
+          "1": {
+            "build": 62,
+            "toll": 17
+          },
+          "2": {
+            "build": 25,
+            "toll": 37
+          },
+          "3": {
+            "build": 75,
+            "toll": 86
+          },
+          "4": {
+            "build": 125,
+            "toll": 195
+          },
+          "5": {
+            "build": 125,
+            "toll": 380
+          }
+        }
+      },
+      "12": {
+        "color": 6,
+        "building": {
+          "1": {
+            "build": 70,
+            "toll": 22
+          },
+          "2": {
+            "build": 30,
+            "toll": 43
+          },
+          "3": {
+            "build": 90,
+            "toll": 100
+          },
+          "4": {
+            "build": 150,
+            "toll": 230
+          },
+          "5": {
+            "build": 150,
+            "toll": 365
+          }
+        }
+      },
+      "13": {
+        "color": 6,
+        "building": {
+          "1": {
+            "build": 73,
+            "toll": 24
+          },
+          "2": {
+            "build": 30,
+            "toll": 46
+          },
+          "3": {
+            "build": 90,
+            "toll": 110
+          },
+          "4": {
+            "build": 150,
+            "toll": 235
+          },
+          "5": {
+            "build": 150,
+            "toll": 375
+          }
+        }
+      },
+      "14": {
+        "color": 6,
+        "building": {
+          "1": {
+            "build": 73,
+            "toll": 24
+          },
+          "2": {
+            "build": 30,
+            "toll": 46
+          },
+          "3": {
+            "build": 90,
+            "toll": 110
+          },
+          "4": {
+            "build": 150,
+            "toll": 235
+          },
+          "5": {
+            "build": 150,
+            "toll": 375
+          }
+        }
+      },
+      "15": {
+        "color": 7,
+        "building": {
+          "1": {
+            "build": 82,
+            "toll": 28
+          },
+          "2": {
+            "build": 35,
+            "toll": 62
+          },
+          "3": {
+            "build": 105,
+            "toll": 140
+          },
+          "4": {
+            "build": 175,
+            "toll": 300
+          },
+          "5": {
+            "build": 175,
+            "toll": 350
+          }
+        }
+      },
+      "16": {
+        "color": 7,
+        "building": {
+          "1": {
+            "build": 85,
+            "toll": 30
+          },
+          "2": {
+            "build": 35,
+            "toll": 65
+          },
+          "3": {
+            "build": 105,
+            "toll": 145
+          },
+          "4": {
+            "build": 175,
+            "toll": 310
+          },
+          "5": {
+            "build": 175,
+            "toll": 350
+          }
+        }
+      },
+      "17": {
+        "color": 8,
+        "building": {
+          "1": {
+            "build": 96,
+            "toll": 28
+          },
+          "2": {
+            "build": 40,
+            "toll": 62
+          },
+          "3": {
+            "build": 120,
+            "toll": 140
+          },
+          "4": {
+            "build": 200,
+            "toll": 300
+          },
+          "5": {
+            "build": 200,
+            "toll": 380
+          }
+        }
+      },
+      "18": {
+        "color": 8,
+        "building": {
+          "1": {
+            "build": 100,
+            "toll": 40
+          },
+          "2": {
+            "build": 40,
+            "toll": 80
+          },
+          "3": {
+            "build": 120,
+            "toll": 170
+          },
+          "4": {
+            "build": 200,
+            "toll": 350
+          },
+          "5": {
+            "build": 200,
+            "toll": 300
+          }
+        }
+      }
+    }
+  },
+  "MiniGame": {
+    "maxChance": 3,
+    "costOptions": [
+      0.05,
+      0.1,
+      0.15
+    ],
+    "increaseRate": 2
+  },
+  "PrisonSpace": {
+    "escapeCostRate": 0.1,
+    "limitTurnByMapId": {
+      "1": 2,
+      "2": 2,
+      "3": 2,
+      "4": 1,
+      "5": 2,
+      "6": 2,
+      "7": 2
+    }
+  },
+  "ResortSpace": {
+    "maxUpgrade": 3,
+    "initCostRate": 0.1,
+    "increaseRate": 2,
+    "initCost": 50,
+    "tollCost": 40
+  },
+  "StartSpace": {
+    "passingBonusRate": 0.15
+  },
+  "TaxSpace": {
+    "taxRate": 0.1
+  },
+  "TravelSpace": {
+    "travelCostRate": 0.02
+  },
+  "GodSpace": {
+    "turnLiftActive": 2
+  },
+  "BankSpace": {
+    "tollTaxRate": 10
+  }
 }

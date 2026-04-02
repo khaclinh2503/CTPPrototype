@@ -298,14 +298,30 @@ class TestNewTileStubs:
         result = strategy.on_land(player, tile, board, event_bus)
         assert isinstance(result, list)
 
-    def test_god_on_land_returns_empty_list(self, board, event_bus):
+    def test_god_on_land_turn1_buys_city(self, board, event_bus):
         from ctp.tiles.god import GodStrategy
+        from ctp.core.events import EventType
         player = Player(player_id="p1", cash=1_000_000)
-        # Create a mock GOD tile
+        # turns_taken=0 (default) = first turn: God tile buys a CITY
         tile = Tile(position=5, space_id=SpaceId.GOD, opt=0)
         strategy = GodStrategy()
         result = strategy.on_land(player, tile, board, event_bus)
+        assert len(result) == 1
+        assert result[0].event_type == EventType.GOD_BUILD
+        assert result[0].data["action"] == "buy"
+
+    def test_god_on_land_turn2_no_owned_returns_empty(self, board, event_bus):
+        from ctp.tiles.god import GodStrategy
+        player = Player(player_id="p1", cash=1_000_000)
+        player.turns_taken = 1  # not first turn
+        tile = Tile(position=5, space_id=SpaceId.GOD, opt=0)
+        strategy = GodStrategy()
+        # No owned properties and map already has elevated tile -> upgrade path, but no owned land
+        board.elevated_tile = 3  # block elevation
+        result = strategy.on_land(player, tile, board, event_bus)
         assert result == []
+        # cleanup
+        board.elevated_tile = None
 
     def test_water_slide_on_land_returns_empty_list(self, board, event_bus):
         from ctp.tiles.water_slide import WaterSlideStrategy
@@ -386,17 +402,18 @@ class TestLandPriceScaling:
 
     def test_buy_price_uses_base_unit(self, board, event_bus):
         """Purchase price = level_1 build * BASE_UNIT = 10 * 1000 = 10_000."""
-        from ctp.tiles.land import LandStrategy
+        from ctp.controller.fsm import GameController
         from ctp.core.constants import BASE_UNIT
 
         tile = board.get_tile(2)  # opt=1, level_1 build=10
-        player = Player(player_id="p1", cash=1_000_000)
+        # Give exactly 10*BASE_UNIT so player can only afford level 1
+        player = Player(player_id="p1", cash=10 * BASE_UNIT)
+        controller = GameController(board=board, players=[player], max_turns=1, event_bus=event_bus)
 
-        strategy = LandStrategy()
-        strategy.on_land(player, tile, board, event_bus)
+        controller._try_buy_property(player, tile)
 
         assert tile.owner_id == "p1"
-        assert player.cash == 1_000_000 - 10 * BASE_UNIT
+        assert player.cash == 0  # spent exactly level_1_build * BASE_UNIT = 10_000
 
 
 class TestResortPriceScaling:

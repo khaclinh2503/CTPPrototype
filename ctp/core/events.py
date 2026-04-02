@@ -32,8 +32,13 @@ class EventType(Enum):
     TURN_ENDED = auto()
     PLAYER_ELIMINATED = auto()
     PROPERTY_ACQUIRED = auto()   # A buys property from B (forced acquisition)
-    PROPERTY_UPGRADED = auto()   # Property upgraded to next level
+    PROPERTY_UPGRADED = auto()   # Property upgraded (revisit, 2nd+ visit)
+    PROPERTY_BUILT = auto()      # House built as part of initial purchase
     MINIGAME_RESULT = auto()     # Mini-game outcome
+    FESTIVAL_FEE_PAID = auto()  # Player pays festival fee to system
+    GOD_BUILD = auto()           # Player built/bought via God tile
+    TILE_ELEVATED = auto()       # A tile was elevated by God action
+    TILE_LOWERED = auto()        # An elevated tile was triggered and lowered
 
 
 @dataclass

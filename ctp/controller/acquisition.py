@@ -46,7 +46,7 @@ def resolve_acquisition(
     if tile.owner_id is None or tile.owner_id == player.player_id:
         return events
 
-    # Chỉ khi chưa max level
+    # Chỉ khi chưa max level (Landmark = level 5)
     if tile.building_level >= 5:
         return events
 

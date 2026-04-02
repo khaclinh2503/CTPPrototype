@@ -219,14 +219,14 @@ class TestUpgrade:
     """Tests cho resolve_upgrades()."""
 
     def test_upgrade_two_level1_properties(self, board, event_bus):
-        """Player có 2 ô level 1, đủ tiền -> upgrade cả 2 lên level 2."""
+        """Eligible positions -> upgrade len level 2 (moi o chi tang 1 cap vi max=2)."""
         from ctp.controller.upgrade import resolve_upgrades
 
         # level 2 build cost = 5 * BASE_UNIT = 5000 each
         initial_cash = STARTING_CASH
         player = Player(player_id="P", cash=initial_cash)
         player.add_property(2)  # opt=1
-        player.add_property(3)  # opt=2
+        player.add_property(3)  # opt=2 (trong mock board, pos=3 la CITY opt=2)
 
         tile2 = board.get_tile(2)
         tile2.owner_id = "P"
@@ -236,7 +236,10 @@ class TestUpgrade:
         tile3.owner_id = "P"
         tile3.building_level = 1
 
-        events = resolve_upgrades(player=player, board=board, event_bus=event_bus)
+        # Truyen eligible_positions voi max_level=2 (chi duoc len cap 2)
+        eligible = {2: 2, 3: 2}
+        events = resolve_upgrades(player=player, board=board, event_bus=event_bus,
+                                  eligible_positions=eligible)
 
         assert tile2.building_level == 2
         assert tile3.building_level == 2
