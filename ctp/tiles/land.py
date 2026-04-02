@@ -1,48 +1,50 @@
-"""LandStrategy - property purchase and rent logic for Land tiles."""
+"""LandStrategy - property purchase and rent logic for City (CITY) tiles."""
 
 from ctp.tiles.base import TileStrategy
 from ctp.core.models import Player
 from ctp.core.board import Tile, Board, SpaceId
 from ctp.core.events import GameEvent, EventType
+from ctp.core.constants import BASE_UNIT, calc_invested_build_cost
 
 
 class LandStrategy(TileStrategy):
-    """Strategy for Land property tiles.
+    """Strategy for CITY property tiles (spaceId=3).
 
     Handles:
-    - Property purchase (auto-buy in Phase 1)
+    - Property purchase (auto-buy in Phase 2 stub)
     - Rent payment when landing on opponent-owned land
-    - Building upgrades (not implemented in Phase 1)
+    - Rent transfer to owner
+    - BASE_UNIT scaled prices
     """
 
-    def on_land(self, player: Player, tile: Tile, board: Board, event_bus) -> list[GameEvent]:
-        """Handle player landing on a land tile.
+    def on_land(self, player: Player, tile: Tile, board: Board, event_bus,
+                players: list | None = None) -> list[GameEvent]:
+        """Handle player landing on a city tile.
 
         Args:
             player: The player who landed.
-            tile: The land tile.
+            tile: The city tile.
             board: The game board.
             event_bus: Event bus for publishing events.
+            players: All players (needed for rent transfer to owner).
 
         Returns:
             List of events from this tile resolution.
         """
         events = []
 
-        # Check if tile is unowned
         if tile.owner_id is None:
-            # Auto-buy unowned property (Phase 1 - no AI decision)
+            # Auto-buy unowned property
             land_config = board.get_land_config(tile.opt)
             if land_config is None:
                 return events
 
-            # Get the purchase price (level 1 build cost)
+            # Price = level 1 build cost * BASE_UNIT
             building = land_config.get("building", {})
             level_1 = building.get("1", {})
-            price = level_1.get("build", 0)
+            price = level_1.get("build", 0) * BASE_UNIT
 
             if player.cash >= price:
-                # Purchase the property
                 player.cash -= price
                 player.add_property(tile.position)
                 tile.owner_id = player.player_id
@@ -53,52 +55,54 @@ class LandStrategy(TileStrategy):
                     player_id=player.player_id,
                     data={
                         "position": tile.position,
-                        "property": f"Land_{tile.opt}",
+                        "property": f"City_{tile.opt}",
                         "price": price,
                         "level": 1
                     }
                 ))
                 event_bus.publish(events[-1])
+
         else:
-            # Tile is owned - pay rent
+            # Tile is owned - pay rent to owner
             if tile.owner_id != player.player_id and not player.is_bankrupt:
                 land_config = board.get_land_config(tile.opt)
                 if land_config is None:
                     return events
 
-                # Calculate rent based on building level
+                # Rent = toll_value * BASE_UNIT
                 building = land_config.get("building", {})
                 level_key = str(tile.building_level) if tile.building_level > 0 else "1"
                 level_data = building.get(level_key, {})
-                rent = level_data.get("toll", 0)
+                rent = level_data.get("toll", 0) * BASE_UNIT
 
-                # Check for toll multiply in General config
-                # (simplified for Phase 1 - map 1 has no tollMultiply)
+                # Deduct from payer (even if negative - bankruptcy handler will resolve)
+                player.cash -= rent
 
-                if player.cash >= rent:
-                    player.cash -= rent
-                    # Find owner and add their cash
-                    for p in board.board:  # This won't work - need to pass players
-                        pass  # Simplified - rent goes to "bank" for now in events
+                # Transfer rent to owner
+                if players:
+                    owner = next((p for p in players if p.player_id == tile.owner_id), None)
+                    if owner:
+                        owner.receive(rent)
 
-                    events.append(GameEvent(
-                        event_type=EventType.RENT_PAID,
-                        player_id=player.player_id,
-                        data={
-                            "position": tile.position,
-                            "amount": rent,
-                            "recipient": tile.owner_id,
-                            "level": tile.building_level
-                        }
-                    ))
-                    event_bus.publish(events[-1])
+                events.append(GameEvent(
+                    event_type=EventType.RENT_PAID,
+                    player_id=player.player_id,
+                    data={
+                        "position": tile.position,
+                        "amount": rent,
+                        "recipient": tile.owner_id,
+                        "level": tile.building_level
+                    }
+                ))
+                event_bus.publish(events[-1])
 
         return events
 
-    def on_pass(self, player: Player, tile: Tile, board: Board, event_bus) -> list[GameEvent]:
-        """Handle player passing a land tile.
+    def on_pass(self, player: Player, tile: Tile, board: Board, event_bus,
+                players: list | None = None) -> list[GameEvent]:
+        """Handle player passing a city tile.
 
-        Land tiles have no pass-through effect.
+        City tiles have no pass-through effect.
 
         Returns:
             Empty list (no events).

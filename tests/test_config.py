@@ -230,7 +230,7 @@ class TestYamlConfigs:
 
         config = GameRulesConfig.model_validate(data)
         assert config is not None
-        assert config.starting_cash == 200
+        assert config.starting_cash == 1_000_000  # Updated in Phase 2 (was 200)
         assert config.num_players == 4
 
 
@@ -283,13 +283,13 @@ class TestConfigLoader:
         assert loader.acquire_rate == 1.0
 
     def test_config_loader_starting_cash(self):
-        """After load_all, loader.starting_cash == 200."""
+        """After load_all, loader.starting_cash == 1_000_000 (updated Phase 2)."""
         from ctp.config import ConfigLoader
 
         loader = ConfigLoader()
         loader.load_all()
 
-        assert loader.starting_cash == 200
+        assert loader.starting_cash == 1_000_000
 
     def test_config_loader_num_players(self):
         """After load_all, loader.num_players == 4."""

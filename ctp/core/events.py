@@ -31,6 +31,9 @@ class EventType(Enum):
     TURN_STARTED = auto()
     TURN_ENDED = auto()
     PLAYER_ELIMINATED = auto()
+    PROPERTY_ACQUIRED = auto()   # A buys property from B (forced acquisition)
+    PROPERTY_UPGRADED = auto()   # Property upgraded to next level
+    MINIGAME_RESULT = auto()     # Mini-game outcome
 
 
 @dataclass
