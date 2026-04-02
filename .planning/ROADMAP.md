@@ -14,7 +14,8 @@ player tokens, info panels, speed control, and end-game stats.
 ## Phases
 
 - [x] **Phase 1: Headless Core** - Board, config loader, tile system, FSM turn engine — game runs headless
-- [ ] **Phase 2: Player + Property Rules** - Skill/Pendant/Pet passive buffs, property acquisition and trading, complete game loop
+- [ ] **Phase 2: Property Rules** - Fix SpaceId, property acquisition/trading/mini game, complete game loop với stubs
+- [ ] **Phase 2.5: Skill / Pendant / Pet System** - Passive buff system, effective_stat() stacking, tích hợp vào game loop
 - [ ] **Phase 3: AI Engine + History** - Heuristic agent, Monte Carlo rollouts, personality system, SQLite history persistence
 - [ ] **Phase 4: Pygame Visualization** - Board rendering, player tokens, info panels, speed control, end-game stats
 
@@ -37,21 +38,36 @@ Plans:
 - [x] 01-02-PLAN.md — GameModel dataclasses, Board/Tile objects, Player skeleton, EventBus
 - [x] 01-03-PLAN.md — GameController FSM, TileStrategy implementations, bankruptcy, headless runner
 
-### Phase 2: Player + Property Rules
-**Goal**: The passive buff system is fully operational and every property/trading decision resolves correctly — a game run from start to finish produces economically coherent outcomes.
+### Phase 2: Property Rules
+**Goal**: SpaceId enum được fix đúng, toàn bộ property/trading economics hoạt động chính xác — một ván đấu chạy từ đầu đến cuối cho ra kết quả kinh tế hợp lý với stubs AI mua/bán/nâng cấp.
 **Depends on**: Phase 1
-**Requirements**: PLAY-01, PLAY-02, PLAY-03, PLAY-04, PLAY-05, PLAY-06, PROP-01, PROP-02, PROP-03, PROP-04, PROP-05
+**Requirements**: PROP-01, PROP-02, PROP-03, PROP-04, PROP-05
 **Success Criteria** (what must be TRUE):
-  1. Each AI player starts a game with a randomly assigned set (5 skills, 3 pendants, 1 pet) drawn from config pools
-  2. `player.effective_stat(stat)` returns the correct stacked value across all active skills, pendants, and pet — verified by unit test with known fixture data
-  3. A player landing on an unowned property either purchases it (AI decision) or leaves it unowned; landing on an owned property pays rent at the correct upgrade level
-  4. When a player is offered the acquisition price on an upgradeable property, the owning AI accepts or declines and the transaction resolves correctly
-  5. AI can upgrade an owned property when it has sufficient funds and the tile is below max level
+  1. SpaceId enum fix đúng (FESTIVAL=1, CHANCE=2, CITY=3, GAME=4, PRISON=5, RESORT=6, START=7, TAX=8, TRAVEL=9) — tất cả tile strategies resolve đúng loại ô
+  2. Một player dừng ở đất chưa có chủ và đủ tiền → tự động mua; dừng ở đất của đối thủ → trả toll đúng level, sau đó có thể mua (forced acquisition, chủ không có quyền từ chối)
+  3. TaxSpace tính đúng: 10% × tổng build cost tất cả property đang sở hữu
+  4. Khi không đủ tiền trả nợ → bán cả ô (stub: bán ô rẻ nhất trước) cho đến khi đủ hoặc phá sản
+  5. Mini game 3 lượt đỏ đen hoạt động: lượt 1 bắt buộc cược min (50k), thắng ×2/×4/×8, player có thể dừng sau khi thắng
 **Plans**: 2 plans
 
 Plans:
-- [ ] 02-01: Player slot system (5 skills / 3 pendants / 1 pet), StatDelta stacking, effective_stat(), random assignment from config pool on game start, buff floor/ceiling guards
-- [ ] 02-02: Property ownership map on Board, rent calculation per upgrade level, buy/skip decision stub (returns True for now), acquisition offer flow, upgrade decision stub, debt resolution order (buildings → tiles → bankrupt)
+- [x] 02-01: Fix SpaceId enum, update TileStrategy registry, fix rent transfer (owner nhận tiền), fix TaxSpace (10% × tổng nhà), update starting_cash=1,000,000, BASE_UNIT=1,000
+- [ ] 02-02: Acquisition flow (A mua đất B forced, toll trước → mua → upgrade stub), MiniGame 3-round đỏ đen, debt resolution (bán cả ô rẻ nhất trước), GodStrategy stub, WaterSlideStrategy stub
+
+### Phase 2.5: Skill / Pendant / Pet System
+**Goal**: Hệ thống passive buff hoạt động hoàn chỉnh — mỗi player có bộ skill/pendant/pet ngẫu nhiên, `effective_stat()` stack đúng tất cả buffs, game loop tích hợp buff vào mọi tính toán kinh tế.
+**Depends on**: Phase 2
+**Requirements**: PLAY-01, PLAY-02, PLAY-03, PLAY-04, PLAY-05, PLAY-06
+**Success Criteria** (what must be TRUE):
+  1. Mỗi AI player bắt đầu ván với bộ ngẫu nhiên (5 skills, 3 pendants, 1 pet) từ config pools
+  2. `player.effective_stat(stat)` trả về giá trị đúng sau khi stack tất cả stat_deltas — verified bằng unit test với fixture data cố định
+  3. Toll, tax, build cost, passing bonus đều áp dụng buff từ effective_stat() khi tính toán
+  4. Buff stacking: Σ stat_deltas, multiplier floor = 0.1 (không âm)
+**Plans**: 2 plans
+
+Plans:
+- [ ] 02.5-01: Player slot system (5 skills / 3 pendants / 1 pet), SkillEntry/PendantEntry/PetEntry schemas, effective_stat() với stacking logic, random assignment từ config pool khi game start
+- [ ] 02.5-02: Điền skills.yaml (10 entries), pendants.yaml (5 entries), pets.yaml (3 entries) với stat_deltas theo vocab D-21; tích hợp effective_stat() vào LandStrategy, TaxSpace, StartSpace, PrisonSpace
 
 ### Phase 3: AI Engine + History
 **Goal**: Each AI player makes economically rational decisions driven by heuristic scoring and Monte Carlo rollouts, with personality affecting thresholds — and every completed game is persisted to SQLite for cross-session learning.
