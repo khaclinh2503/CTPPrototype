@@ -15,13 +15,17 @@ class TurnPhase(Enum):
     1. ROLL - Roll dice (2d6)
     2. MOVE - Move player based on dice roll
     3. RESOLVE_TILE - Apply tile effect
-    4. CHECK_BANKRUPTCY - Check if player is bankrupt
-    5. END_TURN - Advance to next player
+    4. ACQUIRE - Forced acquisition (player buys opponent's land if able)
+    5. UPGRADE - Upgrade all owned properties if affordable
+    6. CHECK_BANKRUPTCY - Check if player is bankrupt
+    7. END_TURN - Advance to next player
     """
 
     ROLL = auto()
     MOVE = auto()
     RESOLVE_TILE = auto()
+    ACQUIRE = auto()
+    UPGRADE = auto()
     CHECK_BANKRUPTCY = auto()
     END_TURN = auto()
 
@@ -93,6 +97,10 @@ class GameController:
                 return self._do_move()
             case TurnPhase.RESOLVE_TILE:
                 return self._do_resolve_tile()
+            case TurnPhase.ACQUIRE:
+                return self._do_acquire()
+            case TurnPhase.UPGRADE:
+                return self._do_upgrade()
             case TurnPhase.CHECK_BANKRUPTCY:
                 return self._do_check_bankruptcy()
             case TurnPhase.END_TURN:
@@ -178,14 +186,17 @@ class GameController:
         return events
 
     def _do_resolve_tile(self) -> list[GameEvent]:
-        """Apply tile effect. Transition to CHECK_BANKRUPTCY.
+        """Apply tile effect. Transition to ACQUIRE.
 
         Returns:
             List of events from tile resolution.
         """
         tile = self.board.get_tile(self.current_player.position)
         strategy = TileRegistry.resolve(tile.space_id)
-        events = strategy.on_land(self.current_player, tile, self.board, self.event_bus)
+        events = strategy.on_land(
+            self.current_player, tile, self.board, self.event_bus,
+            players=self.players
+        )
 
         self.event_bus.publish(GameEvent(
             event_type=EventType.TILE_LANDED,
@@ -197,6 +208,37 @@ class GameController:
             }
         ))
 
+        self.phase = TurnPhase.ACQUIRE
+        return events
+
+    def _do_acquire(self) -> list[GameEvent]:
+        """Attempt forced acquisition of tile from opponent. Transition to UPGRADE.
+
+        Returns:
+            List of events from acquisition (PROPERTY_ACQUIRED if bought).
+        """
+        from ctp.controller.acquisition import resolve_acquisition
+
+        tile = self.board.get_tile(self.current_player.position)
+        acquire_rate = 1.0  # From Board.json General.acquireRate
+        events = resolve_acquisition(
+            self.current_player, tile, self.board,
+            self.players, self.event_bus, acquire_rate
+        )
+        self.phase = TurnPhase.UPGRADE
+        return events
+
+    def _do_upgrade(self) -> list[GameEvent]:
+        """Upgrade all owned properties if affordable. Transition to CHECK_BANKRUPTCY.
+
+        Returns:
+            List of events from upgrades (PROPERTY_UPGRADED for each upgrade).
+        """
+        from ctp.controller.upgrade import resolve_upgrades
+
+        events = resolve_upgrades(
+            self.current_player, self.board, self.event_bus
+        )
         self.phase = TurnPhase.CHECK_BANKRUPTCY
         return events
 

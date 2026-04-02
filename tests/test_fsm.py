@@ -164,13 +164,39 @@ class TestFSMStateTransitions:
         controller.step()
         assert controller.phase == TurnPhase.RESOLVE_TILE
 
-    def test_step_resolve_to_check_bankruptcy(self, controller):
-        """RESOLVE_TILE -> CHECK_BANKRUPTCY"""
+    def test_step_resolve_to_acquire(self, controller):
+        """RESOLVE_TILE -> ACQUIRE (Phase 2: acquisition phase added)"""
         # Roll
         controller.step()
         # Move
         controller.step()
         # Resolve tile
+        controller.step()
+        assert controller.phase == TurnPhase.ACQUIRE
+
+    def test_step_acquire_to_upgrade(self, controller):
+        """ACQUIRE -> UPGRADE"""
+        # Roll
+        controller.step()
+        # Move
+        controller.step()
+        # Resolve tile
+        controller.step()
+        # Acquire
+        controller.step()
+        assert controller.phase == TurnPhase.UPGRADE
+
+    def test_step_upgrade_to_check_bankruptcy(self, controller):
+        """UPGRADE -> CHECK_BANKRUPTCY"""
+        # Roll
+        controller.step()
+        # Move
+        controller.step()
+        # Resolve tile
+        controller.step()
+        # Acquire
+        controller.step()
+        # Upgrade
         controller.step()
         assert controller.phase == TurnPhase.CHECK_BANKRUPTCY
 
@@ -182,14 +208,18 @@ class TestFSMStateTransitions:
         controller.step()
         # Resolve
         controller.step()
+        # Acquire
+        controller.step()
+        # Upgrade
+        controller.step()
         # Check bankruptcy
         controller.step()
         assert controller.phase == TurnPhase.END_TURN
 
     def test_full_turn_cycle(self, controller):
-        """Complete turn cycles back to ROLL."""
-        # Complete one full turn for Player1
-        for _ in range(5):
+        """Complete turn cycles back to ROLL (7 steps with ACQUIRE + UPGRADE phases)."""
+        # Complete one full turn for Player1: ROLL+MOVE+RESOLVE+ACQUIRE+UPGRADE+CHECK+END = 7
+        for _ in range(7):
             controller.step()
 
         # Should be back to ROLL for next player
