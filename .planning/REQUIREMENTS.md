@@ -15,12 +15,12 @@
 
 ### Config System — Đọc dữ liệu từ file
 
-- [ ] **CONF-01**: Map board đọc từ file JSON/YAML (danh sách ô, loại ô, thuộc tính)
-- [ ] **CONF-02**: Skill definitions đọc từ file config riêng (JSON/YAML), validate schema
-- [ ] **CONF-03**: Pendant definitions đọc từ file config riêng (schema khác skill)
-- [ ] **CONF-04**: Pet definitions đọc từ file config riêng (schema khác skill và pendant)
-- [ ] **CONF-05**: Game rules đọc từ file config (tiền khởi đầu, giá xây nhà, lãi suất thuê, v.v.)
-- [ ] **CONF-06**: Config validation bắt lỗi schema sai trước khi game start
+- [x] **CONF-01**: Map board đọc từ file JSON/YAML (danh sách ô, loại ô, thuộc tính)
+- [x] **CONF-02**: Skill definitions đọc từ file config riêng (JSON/YAML), validate schema
+- [x] **CONF-03**: Pendant definitions đọc từ file config riêng (schema khác skill)
+- [x] **CONF-04**: Pet definitions đọc từ file config riêng (schema khác skill và pendant)
+- [x] **CONF-05**: Game rules đọc từ file config (tiền khởi đầu, giá xây nhà, lãi suất thuê, v.v.)
+- [x] **CONF-06**: Config validation bắt lỗi schema sai trước khi game start
 
 ### Player System — Skill / Pendant / Pet
 
