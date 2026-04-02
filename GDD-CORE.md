@@ -46,7 +46,7 @@
 | 7 | START | 1 | Ô xuất phát (vị trí 1) |
 | 8 | TAX | — | Ô thuế (không có trong map 1 — reserved) |
 | 9 | TRAVEL | 1 | Ô du lịch / teleport (vị trí 25) |
-| 10 | GOD | 4 | Ô thần (stub — vị trí 5, 13, 21, 29) |
+| 10 | GOD | 4 | Ô thần (Map 2 — vị trí 5, 13, 21, 29) |
 | 40 | WATER_SLIDE | — | Ô cầu trượt nước (stub — reserved map 3) |
 
 ### Sơ đồ bàn cờ (Map 1)
@@ -299,9 +299,25 @@ Mechanic 2 lượt:
 
 ## 12. Ô Thần (GOD — vị trí 5, 13, 21, 29)
 
-**Stub hiện tại:** không có hiệu ứng.
+> Chỉ xuất hiện trên **Map 2** (SpacePosition1).
 
-Config: `turnLiftActive = 2` (dùng cho tính năng tương lai — miễn 2 lượt tác động?).
+### Khi đổ đôi vào ô Thần
+
+| Điều kiện | Hành động |
+|-----------|-----------|
+|  (lượt đầu tiên của player) | Chọn 1 CITY chưa có chủ → mua + xây level 1, phí bình thường |
+|  (từ lượt 2 trở đi) | Chọn **Xây nhà** hoặc **Nâng ô** |
+
+**Xây nhà:** nâng cấp 1 CITY đang sở hữu lên 1 level, trả phí bình thường.
+
+**Nâng ô:** đánh dấu 1 ô bất kì trên map bị nâng lên.
+- Toàn map chỉ có **1 ô được nâng** tại 1 thời điểm.
+- Khi player khác di chuyển và gặp ô nâng trong đường đi:
+  1. Player dừng tại ô đó (không đi tiếp).
+  2. Ô hạ xuống → resolve effect của ô đó bình thường.
+  3. Lượt kết thúc — **đổ đôi không được đổ lại**.
+
+Events:  (mua/nâng cấp),  (nâng ô),  (hạ ô).
 
 ---
 
@@ -323,6 +339,7 @@ Player:
   is_bankrupt: bool              # True khi bị loại
   owned_properties: list[int]    # Danh sách vị trí đang sở hữu
   prison_turns_remaining: int    # 0 = tự do, >0 = đang ở tù
+  turns_taken: int               # Số lượt đã hoàn thành (dùng cho God tile)
 ```
 
 **Chưa implement (Phase 2.5):**
@@ -348,7 +365,7 @@ Player:
 |-----------|------------|-------------|
 | Card effects (CHANCE) | Stub — event publish nhưng không apply | Phase 3 |
 | TRAVEL đích thật | Teleport về Start thay vì đích config | Phase 2.5? |
-| GOD tile effect | Không làm gì | Chưa xác định |
+| GOD tile effect | **Implemented** — mua đất (turn 1), xây nhà/nâng ô (turn 2+) | ✅ |
 | WATER_SLIDE | Không làm gì | Map 3 |
 | Mini-game round 2, 3 | Stub — dừng sau round 1 | AI Phase 3 |
 | Acquisition decision AI | Luôn mua nếu đủ tiền | AI Phase 3 |
@@ -380,7 +397,7 @@ ctp/
 │   ├── festival.py — FestivalStrategy
 │   ├── fortune.py  — FortuneStrategy (CHANCE)
 │   ├── game.py     — GameStrategy (MINI-GAME)
-│   ├── god.py      — GodStrategy (stub)
+│   ├── god.py      — GodStrategy (Map 2: mua đất / xây nhà / nâng ô)
 │   └── water_slide.py — WaterSlideStrategy (stub)
 └── controller/
     ├── fsm.py         — GameController, TurnPhase FSM
