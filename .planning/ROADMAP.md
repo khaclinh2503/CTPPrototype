@@ -13,7 +13,7 @@ player tokens, info panels, speed control, and end-game stats.
 
 ## Phases
 
-- [ ] **Phase 1: Headless Core** - Board, config loader, tile system, FSM turn engine — game runs headless
+- [x] **Phase 1: Headless Core** - Board, config loader, tile system, FSM turn engine — game runs headless
 - [ ] **Phase 2: Player + Property Rules** - Skill/Pendant/Pet passive buffs, property acquisition and trading, complete game loop
 - [ ] **Phase 3: AI Engine + History** - Heuristic agent, Monte Carlo rollouts, personality system, SQLite history persistence
 - [ ] **Phase 4: Pygame Visualization** - Board rendering, player tokens, info panels, speed control, end-game stats
@@ -30,12 +30,12 @@ player tokens, info panels, speed control, and end-game stats.
   3. Config files with schema errors are caught at startup and print a clear validation error before the game loop begins — bad config never reaches game logic
   4. A game run with `max_turns = 10` terminates at exactly turn 10 if no player has gone bankrupt
   5. A player whose cash goes below zero and cannot cover debts by selling assets is marked bankrupt and removed from the game
-**Plans**: 3 plans
+**Plans**: 3 plans (COMPLETE)
 
 Plans:
-- [ ] 01-01: Project scaffold, config loader, and Pydantic schema validation (board.json, skills.yaml, pendants.yaml, pets.yaml, game_rules.yaml — all validated at startup; `ConfigLoader` class; `ConfigError` on bad schema)
-- [ ] 01-02: `GameModel` dataclasses, `Board`/`Tile` objects, `Player` skeleton (no buff logic yet), `GameEvent` / `EventBus` queue
-- [ ] 01-03: `GameController` FSM (ROLL → MOVE → RESOLVE_TILE → CHECK_BANKRUPTCY → END_TURN), all six `TileStrategy` implementations, bankruptcy resolution, `max_turns` termination, headless test runner
+- [x] 01-01-PLAN.md — Project scaffold, config loader, and Pydantic schema validation
+- [x] 01-02-PLAN.md — GameModel dataclasses, Board/Tile objects, Player skeleton, EventBus
+- [x] 01-03-PLAN.md — GameController FSM, TileStrategy implementations, bankruptcy, headless runner
 
 ### Phase 2: Player + Property Rules
 **Goal**: The passive buff system is fully operational and every property/trading decision resolves correctly — a game run from start to finish produces economically coherent outcomes.
@@ -50,8 +50,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 02-01: `Player` slot system (5 skills / 3 pendants / 1 pet), `StatDelta` stacking, `effective_stat()`, random assignment from config pool on game start, buff floor/ceiling guards
-- [ ] 02-02: Property ownership map on `Board`, rent calculation per upgrade level, buy/skip decision stub (returns True for now), acquisition offer flow, upgrade decision stub, debt resolution order (buildings → tiles → bankrupt)
+- [ ] 02-01: Player slot system (5 skills / 3 pendants / 1 pet), StatDelta stacking, effective_stat(), random assignment from config pool on game start, buff floor/ceiling guards
+- [ ] 02-02: Property ownership map on Board, rent calculation per upgrade level, buy/skip decision stub (returns True for now), acquisition offer flow, upgrade decision stub, debt resolution order (buildings → tiles → bankrupt)
 
 ### Phase 3: AI Engine + History
 **Goal**: Each AI player makes economically rational decisions driven by heuristic scoring and Monte Carlo rollouts, with personality affecting thresholds — and every completed game is persisted to SQLite for cross-session learning.
@@ -87,7 +87,6 @@ Plans:
 - [ ] 04-01: Pygame window setup, `AssetCache`, board surface rendering from config tile positions (Layer 0 static board, Layer 1 tile overlays for ownership/upgrade), `GameView` class with `headless` flag
 - [ ] 04-02: Player token sprites (`LayeredDirty`), token movement lerp animation, `AnimationQueue` driven by `GameEvent` stream, player info panel (cash, properties, skills/pet), turn log panel
 - [ ] 04-03: `SpeedController` / `SpeedWidget` (pause / step / 1x / 5x / 10x / max), keyboard shortcuts (Space, arrow keys, +/-), end-game stats screen with per-player summary
-**UI hint**: yes
 
 ## Progress
 
@@ -96,7 +95,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Headless Core | 0/3 | Not started | - |
+| 1. Headless Core | 3/3 | Complete | ✓ |
 | 2. Player + Property Rules | 0/2 | Not started | - |
 | 3. AI Engine + History | 0/3 | Not started | - |
 | 4. Pygame Visualization | 0/3 | Not started | - |
