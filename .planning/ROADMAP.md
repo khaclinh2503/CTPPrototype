@@ -52,7 +52,7 @@ Plans:
 
 Plans:
 - [x] 02-01: Fix SpaceId enum, update TileStrategy registry, fix rent transfer (owner nhận tiền), fix TaxSpace (10% × tổng nhà), update starting_cash=1,000,000, BASE_UNIT=1,000
-- [ ] 02-02: Acquisition flow (A mua đất B forced, toll trước → mua → upgrade stub), MiniGame 3-round đỏ đen, debt resolution (bán cả ô rẻ nhất trước), GodStrategy stub, WaterSlideStrategy stub
+- [x] 02-02: Acquisition flow (A mua đất B forced, toll trước → mua → upgrade stub), MiniGame 3-round đỏ đen, debt resolution (bán cả ô rẻ nhất trước), GodStrategy stub, WaterSlideStrategy stub
 
 ### Phase 2.5: Skill / Pendant / Pet System
 **Goal**: Hệ thống passive buff hoạt động hoàn chỉnh — mỗi player có bộ skill/pendant/pet ngẫu nhiên, `effective_stat()` stack đúng tất cả buffs, game loop tích hợp buff vào mọi tính toán kinh tế.
