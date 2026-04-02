@@ -1,0 +1,4 @@
+# Game rules configuration for CTP
+# Phase 1: basic rules, will be expanded in later phases
+starting_cash: 200
+num_players: 4
