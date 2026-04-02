@@ -20,7 +20,8 @@ class FestivalStrategy(TileStrategy):
     DEFAULT_INCREASE_RATE = 2
     DEFAULT_MAX_FESTIVAL = 1
 
-    def on_land(self, player: Player, tile: Tile, board: Board, event_bus) -> list[GameEvent]:
+    def on_land(self, player: Player, tile: Tile, board: Board, event_bus,
+                players: list | None = None) -> list[GameEvent]:
         """Handle player landing on a festival tile.
 
         Args:
@@ -83,7 +84,8 @@ class FestivalStrategy(TileStrategy):
 
         return events
 
-    def on_pass(self, player: Player, tile: Tile, board: Board, event_bus) -> list[GameEvent]:
+    def on_pass(self, player: Player, tile: Tile, board: Board, event_bus,
+                players: list | None = None) -> list[GameEvent]:
         """Handle player passing a festival tile.
 
         Passing festival has no effect.

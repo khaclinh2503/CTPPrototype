@@ -9,22 +9,28 @@ from ctp.tiles.tax import TaxStrategy
 from ctp.tiles.start import StartStrategy
 from ctp.tiles.festival import FestivalStrategy
 from ctp.tiles.fortune import FortuneStrategy
+from ctp.tiles.game import GameStrategy
+from ctp.tiles.god import GodStrategy
+from ctp.tiles.water_slide import WaterSlideStrategy
 
-# Register all strategies
+# Register all strategies using updated SpaceId enum (Phase 2)
 from ctp.core.board import SpaceId
-TileRegistry.register(SpaceId.LAND, LandStrategy())
+TileRegistry.register(SpaceId.CITY, LandStrategy())
 TileRegistry.register(SpaceId.RESORT, ResortStrategy())
 TileRegistry.register(SpaceId.PRISON, PrisonStrategy())
 TileRegistry.register(SpaceId.TRAVEL, TravelStrategy())
 TileRegistry.register(SpaceId.TAX, TaxStrategy())
 TileRegistry.register(SpaceId.START, StartStrategy())
 TileRegistry.register(SpaceId.FESTIVAL, FestivalStrategy())
-TileRegistry.register(SpaceId.FORTUNE_CARD, FortuneStrategy())
-TileRegistry.register(SpaceId.FORTUNE_EVENT, FortuneStrategy())
+TileRegistry.register(SpaceId.CHANCE, FortuneStrategy())
+TileRegistry.register(SpaceId.GAME, GameStrategy())
+TileRegistry.register(SpaceId.GOD, GodStrategy())
+TileRegistry.register(SpaceId.WATER_SLIDE, WaterSlideStrategy())
 
 __all__ = [
     "TileStrategy", "TileRegistry",
     "LandStrategy", "ResortStrategy", "PrisonStrategy",
     "TravelStrategy", "TaxStrategy", "StartStrategy",
-    "FestivalStrategy", "FortuneStrategy"
+    "FestivalStrategy", "FortuneStrategy",
+    "GameStrategy", "GodStrategy", "WaterSlideStrategy",
 ]

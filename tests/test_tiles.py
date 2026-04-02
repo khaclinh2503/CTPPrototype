@@ -1,4 +1,7 @@
-"""Tests for tile strategies."""
+"""Tests for tile strategies.
+
+Updated for Phase 2: SpaceId enum renamed, space_positions reflect new semantics.
+"""
 
 import pytest
 from ctp.core.board import SpaceId, Tile, Board
@@ -13,6 +16,9 @@ from ctp.tiles.tax import TaxStrategy
 from ctp.tiles.start import StartStrategy
 from ctp.tiles.festival import FestivalStrategy
 from ctp.tiles.fortune import FortuneStrategy
+from ctp.tiles.game import GameStrategy
+from ctp.tiles.god import GodStrategy
+from ctp.tiles.water_slide import WaterSlideStrategy
 
 
 @pytest.fixture
@@ -23,40 +29,52 @@ def event_bus():
 
 @pytest.fixture
 def space_positions():
-    """Standard 32-tile board layout."""
+    """Standard 32-tile board layout matching Board.json SpacePosition0.
+
+    SpaceId mapping (new Phase 2 enum):
+      spaceId=7 → START      (position 1)
+      spaceId=3 → CITY       (positions 2,4,6,7,8,11,12,14,16,18,20,22,23,24,27,28,30,32)
+      spaceId=4 → GAME       (position 3)
+      spaceId=6 → RESORT     (positions 5,10,15,19,26)
+      spaceId=5 → PRISON     (position 9)
+      spaceId=2 → CHANCE     (positions 13,21,29)
+      spaceId=1 → FESTIVAL   (position 17)
+      spaceId=9 → TRAVEL     (position 25)
+      spaceId=8 → TAX        (position 31)
+    """
     return {
-        "1": {"spaceId": 7, "opt": 0},   # START
-        "2": {"spaceId": 3, "opt": 1},   # LAND
-        "3": {"spaceId": 4, "opt": 0},   # PRISON
-        "4": {"spaceId": 3, "opt": 2},   # LAND
-        "5": {"spaceId": 6, "opt": 101}, # FORTUNE_EVENT
-        "6": {"spaceId": 3, "opt": 3},   # LAND
-        "7": {"spaceId": 3, "opt": 4},   # LAND
-        "8": {"spaceId": 3, "opt": 5},   # LAND
-        "9": {"spaceId": 5, "opt": 0},   # FESTIVAL
-        "10": {"spaceId": 6, "opt": 102}, # FORTUNE_EVENT
-        "11": {"spaceId": 3, "opt": 6},  # LAND
-        "12": {"spaceId": 3, "opt": 7},  # LAND
-        "13": {"spaceId": 2, "opt": 0},  # FORTUNE_CARD
-        "14": {"spaceId": 3, "opt": 8},  # LAND
-        "15": {"spaceId": 6, "opt": 101}, # FORTUNE_EVENT
-        "16": {"spaceId": 3, "opt": 9},  # LAND
-        "17": {"spaceId": 1, "opt": 0},  # TAX
-        "18": {"spaceId": 3, "opt": 10}, # LAND
-        "19": {"spaceId": 6, "opt": 101}, # FORTUNE_EVENT
-        "20": {"spaceId": 3, "opt": 11}, # LAND
-        "21": {"spaceId": 2, "opt": 0},  # FORTUNE_CARD
-        "22": {"spaceId": 3, "opt": 12}, # LAND
-        "23": {"spaceId": 3, "opt": 13}, # LAND
-        "24": {"spaceId": 3, "opt": 14}, # LAND
-        "25": {"spaceId": 9, "opt": 0},  # RESORT
-        "26": {"spaceId": 6, "opt": 102}, # FORTUNE_EVENT
-        "27": {"spaceId": 3, "opt": 15}, # LAND
-        "28": {"spaceId": 3, "opt": 16}, # LAND
-        "29": {"spaceId": 2, "opt": 0},  # FORTUNE_CARD
-        "30": {"spaceId": 3, "opt": 17}, # LAND
-        "31": {"spaceId": 8, "opt": 0},  # TRAVEL
-        "32": {"spaceId": 3, "opt": 18}, # LAND
+        "1": {"spaceId": 7, "opt": 0},    # START
+        "2": {"spaceId": 3, "opt": 1},    # CITY
+        "3": {"spaceId": 4, "opt": 0},    # GAME
+        "4": {"spaceId": 3, "opt": 2},    # CITY
+        "5": {"spaceId": 6, "opt": 101},  # RESORT
+        "6": {"spaceId": 3, "opt": 3},    # CITY
+        "7": {"spaceId": 3, "opt": 4},    # CITY
+        "8": {"spaceId": 3, "opt": 5},    # CITY
+        "9": {"spaceId": 5, "opt": 0},    # PRISON
+        "10": {"spaceId": 6, "opt": 102}, # RESORT
+        "11": {"spaceId": 3, "opt": 6},   # CITY
+        "12": {"spaceId": 3, "opt": 7},   # CITY
+        "13": {"spaceId": 2, "opt": 0},   # CHANCE
+        "14": {"spaceId": 3, "opt": 8},   # CITY
+        "15": {"spaceId": 6, "opt": 101}, # RESORT
+        "16": {"spaceId": 3, "opt": 9},   # CITY
+        "17": {"spaceId": 1, "opt": 0},   # FESTIVAL
+        "18": {"spaceId": 3, "opt": 10},  # CITY
+        "19": {"spaceId": 6, "opt": 101}, # RESORT
+        "20": {"spaceId": 3, "opt": 11},  # CITY
+        "21": {"spaceId": 2, "opt": 0},   # CHANCE
+        "22": {"spaceId": 3, "opt": 12},  # CITY
+        "23": {"spaceId": 3, "opt": 13},  # CITY
+        "24": {"spaceId": 3, "opt": 14},  # CITY
+        "25": {"spaceId": 9, "opt": 0},   # TRAVEL
+        "26": {"spaceId": 6, "opt": 102}, # RESORT
+        "27": {"spaceId": 3, "opt": 15},  # CITY
+        "28": {"spaceId": 3, "opt": 16},  # CITY
+        "29": {"spaceId": 2, "opt": 0},   # CHANCE
+        "30": {"spaceId": 3, "opt": 17},  # CITY
+        "31": {"spaceId": 8, "opt": 0},   # TAX
+        "32": {"spaceId": 3, "opt": 18},  # CITY
     }
 
 
@@ -106,8 +124,8 @@ def board(space_positions, land_config, resort_config, festival_config):
 class TestTileRegistry:
     """Test TileRegistry.resolve() returns correct strategy."""
 
-    def test_resolve_land(self):
-        strategy = TileRegistry.resolve(SpaceId.LAND)
+    def test_resolve_city(self):
+        strategy = TileRegistry.resolve(SpaceId.CITY)
         assert isinstance(strategy, LandStrategy)
 
     def test_resolve_resort(self):
@@ -134,13 +152,21 @@ class TestTileRegistry:
         strategy = TileRegistry.resolve(SpaceId.FESTIVAL)
         assert isinstance(strategy, FestivalStrategy)
 
-    def test_resolve_fortune_card(self):
-        strategy = TileRegistry.resolve(SpaceId.FORTUNE_CARD)
+    def test_resolve_chance(self):
+        strategy = TileRegistry.resolve(SpaceId.CHANCE)
         assert isinstance(strategy, FortuneStrategy)
 
-    def test_resolve_fortune_event(self):
-        strategy = TileRegistry.resolve(SpaceId.FORTUNE_EVENT)
-        assert isinstance(strategy, FortuneStrategy)
+    def test_resolve_game(self):
+        strategy = TileRegistry.resolve(SpaceId.GAME)
+        assert isinstance(strategy, GameStrategy)
+
+    def test_resolve_god(self):
+        strategy = TileRegistry.resolve(SpaceId.GOD)
+        assert isinstance(strategy, GodStrategy)
+
+    def test_resolve_water_slide(self):
+        strategy = TileRegistry.resolve(SpaceId.WATER_SLIDE)
+        assert isinstance(strategy, WaterSlideStrategy)
 
     def test_resolve_unknown_raises(self):
         with pytest.raises(ValueError):
@@ -148,14 +174,15 @@ class TestTileRegistry:
 
 
 class TestLandStrategy:
-    """Test LandStrategy.on_land and on_pass."""
+    """Test LandStrategy.on_land and on_pass (renamed CITY)."""
 
-    def test_land_unowned_auto_buy(self, board, event_bus):
-        """Landing on unowned land triggers auto-buy."""
-        player = Player(player_id="p1", cash=200)
-        tile = board.get_tile(2)  # Position 2 is LAND with opt=1
+    def test_city_unowned_auto_buy(self, board, event_bus):
+        """Landing on unowned city triggers auto-buy."""
+        from ctp.core.constants import BASE_UNIT
+        player = Player(player_id="p1", cash=1_000_000)
+        tile = board.get_tile(2)  # Position 2 is CITY with opt=1
 
-        strategy = TileRegistry.resolve(SpaceId.LAND)
+        strategy = TileRegistry.resolve(SpaceId.CITY)
         events = strategy.on_land(player, tile, board, event_bus)
 
         # Should have purchased property
@@ -167,35 +194,35 @@ class TestLandStrategy:
         purchase_events = event_bus.get_events(EventType.PROPERTY_PURCHASED)
         assert len(purchase_events) == 1
 
-    def test_land_owned_pays_rent(self, board, event_bus):
-        """Landing on owned land pays rent."""
-        # Setup: p1 owns the land
+    def test_city_owned_pays_rent(self, board, event_bus):
+        """Landing on owned city pays rent."""
+        # Setup: p1 owns the city
         tile = board.get_tile(2)
-        p1 = Player(player_id="p1", cash=200)
+        p1 = Player(player_id="p1", cash=1_000_000)
         p1.add_property(2)
         tile.owner_id = "p1"
         tile.building_level = 1
 
         # p2 lands on it
-        p2 = Player(player_id="p2", cash=200)
-        strategy = TileRegistry.resolve(SpaceId.LAND)
-        events = strategy.on_land(p2, tile, board, event_bus)
+        p2 = Player(player_id="p2", cash=1_000_000)
+        strategy = TileRegistry.resolve(SpaceId.CITY)
+        events = strategy.on_land(p2, tile, board, event_bus, players=[p1, p2])
 
         # p2 should have paid rent
-        assert p2.cash < 200
+        assert p2.cash < 1_000_000
         rent_events = event_bus.get_events(EventType.RENT_PAID)
         assert len(rent_events) == 1
 
-    def test_land_pass_no_effect(self, board, event_bus):
-        """Passing land has no effect."""
-        player = Player(player_id="p1", cash=200)
+    def test_city_pass_no_effect(self, board, event_bus):
+        """Passing city has no effect."""
+        player = Player(player_id="p1", cash=1_000_000)
         tile = board.get_tile(2)
 
-        strategy = TileRegistry.resolve(SpaceId.LAND)
+        strategy = TileRegistry.resolve(SpaceId.CITY)
         events = strategy.on_pass(player, tile, board, event_bus)
 
         assert events == []
-        assert player.cash == 200
+        assert player.cash == 1_000_000
 
 
 class TestResortStrategy:
@@ -203,8 +230,9 @@ class TestResortStrategy:
 
     def test_resort_unowned_auto_buy(self, board, event_bus):
         """Landing on unowned resort triggers auto-buy."""
-        player = Player(player_id="p1", cash=200)
-        tile = board.get_tile(25)  # Position 25 is RESORT
+        from ctp.core.constants import BASE_UNIT
+        player = Player(player_id="p1", cash=1_000_000)
+        tile = board.get_tile(10)  # Position 10 is RESORT (spaceId=6)
 
         strategy = TileRegistry.resolve(SpaceId.RESORT)
         events = strategy.on_land(player, tile, board, event_bus)
@@ -214,8 +242,8 @@ class TestResortStrategy:
 
     def test_resort_pass_no_effect(self, board, event_bus):
         """Passing resort has no effect."""
-        player = Player(player_id="p1", cash=200)
-        tile = board.get_tile(25)
+        player = Player(player_id="p1", cash=1_000_000)
+        tile = board.get_tile(10)
 
         strategy = TileRegistry.resolve(SpaceId.RESORT)
         events = strategy.on_pass(player, tile, board, event_bus)
@@ -228,8 +256,8 @@ class TestPrisonStrategy:
 
     def test_prison_sets_prison_turns(self, board, event_bus):
         """Landing on prison sets prison_turns_remaining."""
-        player = Player(player_id="p1", cash=200)
-        tile = board.get_tile(3)  # Position 3 is PRISON
+        player = Player(player_id="p1", cash=1_000_000)
+        tile = board.get_tile(9)  # Position 9 is PRISON (spaceId=5)
 
         strategy = TileRegistry.resolve(SpaceId.PRISON)
         events = strategy.on_land(player, tile, board, event_bus)
@@ -241,8 +269,8 @@ class TestPrisonStrategy:
 
     def test_prison_pass_no_effect(self, board, event_bus):
         """Passing prison has no effect."""
-        player = Player(player_id="p1", cash=200)
-        tile = board.get_tile(3)
+        player = Player(player_id="p1", cash=1_000_000)
+        tile = board.get_tile(9)
 
         strategy = TileRegistry.resolve(SpaceId.PRISON)
         events = strategy.on_pass(player, tile, board, event_bus)
@@ -255,9 +283,10 @@ class TestTravelStrategy:
 
     def test_travel_teleports_and_charges(self, board, event_bus):
         """Landing on travel teleports player and charges cost."""
-        player = Player(player_id="p1", cash=200)
-        player.position = 31  # Currently on TRAVEL
-        tile = board.get_tile(31)
+        from ctp.core.constants import BASE_UNIT
+        player = Player(player_id="p1", cash=1_000_000)
+        player.position = 25  # Currently on TRAVEL (spaceId=9)
+        tile = board.get_tile(25)
 
         strategy = TileRegistry.resolve(SpaceId.TRAVEL)
         events = strategy.on_land(player, tile, board, event_bus)
@@ -265,12 +294,12 @@ class TestTravelStrategy:
         # Player should be teleported to position 1 (Start)
         assert player.position == 1
         # Player should have paid travel cost
-        assert player.cash < 200
+        assert player.cash < 1_000_000
 
     def test_travel_pass_no_effect(self, board, event_bus):
         """Passing travel has no effect."""
-        player = Player(player_id="p1", cash=200)
-        tile = board.get_tile(31)
+        player = Player(player_id="p1", cash=1_000_000)
+        tile = board.get_tile(25)
 
         strategy = TileRegistry.resolve(SpaceId.TRAVEL)
         events = strategy.on_pass(player, tile, board, event_bus)
@@ -282,22 +311,30 @@ class TestTaxStrategy:
     """Test TaxStrategy.on_land and on_pass."""
 
     def test_tax_deducts_cash(self, board, event_bus):
-        """Landing on tax deducts cash."""
-        player = Player(player_id="p1", cash=200)
-        tile = board.get_tile(17)  # Position 17 is TAX
+        """Landing on tax deducts cash (player with property)."""
+        from ctp.core.constants import BASE_UNIT
+        # Give player a property so tax > 0
+        tile2 = board.get_tile(2)
+        tile2.owner_id = "p1"
+        tile2.building_level = 1
+
+        player = Player(player_id="p1", cash=1_000_000)
+        player.add_property(2)
+        tile = board.get_tile(31)  # Position 31 is TAX (spaceId=8)
 
         strategy = TileRegistry.resolve(SpaceId.TAX)
-        events = strategy.on_land(player, tile, board, event_bus)
+        events = strategy.on_land(player, tile, board, event_bus, players=[player])
 
-        assert player.cash < 200
+        # With property, tax > 0
+        assert player.cash < 1_000_000
 
         tax_events = event_bus.get_events(EventType.TAX_PAID)
         assert len(tax_events) == 1
 
     def test_tax_pass_no_effect(self, board, event_bus):
         """Passing tax has no effect."""
-        player = Player(player_id="p1", cash=200)
-        tile = board.get_tile(17)
+        player = Player(player_id="p1", cash=1_000_000)
+        tile = board.get_tile(31)
 
         strategy = TileRegistry.resolve(SpaceId.TAX)
         events = strategy.on_pass(player, tile, board, event_bus)
@@ -309,8 +346,8 @@ class TestStartStrategy:
     """Test StartStrategy.on_land and on_pass."""
 
     def test_start_land_no_effect(self, board, event_bus):
-        """Landing on start has no effect in Phase 1."""
-        player = Player(player_id="p1", cash=200)
+        """Landing on start has no effect."""
+        player = Player(player_id="p1", cash=1_000_000)
         tile = board.get_tile(1)  # Position 1 is START
 
         strategy = TileRegistry.resolve(SpaceId.START)
@@ -320,13 +357,13 @@ class TestStartStrategy:
 
     def test_start_pass_gives_bonus(self, board, event_bus):
         """Passing start gives passing bonus."""
-        player = Player(player_id="p1", cash=200)
+        player = Player(player_id="p1", cash=1_000_000)
         tile = board.get_tile(1)
 
         strategy = TileRegistry.resolve(SpaceId.START)
         events = strategy.on_pass(player, tile, board, event_bus)
 
-        assert player.cash > 200
+        assert player.cash > 1_000_000
 
         bonus_events = event_bus.get_events(EventType.BONUS_RECEIVED)
         assert len(bonus_events) == 1
@@ -337,8 +374,8 @@ class TestFestivalStrategy:
 
     def test_festival_increments_and_pays(self, board, event_bus):
         """Landing on festival updates level and pays reward."""
-        player = Player(player_id="p1", cash=200)
-        tile = board.get_tile(9)  # Position 9 is FESTIVAL
+        player = Player(player_id="p1", cash=1_000_000)
+        tile = board.get_tile(17)  # Position 17 is FESTIVAL (spaceId=1)
         board.festival_level = 0
 
         strategy = TileRegistry.resolve(SpaceId.FESTIVAL)
@@ -351,8 +388,8 @@ class TestFestivalStrategy:
 
     def test_festival_pass_no_effect(self, board, event_bus):
         """Passing festival has no effect."""
-        player = Player(player_id="p1", cash=200)
-        tile = board.get_tile(9)
+        player = Player(player_id="p1", cash=1_000_000)
+        tile = board.get_tile(17)
 
         strategy = TileRegistry.resolve(SpaceId.FESTIVAL)
         events = strategy.on_pass(player, tile, board, event_bus)
@@ -363,12 +400,12 @@ class TestFestivalStrategy:
 class TestFortuneStrategy:
     """Test FortuneStrategy.on_land and on_pass (stub)."""
 
-    def test_fortune_creates_card_event(self, board, event_bus):
-        """Landing on fortune creates CARD_DRAWN event (stub)."""
-        player = Player(player_id="p1", cash=200)
-        tile = board.get_tile(13)  # Position 13 is FORTUNE_CARD
+    def test_chance_creates_card_event(self, board, event_bus):
+        """Landing on chance creates CARD_DRAWN event (stub)."""
+        player = Player(player_id="p1", cash=1_000_000)
+        tile = board.get_tile(13)  # Position 13 is CHANCE (spaceId=2)
 
-        strategy = TileRegistry.resolve(SpaceId.FORTUNE_CARD)
+        strategy = TileRegistry.resolve(SpaceId.CHANCE)
         events = strategy.on_land(player, tile, board, event_bus)
 
         card_events = event_bus.get_events(EventType.CARD_DRAWN)
@@ -376,23 +413,12 @@ class TestFortuneStrategy:
         # Effect should NOT be applied (stub)
         assert card_events[0].data.get("effect_applied") == False
 
-    def test_fortune_event_creates_card_event(self, board, event_bus):
-        """Landing on fortune event creates CARD_DRAWN event (stub)."""
-        player = Player(player_id="p1", cash=200)
-        tile = board.get_tile(5)  # Position 5 is FORTUNE_EVENT
-
-        strategy = TileRegistry.resolve(SpaceId.FORTUNE_EVENT)
-        events = strategy.on_land(player, tile, board, event_bus)
-
-        card_events = event_bus.get_events(EventType.CARD_DRAWN)
-        assert len(card_events) == 1
-
-    def test_fortune_pass_no_effect(self, board, event_bus):
-        """Passing fortune has no effect."""
-        player = Player(player_id="p1", cash=200)
+    def test_chance_pass_no_effect(self, board, event_bus):
+        """Passing chance has no effect."""
+        player = Player(player_id="p1", cash=1_000_000)
         tile = board.get_tile(13)
 
-        strategy = TileRegistry.resolve(SpaceId.FORTUNE_CARD)
+        strategy = TileRegistry.resolve(SpaceId.CHANCE)
         events = strategy.on_pass(player, tile, board, event_bus)
 
         assert events == []

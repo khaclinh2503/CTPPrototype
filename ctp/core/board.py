@@ -9,17 +9,20 @@ class SpaceId(IntEnum):
     """Space types from Board.json spaceId field.
 
     Maps to the spaceId values in Board.json SpacePosition entries.
+    Updated in Phase 2 to match actual game semantics.
     """
 
-    TAX = 1
-    FORTUNE_CARD = 2  # Fortune tile (card draw)
-    LAND = 3
-    PRISON = 4
-    FESTIVAL = 5
-    FORTUNE_EVENT = 6  # Fortune tile (event variant, opt=101/102)
-    START = 7
-    TRAVEL = 8
-    RESORT = 9
+    FESTIVAL    = 1   # Festival/reward tile
+    CHANCE      = 2   # Fortune/Event card (merged FORTUNE_CARD + FORTUNE_EVENT)
+    CITY        = 3   # Land property tile (18 tiles on map 1)
+    GAME        = 4   # Mini-game tile
+    PRISON      = 5   # Prison tile
+    RESORT      = 6   # Resort property tile
+    START       = 7   # Start tile (unchanged)
+    TAX         = 8   # Tax tile
+    TRAVEL      = 9   # Travel/teleport tile
+    GOD         = 10  # God tile (Map 2/3 stub)
+    WATER_SLIDE = 40  # Water slide tile (Map 3 stub)
 
 
 @dataclass

@@ -13,7 +13,8 @@ class PrisonStrategy(TileStrategy):
     based on PrisonSpace.limitTurnByMapId[map_id].
     """
 
-    def on_land(self, player: Player, tile: Tile, board: Board, event_bus) -> list[GameEvent]:
+    def on_land(self, player: Player, tile: Tile, board: Board, event_bus,
+                players: list | None = None) -> list[GameEvent]:
         """Handle player landing on a prison tile.
 
         Args:
@@ -46,7 +47,8 @@ class PrisonStrategy(TileStrategy):
 
         return events
 
-    def on_pass(self, player: Player, tile: Tile, board: Board, event_bus) -> list[GameEvent]:
+    def on_pass(self, player: Player, tile: Tile, board: Board, event_bus,
+                players: list | None = None) -> list[GameEvent]:
         """Handle player passing a prison tile.
 
         Passing prison has no effect.

@@ -14,7 +14,8 @@ class FortuneStrategy(TileStrategy):
     - Card effects (EF_X codes) not implemented until Phase 3
     """
 
-    def on_land(self, player: Player, tile: Tile, board: Board, event_bus) -> list[GameEvent]:
+    def on_land(self, player: Player, tile: Tile, board: Board, event_bus,
+                players: list | None = None) -> list[GameEvent]:
         """Handle player landing on a fortune tile.
 
         STUB: Creates CARD_DRAWN event but applies no effect.
@@ -39,7 +40,7 @@ class FortuneStrategy(TileStrategy):
             data={
                 "position": tile.position,
                 "card_id": card_id,
-                "tile_type": "fortune_card" if tile.space_id == SpaceId.FORTUNE_CARD else "fortune_event",
+                "tile_type": "chance",
                 "effect_applied": False,  # Stub - no effect in Phase 1
                 "note": "Card effects not implemented until Phase 3"
             }
@@ -48,7 +49,8 @@ class FortuneStrategy(TileStrategy):
 
         return events
 
-    def on_pass(self, player: Player, tile: Tile, board: Board, event_bus) -> list[GameEvent]:
+    def on_pass(self, player: Player, tile: Tile, board: Board, event_bus,
+                players: list | None = None) -> list[GameEvent]:
         """Handle player passing a fortune tile.
 
         Passing fortune has no effect.

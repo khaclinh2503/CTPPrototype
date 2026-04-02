@@ -14,7 +14,8 @@ class TileStrategy(ABC):
     """
 
     @abstractmethod
-    def on_land(self, player: Player, tile: Tile, board: Board, event_bus) -> list[GameEvent]:
+    def on_land(self, player: Player, tile: Tile, board: Board, event_bus,
+                players: list | None = None) -> list[GameEvent]:
         """Resolve what happens when player lands on this tile.
 
         Args:
@@ -22,6 +23,7 @@ class TileStrategy(ABC):
             tile: The tile they landed on.
             board: The game board (for accessing configs).
             event_bus: Event bus for publishing game events.
+            players: All players in the game (needed for rent transfer).
 
         Returns:
             List of GameEvents produced by this tile resolution.
@@ -29,7 +31,8 @@ class TileStrategy(ABC):
         pass
 
     @abstractmethod
-    def on_pass(self, player: Player, tile: Tile, board: Board, event_bus) -> list[GameEvent]:
+    def on_pass(self, player: Player, tile: Tile, board: Board, event_bus,
+                players: list | None = None) -> list[GameEvent]:
         """Resolve what happens when player passes this tile (moving through it).
 
         Args:
@@ -37,6 +40,7 @@ class TileStrategy(ABC):
             tile: The tile they passed.
             board: The game board (for accessing configs).
             event_bus: Event bus for publishing game events.
+            players: All players in the game (optional).
 
         Returns:
             List of GameEvents produced by passing this tile.

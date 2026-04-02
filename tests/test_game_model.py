@@ -10,34 +10,40 @@ from ctp.core.events import EventType, GameEvent, EventBus
 
 
 class TestSpaceIdEnum:
-    """Test SpaceId enum has correct values."""
-
-    def test_space_id_tax(self):
-        assert SpaceId.TAX == 1
-
-    def test_space_id_fortune_card(self):
-        assert SpaceId.FORTUNE_CARD == 2
-
-    def test_space_id_land(self):
-        assert SpaceId.LAND == 3
-
-    def test_space_id_prison(self):
-        assert SpaceId.PRISON == 4
+    """Test SpaceId enum has correct values (updated for Phase 2)."""
 
     def test_space_id_festival(self):
-        assert SpaceId.FESTIVAL == 5
+        assert SpaceId.FESTIVAL == 1
 
-    def test_space_id_fortune_event(self):
-        assert SpaceId.FORTUNE_EVENT == 6
+    def test_space_id_chance(self):
+        assert SpaceId.CHANCE == 2
+
+    def test_space_id_city(self):
+        assert SpaceId.CITY == 3
+
+    def test_space_id_game(self):
+        assert SpaceId.GAME == 4
+
+    def test_space_id_prison(self):
+        assert SpaceId.PRISON == 5
+
+    def test_space_id_resort(self):
+        assert SpaceId.RESORT == 6
 
     def test_space_id_start(self):
         assert SpaceId.START == 7
 
-    def test_space_id_travel(self):
-        assert SpaceId.TRAVEL == 8
+    def test_space_id_tax(self):
+        assert SpaceId.TAX == 8
 
-    def test_space_id_resort(self):
-        assert SpaceId.RESORT == 9
+    def test_space_id_travel(self):
+        assert SpaceId.TRAVEL == 9
+
+    def test_space_id_god(self):
+        assert SpaceId.GOD == 10
+
+    def test_space_id_water_slide(self):
+        assert SpaceId.WATER_SLIDE == 40
 
 
 class TestTileDataclass:
@@ -50,11 +56,11 @@ class TestTileDataclass:
         assert tile.opt == 0
 
     def test_tile_with_owner(self):
-        tile = Tile(position=2, space_id=SpaceId.LAND, opt=1, owner_id="p1")
+        tile = Tile(position=2, space_id=SpaceId.CITY, opt=1, owner_id="p1")
         assert tile.owner_id == "p1"
 
     def test_tile_with_building_level(self):
-        tile = Tile(position=2, space_id=SpaceId.LAND, opt=1, building_level=3)
+        tile = Tile(position=2, space_id=SpaceId.CITY, opt=1, building_level=3)
         assert tile.building_level == 3
 
 
@@ -65,38 +71,38 @@ class TestBoardClass:
     def space_positions(self):
         """SpacePosition0 from Board.json (simplified)."""
         return {
-            "1": {"spaceId": 7, "opt": 0},   # START
-            "2": {"spaceId": 3, "opt": 1},   # LAND
-            "3": {"spaceId": 4, "opt": 0},   # PRISON
-            "4": {"spaceId": 3, "opt": 2},   # LAND
-            "5": {"spaceId": 6, "opt": 101}, # FORTUNE_EVENT
-            "6": {"spaceId": 3, "opt": 3},   # LAND
-            "7": {"spaceId": 3, "opt": 4},   # LAND
-            "8": {"spaceId": 3, "opt": 5},   # LAND
-            "9": {"spaceId": 5, "opt": 0},   # FESTIVAL
-            "10": {"spaceId": 6, "opt": 102}, # FORTUNE_EVENT
-            "11": {"spaceId": 3, "opt": 6},  # LAND
-            "12": {"spaceId": 3, "opt": 7},  # LAND
-            "13": {"spaceId": 2, "opt": 0},  # FORTUNE_CARD
-            "14": {"spaceId": 3, "opt": 8},  # LAND
-            "15": {"spaceId": 6, "opt": 101}, # FORTUNE_EVENT
-            "16": {"spaceId": 3, "opt": 9},  # LAND
-            "17": {"spaceId": 1, "opt": 0},  # TAX
-            "18": {"spaceId": 3, "opt": 10}, # LAND
-            "19": {"spaceId": 6, "opt": 101}, # FORTUNE_EVENT
-            "20": {"spaceId": 3, "opt": 11}, # LAND
-            "21": {"spaceId": 2, "opt": 0},  # FORTUNE_CARD
-            "22": {"spaceId": 3, "opt": 12}, # LAND
-            "23": {"spaceId": 3, "opt": 13}, # LAND
-            "24": {"spaceId": 3, "opt": 14}, # LAND
-            "25": {"spaceId": 9, "opt": 0},  # RESORT
-            "26": {"spaceId": 6, "opt": 102}, # FORTUNE_EVENT
-            "27": {"spaceId": 3, "opt": 15}, # LAND
-            "28": {"spaceId": 3, "opt": 16}, # LAND
-            "29": {"spaceId": 2, "opt": 0},  # FORTUNE_CARD
-            "30": {"spaceId": 3, "opt": 17}, # LAND
-            "31": {"spaceId": 8, "opt": 0},  # TRAVEL
-            "32": {"spaceId": 3, "opt": 18}, # LAND
+            "1": {"spaceId": 7, "opt": 0},    # START
+            "2": {"spaceId": 3, "opt": 1},    # CITY
+            "3": {"spaceId": 4, "opt": 0},    # GAME
+            "4": {"spaceId": 3, "opt": 2},    # CITY
+            "5": {"spaceId": 6, "opt": 101},  # RESORT
+            "6": {"spaceId": 3, "opt": 3},    # CITY
+            "7": {"spaceId": 3, "opt": 4},    # CITY
+            "8": {"spaceId": 3, "opt": 5},    # CITY
+            "9": {"spaceId": 5, "opt": 0},    # PRISON
+            "10": {"spaceId": 6, "opt": 102}, # RESORT
+            "11": {"spaceId": 3, "opt": 6},   # CITY
+            "12": {"spaceId": 3, "opt": 7},   # CITY
+            "13": {"spaceId": 2, "opt": 0},   # CHANCE
+            "14": {"spaceId": 3, "opt": 8},   # CITY
+            "15": {"spaceId": 6, "opt": 101}, # RESORT
+            "16": {"spaceId": 3, "opt": 9},   # CITY
+            "17": {"spaceId": 1, "opt": 0},   # FESTIVAL
+            "18": {"spaceId": 3, "opt": 10},  # CITY
+            "19": {"spaceId": 6, "opt": 101}, # RESORT
+            "20": {"spaceId": 3, "opt": 11},  # CITY
+            "21": {"spaceId": 2, "opt": 0},   # CHANCE
+            "22": {"spaceId": 3, "opt": 12},  # CITY
+            "23": {"spaceId": 3, "opt": 13},  # CITY
+            "24": {"spaceId": 3, "opt": 14},  # CITY
+            "25": {"spaceId": 9, "opt": 0},   # TRAVEL
+            "26": {"spaceId": 6, "opt": 102}, # RESORT
+            "27": {"spaceId": 3, "opt": 15},  # CITY
+            "28": {"spaceId": 3, "opt": 16},  # CITY
+            "29": {"spaceId": 2, "opt": 0},   # CHANCE
+            "30": {"spaceId": 3, "opt": 17},  # CITY
+            "31": {"spaceId": 8, "opt": 0},   # TAX
+            "32": {"spaceId": 3, "opt": 18},  # CITY
         }
 
     @pytest.fixture
@@ -125,34 +131,40 @@ class TestBoardClass:
         board = Board(space_positions, land_config)
         assert board.board[0].space_id == SpaceId.START
 
-    def test_position_3_is_prison(self, space_positions, land_config):
+    def test_position_3_is_game(self, space_positions, land_config):
+        """Position 3 has spaceId=4 which is now GAME (mini-game)."""
         board = Board(space_positions, land_config)
-        assert board.board[2].space_id == SpaceId.PRISON
+        assert board.board[2].space_id == SpaceId.GAME
 
-    def test_position_9_is_festival(self, space_positions, land_config):
+    def test_position_9_is_prison(self, space_positions, land_config):
+        """Position 9 has spaceId=5 which is now PRISON."""
         board = Board(space_positions, land_config)
-        assert board.board[8].space_id == SpaceId.FESTIVAL
+        assert board.board[8].space_id == SpaceId.PRISON
 
-    def test_position_17_is_tax(self, space_positions, land_config):
+    def test_position_17_is_festival(self, space_positions, land_config):
+        """Position 17 has spaceId=1 which is now FESTIVAL."""
         board = Board(space_positions, land_config)
-        assert board.board[16].space_id == SpaceId.TAX
+        assert board.board[16].space_id == SpaceId.FESTIVAL
 
-    def test_position_25_is_resort(self, space_positions, land_config):
+    def test_position_25_is_travel(self, space_positions, land_config):
+        """Position 25 has spaceId=9 which is now TRAVEL."""
         board = Board(space_positions, land_config)
-        assert board.board[24].space_id == SpaceId.RESORT
+        assert board.board[24].space_id == SpaceId.TRAVEL
 
-    def test_position_31_is_travel(self, space_positions, land_config):
+    def test_position_31_is_tax(self, space_positions, land_config):
+        """Position 31 has spaceId=8 which is now TAX."""
         board = Board(space_positions, land_config)
-        assert board.board[30].space_id == SpaceId.TRAVEL
+        assert board.board[30].space_id == SpaceId.TAX
 
-    def test_position_2_is_land(self, space_positions, land_config):
+    def test_position_2_is_city(self, space_positions, land_config):
+        """Position 2 has spaceId=3 which is now CITY."""
         board = Board(space_positions, land_config)
-        assert board.board[1].space_id == SpaceId.LAND
+        assert board.board[1].space_id == SpaceId.CITY
 
-    def test_land_tiles_have_opt_values(self, space_positions, land_config):
+    def test_city_tiles_have_opt_values(self, space_positions, land_config):
         board = Board(space_positions, land_config)
-        land_tiles = [t for t in board.board if t.space_id == SpaceId.LAND]
-        opt_values = [t.opt for t in land_tiles]
+        city_tiles = [t for t in board.board if t.space_id == SpaceId.CITY]
+        opt_values = [t.opt for t in city_tiles]
         assert sorted(opt_values) == list(range(1, 19))
 
 

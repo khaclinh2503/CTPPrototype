@@ -17,7 +17,8 @@ class TravelStrategy(TileStrategy):
     # Default travel cost rate if not in config
     DEFAULT_TRAVEL_COST_RATE = 0.02
 
-    def on_land(self, player: Player, tile: Tile, board: Board, event_bus) -> list[GameEvent]:
+    def on_land(self, player: Player, tile: Tile, board: Board, event_bus,
+                players: list | None = None) -> list[GameEvent]:
         """Handle player landing on a travel tile.
 
         Args:
@@ -58,7 +59,8 @@ class TravelStrategy(TileStrategy):
 
         return events
 
-    def on_pass(self, player: Player, tile: Tile, board: Board, event_bus) -> list[GameEvent]:
+    def on_pass(self, player: Player, tile: Tile, board: Board, event_bus,
+                players: list | None = None) -> list[GameEvent]:
         """Handle player passing a travel tile.
 
         Passing travel has no effect.
