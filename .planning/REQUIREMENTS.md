@@ -7,8 +7,8 @@
 
 ### Game Core — Bàn cờ & Game Loop
 
-- [ ] **CORE-01**: Game khởi tạo ván đấu với 2-4 người chơi AI
-- [ ] **CORE-02**: Người chơi lần lượt tung xúc xắc (2d6) và di chuyển theo số ô tương ứng
+- [x] **CORE-01**: Game khởi tạo ván đấu với 2-4 người chơi AI
+- [x] **CORE-02**: Người chơi lần lượt tung xúc xắc (2d6) và di chuyển theo số ô tương ứng
 - [ ] **CORE-03**: Vòng lặp turn kết thúc khi chỉ còn 1 người chơi không phá sản (hoặc đạt `max_turns`)
 - [ ] **CORE-04**: Điều kiện phá sản: tiền < 0, bán/mất hết tài sản không đủ bù nợ
 - [ ] **CORE-05**: Hỗ trợ `max_turns` trong config để ngăn game vô tận

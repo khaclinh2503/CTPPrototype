@@ -95,7 +95,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Headless Core | 1/3 | In Progress|  |
+| 1. Headless Core | 2/3 | In Progress|  |
 | 2. Player + Property Rules | 0/2 | Not started | - |
 | 3. AI Engine + History | 0/3 | Not started | - |
 | 4. Pygame Visualization | 0/3 | Not started | - |
