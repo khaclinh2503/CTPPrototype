@@ -1,0 +1,331 @@
+{
+    "Card": {
+        "IT_CA_1": {
+            "contentId": "eff_angel",
+            "effect": "EF_20",
+            "isActive": 1,
+            "rate": 5
+        },
+        "IT_CA_2": {
+            "contentId": "eff_discount_toll",
+            "effect": "EF_2",
+            "isActive": 1,
+            "rate": 5
+        },
+        "IT_CA_3": {
+            "contentId": "eff_shield",
+            "effect": "EF_3",
+            "isActive": 1,
+            "rate": 10
+        },
+        "IT_CA_4": {
+            "contentId": "eff_force_sell",
+            "effect": "EF_4",
+            "isActive": 0,
+            "rate": 5
+        },
+        "IT_CA_5": {
+            "contentId": "eff_change_city",
+            "effect": "EF_5",
+            "isActive": 0,
+            "rate": 5
+        },
+        "IT_CA_6": {
+            "contentId": "eff_alien_invaion",
+            "effect": "EF_6",
+            "isActive": 0,
+            "rate": 5
+        },
+        "IT_CA_7": {
+            "contentId": "eff_earth_quake",
+            "effect": "EF_6",
+            "isActive": 0,
+            "rate": 5
+        },
+        "IT_CA_8": {
+            "contentId": "eff_virus",
+            "effect": "EF_7",
+            "isActive": 0,
+            "rate": 5
+        },
+        "IT_CA_9": {
+            "contentId": "eff_yellow_sand",
+            "effect": "EF_8",
+            "isActive": 0,
+            "rate": 5
+        },
+        "IT_CA_10": {
+            "contentId": "eff_city_black_out",
+            "effect": "EF_7",
+            "isActive": 0,
+            "rate": 5
+        },
+        "IT_CA_11": {
+            "contentId": "eff_tax",
+            "effect": "EF_26",
+            "isActive": 0,
+            "rate": 10,
+            "mapNotAvail": [
+                2
+            ]
+        },
+        "IT_CA_12": {
+            "contentId": "eff_festival",
+            "effect": "EF_10",
+            "isActive": 0,
+            "rate": 10
+        },
+        "IT_CA_13": {
+            "contentId": "eff_festival_tour",
+            "effect": "EF_11",
+            "isActive": 0,
+            "rate": 5
+        },
+        "IT_CA_14": {
+            "contentId": "eff_exploring",
+            "effect": "EF_13",
+            "isActive": 0,
+            "rate": 5
+        },
+        "IT_CA_15": {
+            "contentId": "eff_travel",
+            "effect": "EF_12",
+            "isActive": 0,
+            "rate": 5
+        },
+        "IT_CA_16": {
+            "contentId": "eff_start",
+            "effect": "EF_14",
+            "isActive": 0,
+            "rate": 5
+        },
+        "IT_CA_17": {
+            "contentId": "eff_host_dice_festival",
+            "effect": "EF_15",
+            "isActive": 0,
+            "rate": 10
+        },
+        "IT_CA_18": {
+            "contentId": "eff_fee",
+            "effect": "EF_16",
+            "isActive": 0,
+            "rate": 5
+        },
+        "IT_CA_19": {
+            "contentId": "eff_city_donate",
+            "effect": "EF_17",
+            "isActive": 0,
+            "rate": 10
+        },
+        "IT_CA_20": {
+            "contentId": "eff_charity",
+            "effect": "EF_18",
+            "isActive": 0,
+            "rate": 5
+        },
+        "IT_CA_21": {
+            "contentId": "eff_escape",
+            "effect": "EF_19",
+            "isActive": 1,
+            "rate": 5
+        },
+        "IT_CA_22": {
+            "contentId": "eff_god_hand",
+            "effect": "EF_21",
+            "isActive": 0,
+            "rate": 10,
+            "mapNotAvail": [
+                1,
+                3
+            ]
+        },
+        "IT_CA_23": {
+            "contentId": "eff_pinwheel",
+            "effect": "EF_22",
+            "isActive": 1,
+            "rate": 10,
+            "mapNotAvail": [
+                1,
+                3
+            ]
+        },
+        "IT_CA_24": {
+            "contentId": "eff_bank",
+            "effect": "EF_24",
+            "isActive": 0,
+            "rate": 10,
+            "mapNotAvail": [
+                1,
+                2
+            ]
+        },
+        "IT_CA_25": {
+            "contentId": "eff_agency",
+            "effect": "EF_25",
+            "isActive": 0,
+            "rate": 10,
+            "mapNotAvail": [
+                1,
+                2
+            ]
+        },
+        "IT_CA_26": {
+            "contentId": "eff_get_house",
+            "effect": "EF_23",
+            "isActive": 0,
+            "rate": 0,
+            "mapNotAvail": [
+                1,
+                2,
+                3
+            ]
+        },
+        "IT_CA_27": {
+            "contentId": "eff_anti_kick",
+            "effect": "EF_27",
+            "isActive": 1,
+            "rate": 0,
+            "mapNotAvail": [
+                1,
+                2,
+                3
+            ]
+        },
+        "IT_CA_29": {
+            "contentId": "eff_flag",
+            "effect": "EF_29",
+            "isActive": 0,
+            "rate": 0,
+            "mapNotAvail": [
+                1,
+                2,
+                4
+            ]
+        }
+    },
+    "LobbyItem": {
+        "1": {
+            "1": {
+                "price": 5,
+                "type": "G"
+            },
+            "2": {
+                "price": 5,
+                "type": "G"
+            },
+            "3": {
+                "price": 100,
+                "type": "GOLD"
+            }
+        },
+        "2": {
+            "1": {
+                "price": 5,
+                "type": "G"
+            },
+            "2": {
+                "price": 5,
+                "type": "G"
+            },
+            "3": {
+                "price": 100,
+                "type": "GOLD"
+            }
+        },
+        "3": {
+            "1": {
+                "price": 5,
+                "type": "G"
+            },
+            "2": {
+                "price": 5,
+                "type": "G"
+            },
+            "3": {
+                "price": 100,
+                "type": "GOLD"
+            }
+        },
+        "4": {
+            "4": {
+                "price": 20,
+                "type": "G"
+            },
+            "5": {
+                "price": 20,
+                "type": "G"
+            },
+            "6": {
+                "price": 50000,
+                "type": "GOLD"
+            }
+        },
+		"5": {
+            "1": {
+                "price": 5,
+                "type": "G"
+            },
+            "2": {
+                "price": 5,
+                "type": "G"
+            },
+            "3": {
+                "price": 100,
+                "type": "GOLD"
+            }
+        },
+        "6": {
+            "1": {
+                "price": 5,
+                "type": "G"
+            },
+            "2": {
+                "price": 5,
+                "type": "G"
+            },
+            "8": {
+                "price": 5,
+                "type": "G",
+                "ATK": 2
+            }
+        },
+        "7": {
+            "1": {
+                "price": 5,
+                "type": "G"
+            },
+            "2": {
+                "price": 5,
+                "type": "G"
+            },
+            "3": {
+                "price": 100,
+                "type": "GOLD"
+            }
+        }
+    },
+    "General": {
+        "maxEvenOddBuy": 2,
+        "gPriceLoan": 10
+    },
+    "MatchItem": {
+        "1": {
+            "price1": 5,
+            "price2": 10
+        },
+        "2": {
+            "price1": 0,
+            "price2": 0
+        },
+        "3": {
+            "price1": 0,
+            "price2": 0
+        }
+    },
+    "DoubleItemConfig": {
+        "minPrice": 100,
+        "priceByBetPercent": 2,
+        "priceInTour": 2000,
+        "incControlValue": 55
+    }
+}

@@ -95,12 +95,13 @@ class TestHeadlessRunToCompletion:
         )
 
         # Run game to completion
+        # Safety limit: max_turns * num_players * phases_per_turn (7 phases in Phase 2)
         turn_count = 0
         while not controller.is_game_over():
             controller.step()
             turn_count += 1
-            # Safety limit
-            if turn_count > 50:
+            # Safety limit: 5 turns * 2 players * 7 phases = 70, use 200 for margin
+            if turn_count > 200:
                 break
 
         # Game should be over
