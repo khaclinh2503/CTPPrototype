@@ -45,6 +45,8 @@ class Tile:
     is_golden: bool = False   # x2 toll khi check in
     visit_count: int = 0      # số lần người khác đã vào trả tiền (dùng cho resort đơn)
     festival_level: int = 0   # số lần ô này được chọn làm festival (1→2x, 2→3x, 3+→4x)
+    toll_debuff_turns: int = 0   # EF_7/8: lượt còn lại của toll debuff trên tile này
+    toll_debuff_rate: float = 1.0  # EF_7/8: 0.0=miễn phí, 0.5=giảm 50%, 1.0=bình thường
 
 
 class Board:
@@ -284,6 +286,8 @@ class Board:
             tile.is_golden = False
             tile.visit_count = 0
             tile.festival_level = 0
+            tile.toll_debuff_turns = 0
+            tile.toll_debuff_rate = 1.0
 
     def get_row_non_corner_positions(self, water_tile_pos: int) -> list[int]:
         """Lấy các ô không phải góc trong cùng hàng với water_tile_pos.

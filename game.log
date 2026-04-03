@@ -5,7 +5,7 @@ So nguoi choi : 4
 So luot toi da: 25
 Tien khoi dau : $1,000,000
 ============================================================
-[Dat vang] 3 o dat vang van nay: [30, 7, 15]
+[Dat vang] 3 o dat vang van nay: [2, 24, 16]
 
 ======================================================================
 BAN DO - 32 O (4 canh x 8 o)
@@ -24,6 +24,7 @@ BAN DO - 32 O (4 canh x 8 o)
   │          Nha L2        $15,000     $10,000
   │          Nha L3        $25,000     $28,000
   │          Landmark      $25,000    $125,000
+  │          *** O DAT VANG - phi check in x2 ***
   │    o 3  [MINIGAME]
   │    o 4  [DAT #2]  Mau: Vang nhat (nhom 1)
   │          Cap          Xay them   Tien thue
@@ -50,7 +51,6 @@ BAN DO - 32 O (4 canh x 8 o)
   │          Nha L2        $30,000     $23,000
   │          Nha L3        $50,000     $60,000
   │          Landmark      $50,000    $225,000
-  │          *** O DAT VANG - phi check in x2 ***
   │    o 8  [DAT #5]  Mau: Vang dam (nhom 2)
   │          Cap          Xay them   Tien thue
   │          ────────── ──────────  ──────────
@@ -92,7 +92,7 @@ BAN DO - 32 O (4 canh x 8 o)
   │          Nha L2        $60,000     $57,000
   │          Nha L3       $100,000    $135,000
   │          Landmark     $100,000    $325,000
-  │    o15  [KHU NGHI DUONG]  mua=$50,000  thue_cap1=$40,000  rate=x2  max_cap=3  *** DAT VANG x2 ***
+  │    o15  [KHU NGHI DUONG]  mua=$50,000  thue_cap1=$40,000  rate=x2  max_cap=3
   │    o16  [DAT #9]  Mau: Do (nhom 4)
   │          Cap          Xay them   Tien thue
   │          ────────── ──────────  ──────────
@@ -101,6 +101,7 @@ BAN DO - 32 O (4 canh x 8 o)
   │          Nha L2        $60,000     $59,000
   │          Nha L3       $100,000    $140,000
   │          Landmark     $100,000    $325,000
+  │          *** O DAT VANG - phi check in x2 ***
   └───────────────────────────────────────────────────────
 
   ┌─ CANH 3 (O 17-24) ──────────────────────────────────
@@ -150,6 +151,7 @@ BAN DO - 32 O (4 canh x 8 o)
   │          Nha L2        $90,000    $110,000
   │          Nha L3       $150,000    $235,000
   │          Landmark     $150,000    $375,000
+  │          *** O DAT VANG - phi check in x2 ***
   └───────────────────────────────────────────────────────
 
   ┌─ CANH 4 (O 25-32) ──────────────────────────────────
@@ -183,7 +185,6 @@ BAN DO - 32 O (4 canh x 8 o)
   │          Nha L2       $120,000    $140,000
   │          Nha L3       $200,000    $300,000
   │          Landmark     $200,000    $380,000
-  │          *** O DAT VANG - phi check in x2 ***
   │    o31  [THUE]
   │    o32  [DAT #18]  Mau: Xanh la (nhom 8)
   │          Cap          Xay them   Tien thue
@@ -222,1020 +223,798 @@ NGUOI CHOI
 BAT DAU VAN DAU
 ============================================================
 [Game] Bat dau voi 4 nguoi choi
-  [Dice] A tung xuc xac: 6+6 = 12  [DOI - duoc do lai!]
+  [Dice] A tung xuc xac: 4+3 = 7
 
 ──────────────────────────────────────────────────
   LUOT 1: Nguoi choi A
 ──────────────────────────────────────────────────
   [Trang thai] Vi tri: o 1 | Tien: $1,000,000 | Dat: chua co
-  [Di chuyen] A: o 1 -> o 13
-  [Dung o] A dung tai o 13 [CHANCE]
-  [Rut the] A rut the 'fortune_card'
-  [Do doi] A do doi - duoc do them 1 lan nua!
-  [Dice] A tung xuc xac: 3+5 = 8
-
-──────────────────────────────────────────────────
-  LUOT 1: Nguoi choi A
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 13 | Tien: $1,000,000 | Dat: chua co
-  [Di chuyen] A: o 13 -> o 21
-  [Dung o] A dung tai o 21 [CHANCE]
-  [Rut the] A rut the 'fortune_card'
-  [Ket thuc luot] Tien: $1,000,000 | Dat: chua co
-  [Dice] B tung xuc xac: 3+4 = 7
+  [Di chuyen] A: o 1 -> o 8
+  [Dung o] A dung tai o 8 [CITY]
+  [Mua dat] A mua Cam co, Nha L1, Nha L2, Nha L3 (o 8) gia $117,000
+  [Ket thuc luot] Tien: $883,000 | Dat: [8]
+  [Dice] B tung xuc xac: 2+3 = 5
 
 ──────────────────────────────────────────────────
   LUOT 1: Nguoi choi B
 ──────────────────────────────────────────────────
   [Trang thai] Vi tri: o 1 | Tien: $1,000,000 | Dat: chua co
-  [Di chuyen] B: o 1 -> o 8
-  [Dung o] B dung tai o 8 [CITY]
-  [Mua dat] B mua Cam co, Nha L1, Nha L2, Nha L3 (o 8) gia $117,000
-  [Ket thuc luot] Tien: $883,000 | Dat: [8]
-  [Dice] C tung xuc xac: 3+3 = 6  [DOI - duoc do lai!]
+  [Di chuyen] B: o 1 -> o 6
+  [Dung o] B dung tai o 6 [CITY]
+  [Mua dat] B mua Cam co, Nha L1, Nha L2, Nha L3 (o 6) gia $114,000
+  [Ket thuc luot] Tien: $886,000 | Dat: [6]
+  [Dice] C tung xuc xac: 1+4 = 5
 
 ──────────────────────────────────────────────────
   LUOT 1: Nguoi choi C
 ──────────────────────────────────────────────────
   [Trang thai] Vi tri: o 1 | Tien: $1,000,000 | Dat: chua co
-  [Di chuyen] C: o 1 -> o 7
-  [Dung o] C dung tai o 7 [CITY]
-  [Mua dat] C mua Cam co, Nha L1, Nha L2, Nha L3 (o 7) gia $114,000
-  [Do doi] C do doi - duoc do them 1 lan nua!
-  [Dice] C tung xuc xac: 2+1 = 3
-
-──────────────────────────────────────────────────
-  LUOT 1: Nguoi choi C
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 7 | Tien: $886,000 | Dat: [7]
-  [Di chuyen] C: o 7 -> o 10
-  [Dung o] C dung tai o 10 [RESORT]
-  [Mua Resort] C mua Resort (o 10) gia $50,000
-  [Ket thuc luot] Tien: $836,000 | Dat: [7, 10]
-  [Dice] D tung xuc xac: 5+6 = 11
+  [Di chuyen] C: o 1 -> o 6
+  [Dung o] C dung tai o 6 [CITY]
+  [Thu tien] C tra tien thue $95,000 cho B (o 6)
+  [Cuop dat] C cuop dat o 6 tu B, tra $114,000
+  [Ket thuc luot] Tien: $791,000 | Dat: [6]
+  [Dice] D tung xuc xac: 6+3 = 9
 
 ──────────────────────────────────────────────────
   LUOT 1: Nguoi choi D
 ──────────────────────────────────────────────────
   [Trang thai] Vi tri: o 1 | Tien: $1,000,000 | Dat: chua co
-  [Di chuyen] D: o 1 -> o 12
-  [Dung o] D dung tai o 12 [CITY]
-  [Mua dat] D mua Cam co, Nha L1, Nha L2, Nha L3 (o 12) gia $171,000
-  [Ket thuc luot] Tien: $829,000 | Dat: [12]
-  [Dice] A tung xuc xac: 3+6 = 9
+  [Di chuyen] D: o 1 -> o 10
+  [Dung o] D dung tai o 10 [RESORT]
+  [Mua Resort] D mua Resort (o 10) gia $50,000
+  [Ket thuc luot] Tien: $950,000 | Dat: [10]
+  [Dice] A tung xuc xac: 4+6 = 10
 
 ──────────────────────────────────────────────────
   LUOT 2: Nguoi choi A
 ──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 21 | Tien: $1,000,000 | Dat: chua co
-  [Di chuyen] A: o 21 -> o 30
-  [Dung o] A dung tai o 30 [CITY]
-  [Mua dat] A mua Cam co, Nha L1, Nha L2, Nha L3 (o 30) gia $456,000
-  [Ket thuc luot] Tien: $544,000 | Dat: [30]
-  [Dice] B tung xuc xac: 4+6 = 10
+  [Trang thai] Vi tri: o 8 | Tien: $883,000 | Dat: [8]
+  [Di chuyen] A: o 8 -> o 18
+  [Dung o] A dung tai o 18 [CITY]
+  [Mua dat] A mua Cam co, Nha L1, Nha L2, Nha L3 (o 18) gia $284,000
+  [Ket thuc luot] Tien: $599,000 | Dat: [8, 18]
+  [Dice] B tung xuc xac: 1+6 = 7
 
 ──────────────────────────────────────────────────
   LUOT 2: Nguoi choi B
 ──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 8 | Tien: $883,000 | Dat: [8]
-  [Di chuyen] B: o 8 -> o 18
-  [Dung o] B dung tai o 18 [CITY]
-  [Mua dat] B mua Cam co, Nha L1, Nha L2, Nha L3 (o 18) gia $284,000
-  [Ket thuc luot] Tien: $599,000 | Dat: [8, 18]
-  [Dice] C tung xuc xac: 4+6 = 10
+  [Trang thai] Vi tri: o 6 | Tien: $1,095,000 | Dat: chua co
+  [Di chuyen] B: o 6 -> o 13
+  [Dung o] B dung tai o 13 [CHANCE]
+  [Rut the] B rut the 'IT_CA_10' -> EF_7
+  [Ket thuc luot] Tien: $1,095,000 | Dat: chua co
+  [Dice] C tung xuc xac: 5+3 = 8
 
 ──────────────────────────────────────────────────
   LUOT 2: Nguoi choi C
 ──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 10 | Tien: $836,000 | Dat: [7, 10]
-  [Di chuyen] C: o 10 -> o 20
-  [Dung o] C dung tai o 20 [CITY]
-  [Mua dat] C mua Cam co, Nha L1, Nha L2, Nha L3 (o 20) gia $287,000
-  [Ket thuc luot] Tien: $549,000 | Dat: [7, 10, 20]
-  [Dice] D tung xuc xac: 3+4 = 7
+  [Trang thai] Vi tri: o 6 | Tien: $791,000 | Dat: [6]
+  [Di chuyen] C: o 6 -> o 14
+  [Dung o] C dung tai o 14 [CITY]
+  [Mua dat] C mua Cam co, Nha L1, Nha L2, Nha L3 (o 14) gia $227,000
+  [Ket thuc luot] Tien: $564,000 | Dat: [6, 14]
+  [Dice] D tung xuc xac: 1+1 = 2  [DOI - duoc do lai!]
 
 ──────────────────────────────────────────────────
   LUOT 2: Nguoi choi D
 ──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 12 | Tien: $829,000 | Dat: [12]
-  [Di chuyen] D: o 12 -> o 19
-  [Dung o] D dung tai o 19 [RESORT]
-  [Mua Resort] D mua Resort (o 19) gia $50,000
-  [Ket thuc luot] Tien: $779,000 | Dat: [12, 19]
-  [Dice] A tung xuc xac: 3+5 = 8
+  [Trang thai] Vi tri: o 10 | Tien: $950,000 | Dat: [10]
+  [Di chuyen] D: o 10 -> o 12
+  [Dung o] D dung tai o 12 [CITY]
+  [Mua dat] D mua Cam co, Nha L1, Nha L2, Nha L3 (o 12) gia $171,000
+  [Do doi] D do doi - duoc do them 1 lan nua!
+  [Dice] D tung xuc xac: 1+1 = 2  [DOI - duoc do lai!]
+
+──────────────────────────────────────────────────
+  LUOT 2: Nguoi choi D
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 12 | Tien: $779,000 | Dat: [10, 12]
+  [Di chuyen] D: o 12 -> o 14
+  [Dung o] D dung tai o 14 [CITY]
+  [Thu tien] D tra tien thue $225,000 cho C (o 14)
+  [Cuop dat] D cuop dat o 14 tu C, tra $227,000
+  [Do doi] D do doi - duoc do them 1 lan nua!
+  [Dice] D tung xuc xac: 4+5 = 9
+
+──────────────────────────────────────────────────
+  LUOT 2: Nguoi choi D
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 14 | Tien: $327,000 | Dat: [10, 12, 14]
+  [Di chuyen] D: o 14 -> o 23
+  [Dung o] D dung tai o 23 [CITY]
+  [Mua dat] D mua Cam co, Nha L1, Nha L2 (o 23) gia $193,000
+  [Ket thuc luot] Tien: $134,000 | Dat: [10, 12, 14, 23]
+  [Dice] A tung xuc xac: 4+6 = 10
 
 ──────────────────────────────────────────────────
   LUOT 3: Nguoi choi A
 ──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 30 | Tien: $544,000 | Dat: [30]
-  [Nhan tien] A nhan $150,000 (passing_start)
-  [Di chuyen] A: o 30 -> o 6 (qua O xuat phat)
-  [Dung o] A dung tai o 6 [CITY]
-  [Mua dat] A mua Cam co, Nha L1, Nha L2, Nha L3 (o 6) gia $114,000
-  [Ket thuc luot] Tien: $580,000 | Dat: [30, 6]
-  [Dice] B tung xuc xac: 4+3 = 7
+  [Trang thai] Vi tri: o 18 | Tien: $599,000 | Dat: [8, 18]
+  [Di chuyen] A: o 18 -> o 28
+  [Dung o] A dung tai o 28 [CITY]
+  [Mua dat] A mua Cam co, Nha L1, Nha L2, Nha L3 (o 28) gia $400,000
+  [Ket thuc luot] Tien: $199,000 | Dat: [8, 18, 28]
+  [Dice] B tung xuc xac: 4+4 = 8  [DOI - duoc do lai!]
 
 ──────────────────────────────────────────────────
   LUOT 3: Nguoi choi B
 ──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 18 | Tien: $599,000 | Dat: [8, 18]
-  [Di chuyen] B: o 18 -> o 25
-  [Dung o] B dung tai o 25 [TRAVEL]
-  [Dung o] B dung tai o 25 [TRAVEL]
-  [Ket thuc luot] Tien: $599,000 | Dat: [8, 18]
-  [Dice] C tung xuc xac: 2+5 = 7
+  [Trang thai] Vi tri: o 13 | Tien: $1,095,000 | Dat: chua co
+  [Di chuyen] B: o 13 -> o 21
+  [Dung o] B dung tai o 21 [CHANCE]
+  [Rut the] B rut the 'IT_CA_14' -> EF_13
+  [Ket thuc luot] Tien: $1,095,000 | Dat: chua co
+  [Dice] C tung xuc xac: 1+5 = 6
 
 ──────────────────────────────────────────────────
   LUOT 3: Nguoi choi C
 ──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 20 | Tien: $549,000 | Dat: [7, 10, 20]
-  [Di chuyen] C: o 20 -> o 27
-  [Dung o] C dung tai o 27 [CITY]
-  [Mua dat] C mua Cam co, Nha L1, Nha L2, Nha L3 (o 27) gia $397,000
-  [Ket thuc luot] Tien: $152,000 | Dat: [7, 10, 20, 27]
-  [Dice] D tung xuc xac: 5+2 = 7
+  [Trang thai] Vi tri: o 14 | Tien: $1,016,000 | Dat: [6]
+  [Di chuyen] C: o 14 -> o 20
+  [Dung o] C dung tai o 20 [CITY]
+  [Mua dat] C mua Cam co, Nha L1, Nha L2, Nha L3 (o 20) gia $287,000
+  [Ket thuc luot] Tien: $729,000 | Dat: [6, 20]
+  [Dice] D tung xuc xac: 2+1 = 3
 
 ──────────────────────────────────────────────────
   LUOT 3: Nguoi choi D
 ──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 19 | Tien: $779,000 | Dat: [12, 19]
-  [Di chuyen] D: o 19 -> o 26
+  [Trang thai] Vi tri: o 23 | Tien: $134,000 | Dat: [10, 12, 14, 23]
+  [Di chuyen] D: o 23 -> o 26
   [Dung o] D dung tai o 26 [RESORT]
   [Mua Resort] D mua Resort (o 26) gia $50,000
-  [Ket thuc luot] Tien: $729,000 | Dat: [12, 19, 26]
-  [Dice] A tung xuc xac: 4+4 = 8  [DOI - duoc do lai!]
+  [Ket thuc luot] Tien: $84,000 | Dat: [10, 12, 14, 23, 26]
+  [Dice] A tung xuc xac: 1+1 = 2  [DOI - duoc do lai!]
 
 ──────────────────────────────────────────────────
   LUOT 4: Nguoi choi A
 ──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 6 | Tien: $580,000 | Dat: [30, 6]
-  [Di chuyen] A: o 6 -> o 14
-  [Dung o] A dung tai o 14 [CITY]
-  [Mua dat] A mua Cam co, Nha L1, Nha L2, Nha L3 (o 14) gia $227,000
-  [Do doi] A do doi - duoc do them 1 lan nua!
-  [Dice] A tung xuc xac: 3+4 = 7
-
-──────────────────────────────────────────────────
-  LUOT 4: Nguoi choi A
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 14 | Tien: $353,000 | Dat: [30, 6, 14]
-  [Di chuyen] A: o 14 -> o 21
-  [Dung o] A dung tai o 21 [CHANCE]
-  [Rut the] A rut the 'fortune_card'
-  [Ket thuc luot] Tien: $353,000 | Dat: [30, 6, 14]
-  [Di chuyen] B: o 25 -> o 12 (qua O xuat phat)
-  [Nhan tien] B nhan $150,000 (passing_start)
-  [Ket thuc luot] Tien: $729,000 | Dat: [8, 18]
-  [Dice] C tung xuc xac: 5+4 = 9
-
-──────────────────────────────────────────────────
-  LUOT 4: Nguoi choi C
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 27 | Tien: $152,000 | Dat: [7, 10, 20, 27]
-  [Nhan tien] C nhan $150,000 (passing_start)
-  [Di chuyen] C: o 27 -> o 4 (qua O xuat phat)
-  [Dung o] C dung tai o 4 [CITY]
-  [Mua dat] C mua Cam co, Nha L1, Nha L2, Nha L3 (o 4) gia $58,000
-  [Ket thuc luot] Tien: $244,000 | Dat: [7, 10, 20, 27, 4]
-  [Dice] D tung xuc xac: 6+5 = 11
-
-──────────────────────────────────────────────────
-  LUOT 4: Nguoi choi D
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 26 | Tien: $729,000 | Dat: [12, 19, 26]
-  [Nhan tien] D nhan $150,000 (passing_start)
-  [Di chuyen] D: o 26 -> o 5 (qua O xuat phat)
-  [Dung o] D dung tai o 5 [RESORT]
-  [Mua Resort] D mua Resort (o 5) gia $50,000
-  [Ket thuc luot] Tien: $829,000 | Dat: [12, 19, 26, 5]
-  [Dice] A tung xuc xac: 2+3 = 5
-
-──────────────────────────────────────────────────
-  LUOT 5: Nguoi choi A
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 21 | Tien: $353,000 | Dat: [30, 6, 14]
-  [Di chuyen] A: o 21 -> o 26
-  [Dung o] A dung tai o 26 [RESORT]
-  [Thu tien] A tra tien thue $80,000 cho D (o 26)
-  [Ket thuc luot] Tien: $273,000 | Dat: [30, 6, 14]
-  [Dice] B tung xuc xac: 5+3 = 8
-
-──────────────────────────────────────────────────
-  LUOT 5: Nguoi choi B
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 12 | Tien: $729,000 | Dat: [8, 18]
-  [Di chuyen] B: o 12 -> o 20
-  [Dung o] B dung tai o 20 [CITY]
-  [Thu tien] B tra tien thue $335,000 cho C (o 20)
-  [Cuop dat] B cuop dat o 20 tu C, tra $287,000
-  [Ket thuc luot] Tien: $107,000 | Dat: [8, 18, 20]
-  [Dice] C tung xuc xac: 4+5 = 9
-
-──────────────────────────────────────────────────
-  LUOT 5: Nguoi choi C
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 4 | Tien: $866,000 | Dat: [7, 10, 27, 4]
-  [Di chuyen] C: o 4 -> o 13
-  [Dung o] C dung tai o 13 [CHANCE]
-  [Rut the] C rut the 'fortune_card'
-  [Ket thuc luot] Tien: $866,000 | Dat: [7, 10, 27, 4]
-  [Dice] D tung xuc xac: 1+2 = 3
-
-──────────────────────────────────────────────────
-  LUOT 5: Nguoi choi D
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 5 | Tien: $909,000 | Dat: [12, 19, 26, 5]
-  [Di chuyen] D: o 5 -> o 8
-  [Dung o] D dung tai o 8 [CITY]
-  [Thu tien] D tra tien thue $100,000 cho B (o 8)
-  [Cuop dat] D cuop dat o 8 tu B, tra $117,000
-  [Ket thuc luot] Tien: $692,000 | Dat: [12, 19, 26, 5, 8]
-  [Dice] A tung xuc xac: 4+6 = 10
-
-──────────────────────────────────────────────────
-  LUOT 6: Nguoi choi A
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 26 | Tien: $273,000 | Dat: [30, 6, 14]
-  [Nhan tien] A nhan $150,000 (passing_start)
-  [Di chuyen] A: o 26 -> o 4 (qua O xuat phat)
-  [Dung o] A dung tai o 4 [CITY]
-  [Thu tien] A tra tien thue $46,000 cho C (o 4)
-  [Cuop dat] A cuop dat o 4 tu C, tra $58,000
-  [Ket thuc luot] Tien: $319,000 | Dat: [30, 6, 14, 4]
-  [Dice] B tung xuc xac: 5+2 = 7
-
-──────────────────────────────────────────────────
-  LUOT 6: Nguoi choi B
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 20 | Tien: $324,000 | Dat: [18, 20]
-  [Di chuyen] B: o 20 -> o 27
-  [Dung o] B dung tai o 27 [CITY]
-  [No thue] B phai tra cho C $530,000 (o 27) — khong du tien
-  [Ban dat] B ban dat o 18 thu $142,000
-  [Ban dat] B ban dat o 20 thu $143,500
-  [Thanh toan no] C nhan duoc tu B: $609,500 / $530,000 (con thieu $-79,500)
-  [Ket thuc luot] Tien: $79,500 | Dat: chua co
-  [Dice] C tung xuc xac: 5+4 = 9
-
-──────────────────────────────────────────────────
-  LUOT 6: Nguoi choi C
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 13 | Tien: $1,579,500 | Dat: [7, 10, 27]
-  [Di chuyen] C: o 13 -> o 22
-  [Dung o] C dung tai o 22 [CITY]
-  [Mua dat] C mua Cam co, Nha L1, Nha L2, Nha L3 (o 22) gia $340,000
-  [Ket thuc luot] Tien: $1,239,500 | Dat: [7, 10, 27, 22]
-  [Dice] D tung xuc xac: 6+6 = 12  [DOI - duoc do lai!]
-
-──────────────────────────────────────────────────
-  LUOT 6: Nguoi choi D
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 8 | Tien: $692,000 | Dat: [12, 19, 26, 5, 8]
-  [Di chuyen] D: o 8 -> o 20
-  [Dung o] D dung tai o 20 [CITY]
-  [Mua dat] D mua Cam co, Nha L1, Nha L2, Nha L3 (o 20) gia $287,000
-  [Do doi] D do doi - duoc do them 1 lan nua!
-  [Dice] D tung xuc xac: 2+3 = 5
-
-──────────────────────────────────────────────────
-  LUOT 6: Nguoi choi D
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 20 | Tien: $405,000 | Dat: [12, 19, 26, 5, 8, 20]
-  [Di chuyen] D: o 20 -> o 25
-  [Dung o] D dung tai o 25 [TRAVEL]
-  [Dung o] D dung tai o 25 [TRAVEL]
-  [Ket thuc luot] Tien: $405,000 | Dat: [12, 19, 26, 5, 8, 20]
-  [Dice] A tung xuc xac: 6+2 = 8
-
-──────────────────────────────────────────────────
-  LUOT 7: Nguoi choi A
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 4 | Tien: $319,000 | Dat: [30, 6, 14, 4]
-  [Di chuyen] A: o 4 -> o 12
-  [Dung o] A dung tai o 12 [CITY]
-  [Thu tien] A tra tien thue $175,000 cho D (o 12)
-  [Ket thuc luot] Tien: $144,000 | Dat: [30, 6, 14, 4]
-  [Dice] B tung xuc xac: 5+1 = 6
-
-──────────────────────────────────────────────────
-  LUOT 7: Nguoi choi B
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 27 | Tien: $79,500 | Dat: chua co
-  [Nhan tien] B nhan $150,000 (passing_start)
-  [Di chuyen] B: o 27 -> o 1 (qua O xuat phat)
-  [Dung o] B dung tai o 1 [START]
-  [Ket thuc luot] Tien: $229,500 | Dat: chua co
-  [Dice] C tung xuc xac: 3+6 = 9
-
-──────────────────────────────────────────────────
-  LUOT 7: Nguoi choi C
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 22 | Tien: $1,239,500 | Dat: [7, 10, 27, 22]
-  [Di chuyen] C: o 22 -> o 31
-  [Dung o] C dung tai o 31 [TAX]
-  [Thue] C dong thue $90,100
-  [Ket thuc luot] Tien: $1,149,400 | Dat: [7, 10, 27, 22]
-  [Di chuyen] D: o 25 -> o 10 (qua O xuat phat)
-  [Nhan tien] D nhan $150,000 (passing_start)
-  [Ket thuc luot] Tien: $710,000 | Dat: [12, 19, 26, 5, 8, 20]
-  [Dice] A tung xuc xac: 5+6 = 11
-
-──────────────────────────────────────────────────
-  LUOT 8: Nguoi choi A
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 12 | Tien: $144,000 | Dat: [30, 6, 14, 4]
-  [Di chuyen] A: o 12 -> o 23
-  [Dung o] A dung tai o 23 [CITY]
-  [Mua dat] A mua Cam co, Nha L1 (o 23) gia $103,000
-  [Ket thuc luot] Tien: $41,000 | Dat: [30, 6, 14, 4, 23]
-  [Dice] B tung xuc xac: 6+6 = 12  [DOI - duoc do lai!]
-
-──────────────────────────────────────────────────
-  LUOT 8: Nguoi choi B
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 1 | Tien: $229,500 | Dat: chua co
-  [Di chuyen] B: o 1 -> o 13
-  [Dung o] B dung tai o 13 [CHANCE]
-  [Rut the] B rut the 'fortune_card'
-  [Do doi] B do doi - duoc do them 1 lan nua!
-  [Dice] B tung xuc xac: 4+4 = 8  [DOI - duoc do lai!]
-
-──────────────────────────────────────────────────
-  LUOT 8: Nguoi choi B
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 13 | Tien: $229,500 | Dat: chua co
-  [Di chuyen] B: o 13 -> o 21
-  [Dung o] B dung tai o 21 [CHANCE]
-  [Rut the] B rut the 'fortune_card'
-  [Do doi] B do doi - duoc do them 1 lan nua!
-  [Dice] B tung xuc xac: 6+1 = 7
-
-──────────────────────────────────────────────────
-  LUOT 8: Nguoi choi B
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 21 | Tien: $229,500 | Dat: chua co
-  [Di chuyen] B: o 21 -> o 28
-  [Dung o] B dung tai o 28 [CITY]
-  [Mua dat] B mua Cam co, Nha L1, Nha L2 (o 28) gia $225,000
-  [Ket thuc luot] Tien: $4,500 | Dat: [28]
-  [Dice] C tung xuc xac: 5+2 = 7
-
-──────────────────────────────────────────────────
-  LUOT 8: Nguoi choi C
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 31 | Tien: $1,149,400 | Dat: [7, 10, 27, 22]
-  [Nhan tien] C nhan $150,000 (passing_start)
-  [Di chuyen] C: o 31 -> o 6 (qua O xuat phat)
-  [Dung o] C dung tai o 6 [CITY]
-  [Thu tien] C tra tien thue $95,000 cho A (o 6)
-  [Cuop dat] C cuop dat o 6 tu A, tra $114,000
-  [Ket thuc luot] Tien: $1,090,400 | Dat: [7, 10, 27, 22, 6]
-  [Dice] D tung xuc xac: 2+5 = 7
-
-──────────────────────────────────────────────────
-  LUOT 8: Nguoi choi D
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 10 | Tien: $710,000 | Dat: [12, 19, 26, 5, 8, 20]
-  [Di chuyen] D: o 10 -> o 17
-  [Dung o] D dung tai o 17 [FESTIVAL]
-  [Le hoi] Cap do: 0, Phan thuong: $0
-  [Ket thuc luot] Tien: $690,000 | Dat: [12, 19, 26, 5, 8, 20]
-  [Dice] A tung xuc xac: 6+4 = 10
-
-──────────────────────────────────────────────────
-  LUOT 9: Nguoi choi A
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 23 | Tien: $250,000 | Dat: [30, 14, 4, 23]
-  [Nhan tien] A nhan $150,000 (passing_start)
-  [Di chuyen] A: o 23 -> o 1 (qua O xuat phat)
-  [Dung o] A dung tai o 1 [START]
-  [Nang cap] A nang cap o 30 -> Landmark, chi $200,000
-  [Ket thuc luot] Tien: $200,000 | Dat: [30, 14, 4, 23]
-  [Dice] B tung xuc xac: 4+1 = 5
-
-──────────────────────────────────────────────────
-  LUOT 9: Nguoi choi B
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 28 | Tien: $4,500 | Dat: [28]
-  [Nhan tien] B nhan $150,000 (passing_start)
-  [Di chuyen] B: o 28 -> o 1 (qua O xuat phat)
-  [Dung o] B dung tai o 1 [START]
-  [Ket thuc luot] Tien: $154,500 | Dat: [28]
-  [Dice] C tung xuc xac: 1+3 = 4
-
-──────────────────────────────────────────────────
-  LUOT 9: Nguoi choi C
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 6 | Tien: $1,090,400 | Dat: [7, 10, 27, 22, 6]
-  [Di chuyen] C: o 6 -> o 10
-  [Dung o] C dung tai o 10 [RESORT]
-  [Ket thuc luot] Tien: $1,090,400 | Dat: [7, 10, 27, 22, 6]
-  [Dice] D tung xuc xac: 4+2 = 6
-
-──────────────────────────────────────────────────
-  LUOT 9: Nguoi choi D
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 17 | Tien: $690,000 | Dat: [12, 19, 26, 5, 8, 20]
-  [Di chuyen] D: o 17 -> o 23
-  [Dung o] D dung tai o 23 [CITY]
-  [Thu tien] D tra tien thue $70,000 cho A (o 23)
-  [Cuop dat] D cuop dat o 23 tu A, tra $103,000
-  [Nang cap] D nang cap o 23 -> Nha L2, chi $90,000
-  [Nang cap] D nang cap o 23 -> Nha L3, chi $150,000
-  [Ket thuc luot] Tien: $277,000 | Dat: [12, 19, 26, 5, 8, 20, 23]
-  [Dice] A tung xuc xac: 3+2 = 5
-
-──────────────────────────────────────────────────
-  LUOT 10: Nguoi choi A
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 1 | Tien: $373,000 | Dat: [30, 14, 4]
-  [Di chuyen] A: o 1 -> o 6
-  [Dung o] A dung tai o 6 [CITY]
-  [Thu tien] A tra tien thue $95,000 cho C (o 6)
-  [Cuop dat] A cuop dat o 6 tu C, tra $114,000
-  [Ket thuc luot] Tien: $164,000 | Dat: [30, 14, 4, 6]
-  [Dice] B tung xuc xac: 4+4 = 8  [DOI - duoc do lai!]
-
-──────────────────────────────────────────────────
-  LUOT 10: Nguoi choi B
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 1 | Tien: $154,500 | Dat: [28]
-  [Di chuyen] B: o 1 -> o 9
-  [Dung o] B dung tai o 9 [PRISON]
-  [Nguc] B bi giam vao tu, ngoi 3 luot
-  [Ket thuc luot] Tien: $154,500 | Dat: [28]
-  [Dice] C tung xuc xac: 4+5 = 9
-
-──────────────────────────────────────────────────
-  LUOT 10: Nguoi choi C
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 10 | Tien: $1,299,400 | Dat: [7, 10, 27, 22]
-  [Di chuyen] C: o 10 -> o 19
-  [Dung o] C dung tai o 19 [RESORT]
-  [Thu tien] C tra tien thue $160,000 cho D (o 19)
-  [Ket thuc luot] Tien: $1,139,400 | Dat: [7, 10, 27, 22]
-  [Dice] D tung xuc xac: 6+3 = 9
-
-──────────────────────────────────────────────────
-  LUOT 10: Nguoi choi D
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 23 | Tien: $437,000 | Dat: [12, 19, 26, 5, 8, 20, 23]
-  [Di chuyen] D: o 23 -> o 32
-  [Dung o] D dung tai o 32 [CITY]
-  [Mua dat] D mua Cam co, Nha L1, Nha L2 (o 32) gia $260,000
-  [Ket thuc luot] Tien: $177,000 | Dat: [12, 19, 26, 5, 8, 20, 23, 32]
-  [Dice] A tung xuc xac: 5+1 = 6
-
-──────────────────────────────────────────────────
-  LUOT 11: Nguoi choi A
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 6 | Tien: $164,000 | Dat: [30, 14, 4, 6]
-  [Di chuyen] A: o 6 -> o 12
-  [Dung o] A dung tai o 12 [CITY]
-  [No thue] A phai tra cho D $175,000 (o 12) — khong du tien
-  [Ban dat] A ban dat o 4 thu $29,000
-  [Thanh toan no] D nhan duoc tu A: $193,000 / $175,000 (con thieu $-18,000)
-  [Ket thuc luot] Tien: $18,000 | Dat: [30, 14, 6]
-  [Thoat tu] B tra phi $50,000 de ra tu
-  [Nguc] B da tra phi - tu do!
-  [Dice] B tung xuc xac: 2+6 = 8
-
-──────────────────────────────────────────────────
-  LUOT 11: Nguoi choi B
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 9 | Tien: $104,500 | Dat: [28]
-  [Di chuyen] B: o 9 -> o 17
-  [Dung o] B dung tai o 17 [FESTIVAL]
-  [Le hoi] Cap do: 0, Phan thuong: $0
-  [Ket thuc luot] Tien: $84,500 | Dat: [28]
-  [Dice] C tung xuc xac: 4+2 = 6
-
-──────────────────────────────────────────────────
-  LUOT 11: Nguoi choi C
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 19 | Tien: $1,139,400 | Dat: [7, 10, 27, 22]
-  [Di chuyen] C: o 19 -> o 25
-  [Dung o] C dung tai o 25 [TRAVEL]
-  [Dung o] C dung tai o 25 [TRAVEL]
-  [Ket thuc luot] Tien: $1,139,400 | Dat: [7, 10, 27, 22]
-  [Dice] D tung xuc xac: 5+5 = 10  [DOI - duoc do lai!]
-
-──────────────────────────────────────────────────
-  LUOT 11: Nguoi choi D
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 32 | Tien: $370,000 | Dat: [12, 19, 26, 5, 8, 20, 23, 32]
-  [Nhan tien] D nhan $150,000 (passing_start)
-  [Di chuyen] D: o 32 -> o 10 (qua O xuat phat)
-  [Dung o] D dung tai o 10 [RESORT]
-  [Thu tien] D tra tien thue $80,000 cho C (o 10)
-  [Do doi] D do doi - duoc do them 1 lan nua!
-  [Dice] D tung xuc xac: 3+1 = 4
-
-──────────────────────────────────────────────────
-  LUOT 11: Nguoi choi D
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 10 | Tien: $440,000 | Dat: [12, 19, 26, 5, 8, 20, 23, 32]
-  [Di chuyen] D: o 10 -> o 14
-  [Dung o] D dung tai o 14 [CITY]
-  [Thu tien] D tra tien thue $225,000 cho A (o 14)
-  [Ket thuc luot] Tien: $215,000 | Dat: [12, 19, 26, 5, 8, 20, 23, 32]
-  [Dice] A tung xuc xac: 3+3 = 6  [DOI - duoc do lai!]
-
-──────────────────────────────────────────────────
-  LUOT 12: Nguoi choi A
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 12 | Tien: $243,000 | Dat: [30, 14, 6]
-  [Di chuyen] A: o 12 -> o 18
-  [Dung o] A dung tai o 18 [CITY]
-  [Mua dat] A mua Cam co, Nha L1, Nha L2 (o 18) gia $159,000
-  [Do doi] A do doi - duoc do them 1 lan nua!
-  [Dice] A tung xuc xac: 3+2 = 5
-
-──────────────────────────────────────────────────
-  LUOT 12: Nguoi choi A
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 18 | Tien: $84,000 | Dat: [30, 14, 6, 18]
-  [Di chuyen] A: o 18 -> o 23
-  [Dung o] A dung tai o 23 [CITY]
-  [No thue] A phai tra cho D $415,000 (o 23) — khong du tien
-  [Ban dat] A ban dat o 6 thu $57,000
-  [Ban dat] A ban dat o 18 thu $79,500
-  [Ban dat] A ban dat o 14 thu $113,500
-  [Ban dat] A ban dat o 30 thu $328,000
-  [Thanh toan no] D nhan duoc tu A: $662,000 / $415,000 (con thieu $-247,000)
-  [Ket thuc luot] Tien: $247,000 | Dat: chua co
-  [Dice] B tung xuc xac: 2+3 = 5
-
-──────────────────────────────────────────────────
-  LUOT 12: Nguoi choi B
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 17 | Tien: $84,500 | Dat: [28]
-  [Di chuyen] B: o 17 -> o 22
-  [Dung o] B dung tai o 22 [CITY]
-  [No thue] B phai tra cho C $395,000 (o 22) — khong du tien
-  [Ban dat] B ban dat o 28 thu $112,500
-  [Thanh toan no] C nhan duoc tu B: $197,000 / $395,000 (con thieu $198,000)
-  [Pha san] *** B DA PHA SAN ***
-  [Di chuyen] C: o 25 -> o 18 (qua O xuat phat)
-  [Nhan tien] C nhan $150,000 (passing_start)
-  [Ket thuc luot] Tien: $1,546,400 | Dat: [7, 10, 27, 22]
-  [Dice] D tung xuc xac: 5+5 = 10  [DOI - duoc do lai!]
-
-──────────────────────────────────────────────────
-  LUOT 12: Nguoi choi D
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 14 | Tien: $877,000 | Dat: [12, 19, 26, 5, 8, 20, 23, 32]
-  [Di chuyen] D: o 14 -> o 24
-  [Dung o] D dung tai o 24 [CITY]
-  [Mua dat] D mua Cam co, Nha L1, Nha L2, Nha L3 (o 24) gia $343,000
-  [Do doi] D do doi - duoc do them 1 lan nua!
-  [Dice] D tung xuc xac: 4+6 = 10
-
-──────────────────────────────────────────────────
-  LUOT 12: Nguoi choi D
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 24 | Tien: $534,000 | Dat: [12, 19, 26, 5, 8, 20, 23, 32, 24]
-  [Nhan tien] D nhan $150,000 (passing_start)
-  [Di chuyen] D: o 24 -> o 2 (qua O xuat phat)
-  [Dung o] D dung tai o 2 [CITY]
-  [Mua dat] D mua Cam co, Nha L1, Nha L2, Nha L3 (o 2) gia $55,000
-  [Ket thuc luot] Tien: $629,000 | Dat: [12, 19, 26, 5, 8, 20, 23, 32, 24, 2]
-  [Dice] A tung xuc xac: 5+2 = 7
-
-──────────────────────────────────────────────────
-  LUOT 13: Nguoi choi A
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 23 | Tien: $247,000 | Dat: chua co
-  [Di chuyen] A: o 23 -> o 30
+  [Trang thai] Vi tri: o 28 | Tien: $199,000 | Dat: [8, 18, 28]
+  [Di chuyen] A: o 28 -> o 30
   [Dung o] A dung tai o 30 [CITY]
   [Mua dat] A mua Cam co, Nha L1 (o 30) gia $136,000
-  [Ket thuc luot] Tien: $111,000 | Dat: [30]
-  [Dice] C tung xuc xac: 6+6 = 12  [DOI - duoc do lai!]
-
-──────────────────────────────────────────────────
-  LUOT 13: Nguoi choi C
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 18 | Tien: $1,546,400 | Dat: [7, 10, 27, 22]
-  [Di chuyen] C: o 18 -> o 30
-  [Dung o] C dung tai o 30 [CITY]
-  [Thu tien] C tra tien thue $180,000 cho A (o 30) [DAT VANG x2]
-  [Cuop dat] C cuop dat o 30 tu A, tra $136,000
-  [Nang cap] C nang cap o 30 -> Nha L2, chi $120,000
-  [Nang cap] C nang cap o 30 -> Nha L3, chi $200,000
-  [Do doi] C do doi - duoc do them 1 lan nua!
-  [Dice] C tung xuc xac: 4+3 = 7
-
-──────────────────────────────────────────────────
-  LUOT 13: Nguoi choi C
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 30 | Tien: $910,400 | Dat: [7, 10, 27, 22, 30]
-  [Nhan tien] C nhan $150,000 (passing_start)
-  [Di chuyen] C: o 30 -> o 5 (qua O xuat phat)
-  [Dung o] C dung tai o 5 [RESORT]
-  [Thu tien] C tra tien thue $160,000 cho D (o 5)
-  [Ket thuc luot] Tien: $900,400 | Dat: [7, 10, 27, 22, 30]
-  [Dice] D tung xuc xac: 5+2 = 7
-
-──────────────────────────────────────────────────
-  LUOT 13: Nguoi choi D
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 2 | Tien: $789,000 | Dat: [12, 19, 26, 5, 8, 20, 23, 32, 24, 2]
-  [Di chuyen] D: o 2 -> o 9
-  [Dung o] D dung tai o 9 [PRISON]
-  [Nguc] D bi giam vao tu, ngoi 3 luot
-  [Ket thuc luot] Tien: $789,000 | Dat: [12, 19, 26, 5, 8, 20, 23, 32, 24, 2]
+  [Do doi] A do doi - duoc do them 1 lan nua!
   [Dice] A tung xuc xac: 3+3 = 6  [DOI - duoc do lai!]
 
 ──────────────────────────────────────────────────
-  LUOT 14: Nguoi choi A
+  LUOT 4: Nguoi choi A
 ──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 30 | Tien: $427,000 | Dat: chua co
+  [Trang thai] Vi tri: o 30 | Tien: $63,000 | Dat: [8, 18, 28, 30]
   [Nhan tien] A nhan $150,000 (passing_start)
   [Di chuyen] A: o 30 -> o 4 (qua O xuat phat)
   [Dung o] A dung tai o 4 [CITY]
   [Mua dat] A mua Cam co, Nha L1, Nha L2, Nha L3 (o 4) gia $58,000
   [Do doi] A do doi - duoc do them 1 lan nua!
-  [Dice] A tung xuc xac: 2+6 = 8
+  [Dice] A tung xuc xac: 6+5 = 11
+
+──────────────────────────────────────────────────
+  LUOT 4: Nguoi choi A
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 4 | Tien: $155,000 | Dat: [8, 18, 28, 30, 4]
+  [Di chuyen] A: o 4 -> o 15
+  [Dung o] A dung tai o 15 [RESORT]
+  [Mua Resort] A mua Resort (o 15) gia $50,000
+  [Ket thuc luot] Tien: $105,000 | Dat: [8, 18, 28, 30, 4, 15]
+  [Thoat tu] B tra phi $50,000 de ra tu
+  [Nguc] B da tra phi - tu do!
+  [Dice] B tung xuc xac: 1+1 = 2  [DOI - duoc do lai!]
+
+──────────────────────────────────────────────────
+  LUOT 4: Nguoi choi B
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 9 | Tien: $1,045,000 | Dat: chua co
+  [Di chuyen] B: o 9 -> o 11
+  [Dung o] B dung tai o 11 [CITY]
+  [Mua dat] B mua Cam co, Nha L1, Nha L2, Nha L3 (o 11) gia $171,000
+  [Do doi] B do doi - duoc do them 1 lan nua!
+  [Dice] B tung xuc xac: 2+5 = 7
+
+──────────────────────────────────────────────────
+  LUOT 4: Nguoi choi B
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 11 | Tien: $874,000 | Dat: [11]
+  [Di chuyen] B: o 11 -> o 18
+  [Dung o] B dung tai o 18 [CITY]
+  [Thu tien] B tra tien thue $325,000 cho A (o 18)
+  [Cuop dat] B cuop dat o 18 tu A, tra $284,000
+  [Ket thuc luot] Tien: $265,000 | Dat: [11, 18]
+  [Dice] C tung xuc xac: 2+1 = 3
+
+──────────────────────────────────────────────────
+  LUOT 4: Nguoi choi C
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 20 | Tien: $729,000 | Dat: [6, 20]
+  [Di chuyen] C: o 20 -> o 23
+  [Dung o] C dung tai o 23 [CITY]
+  [Thu tien] C tra tien thue $180,000 cho D (o 23)
+  [Cuop dat] C cuop dat o 23 tu D, tra $193,000
+  [Nang cap] C nang cap o 23 -> Nha L3, chi $150,000
+  [Ket thuc luot] Tien: $206,000 | Dat: [6, 20, 23]
+  [Dice] D tung xuc xac: 1+1 = 2  [DOI - duoc do lai!]
+
+──────────────────────────────────────────────────
+  LUOT 4: Nguoi choi D
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 26 | Tien: $457,000 | Dat: [10, 12, 14, 26]
+  [Di chuyen] D: o 26 -> o 28
+  [Dung o] D dung tai o 28 [CITY]
+  [No thue] D phai tra cho A $550,000 (o 28) — khong du tien
+  [Ban dat] D ban dat o 10 thu $25,000
+  [Ban dat] D ban dat o 26 thu $25,000
+  [Ban dat] D ban dat o 12 thu $85,500
+  [Thanh toan no] A nhan duoc tu D: $592,500 / $550,000 (con thieu $-42,500)
+  [Do doi] D do doi - duoc do them 1 lan nua!
+  [Dice] D tung xuc xac: 1+5 = 6
+
+──────────────────────────────────────────────────
+  LUOT 4: Nguoi choi D
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 28 | Tien: $42,500 | Dat: [14]
+  [Nhan tien] D nhan $150,000 (passing_start)
+  [Di chuyen] D: o 28 -> o 2 (qua O xuat phat)
+  [Dung o] D dung tai o 2 [CITY]
+  [Mua dat] D mua Cam co, Nha L1, Nha L2, Nha L3 (o 2) gia $55,000
+  [Ket thuc luot] Tien: $137,500 | Dat: [14, 2]
+  [Dice] A tung xuc xac: 1+2 = 3
+
+──────────────────────────────────────────────────
+  LUOT 5: Nguoi choi A
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 15 | Tien: $1,306,500 | Dat: [8, 28, 30, 4, 15]
+  [Di chuyen] A: o 15 -> o 18
+  [Dung o] A dung tai o 18 [CITY]
+  [Thu tien] A tra tien thue $325,000 cho B (o 18)
+  [Cuop dat] A cuop dat o 18 tu B, tra $284,000
+  [Ket thuc luot] Tien: $697,500 | Dat: [8, 28, 30, 4, 15, 18]
+  [Dice] B tung xuc xac: 2+1 = 3
+
+──────────────────────────────────────────────────
+  LUOT 5: Nguoi choi B
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 18 | Tien: $874,000 | Dat: [11]
+  [Di chuyen] B: o 18 -> o 21
+  [Dung o] B dung tai o 21 [CHANCE]
+  [Rut the] B rut the 'IT_CA_13' -> EF_11
+  [Ket thuc luot] Tien: $874,000 | Dat: [11]
+  [Dice] C tung xuc xac: 4+3 = 7
+
+──────────────────────────────────────────────────
+  LUOT 5: Nguoi choi C
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 23 | Tien: $206,000 | Dat: [6, 20, 23]
+  [Di chuyen] C: o 23 -> o 30
+  [Dung o] C dung tai o 30 [CITY]
+  [Thu tien] C tra tien thue $90,000 cho A (o 30)
+  [Ket thuc luot] Tien: $116,000 | Dat: [6, 20, 23]
+  [Dice] D tung xuc xac: 3+4 = 7
+
+──────────────────────────────────────────────────
+  LUOT 5: Nguoi choi D
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 2 | Tien: $137,500 | Dat: [14, 2]
+  [Di chuyen] D: o 2 -> o 9
+  [Dung o] D dung tai o 9 [PRISON]
+  [Nguc] D bi giam vao tu, ngoi 3 luot
+  [Ket thuc luot] Tien: $137,500 | Dat: [14, 2]
+  [Dice] A tung xuc xac: 2+2 = 4  [DOI - duoc do lai!]
+
+──────────────────────────────────────────────────
+  LUOT 6: Nguoi choi A
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 18 | Tien: $787,500 | Dat: [8, 28, 30, 4, 15, 18]
+  [Di chuyen] A: o 18 -> o 22
+  [Dung o] A dung tai o 22 [CITY]
+  [Mua dat] A mua Cam co, Nha L1, Nha L2, Nha L3 (o 22) gia $340,000
+  [Do doi] A do doi - duoc do them 1 lan nua!
+  [Dice] A tung xuc xac: 2+3 = 5
+
+──────────────────────────────────────────────────
+  LUOT 6: Nguoi choi A
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 22 | Tien: $447,500 | Dat: [8, 28, 30, 4, 15, 18, 22]
+  [Di chuyen] A: o 22 -> o 27
+  [Dung o] A dung tai o 27 [CITY]
+  [Mua dat] A mua Cam co, Nha L1, Nha L2, Nha L3 (o 27) gia $397,000
+  [Ket thuc luot] Tien: $50,500 | Dat: [8, 28, 30, 4, 15, 18, 22, 27]
+  [Dice] B tung xuc xac: 4+1 = 5
+
+──────────────────────────────────────────────────
+  LUOT 6: Nguoi choi B
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 21 | Tien: $874,000 | Dat: [11]
+  [Di chuyen] B: o 21 -> o 26
+  [Dung o] B dung tai o 26 [RESORT]
+  [Mua Resort] B mua Resort (o 26) gia $50,000
+  [Ket thuc luot] Tien: $824,000 | Dat: [11, 26]
+  [Dice] C tung xuc xac: 4+6 = 10
+
+──────────────────────────────────────────────────
+  LUOT 6: Nguoi choi C
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 30 | Tien: $116,000 | Dat: [6, 20, 23]
+  [Nhan tien] C nhan $150,000 (passing_start)
+  [Di chuyen] C: o 30 -> o 8 (qua O xuat phat)
+  [Dung o] C dung tai o 8 [CITY]
+  [Thu tien] C tra tien thue $100,000 cho A (o 8)
+  [Cuop dat] C cuop dat o 8 tu A, tra $117,000
+  [Ket thuc luot] Tien: $49,000 | Dat: [6, 20, 23, 8]
+  [Thoat tu] D tra phi $50,000 de ra tu
+  [Nguc] D da tra phi - tu do!
+  [Dice] D tung xuc xac: 1+6 = 7
+
+──────────────────────────────────────────────────
+  LUOT 6: Nguoi choi D
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 9 | Tien: $87,500 | Dat: [14, 2]
+  [Di chuyen] D: o 9 -> o 16
+  [Dung o] D dung tai o 16 [CITY]
+  [Mua dat] D mua Cam co, Nha L1 (o 16) gia $70,000
+  [Ket thuc luot] Tien: $17,500 | Dat: [14, 2, 16]
+  [Dice] A tung xuc xac: 4+6 = 10
+
+──────────────────────────────────────────────────
+  LUOT 7: Nguoi choi A
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 27 | Tien: $267,500 | Dat: [28, 30, 4, 15, 18, 22, 27]
+  [Nhan tien] A nhan $150,000 (passing_start)
+  [Di chuyen] A: o 27 -> o 5 (qua O xuat phat)
+  [Dung o] A dung tai o 5 [RESORT]
+  [Mua Resort] A mua Resort (o 5) gia $50,000
+  [Ket thuc luot] Tien: $367,500 | Dat: [28, 30, 4, 15, 18, 22, 27, 5]
+  [Dice] B tung xuc xac: 5+4 = 9
+
+──────────────────────────────────────────────────
+  LUOT 7: Nguoi choi B
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 26 | Tien: $824,000 | Dat: [11, 26]
+  [Nhan tien] B nhan $150,000 (passing_start)
+  [Di chuyen] B: o 26 -> o 3 (qua O xuat phat)
+  [Dung o] B dung tai o 3 [GAME]
+  [MiniGame] B: THANG, cuoc $50,000, nhan lai $100,000
+  [Ket thuc luot] Tien: $1,024,000 | Dat: [11, 26]
+  [Dice] C tung xuc xac: 1+3 = 4
+
+──────────────────────────────────────────────────
+  LUOT 7: Nguoi choi C
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 8 | Tien: $49,000 | Dat: [6, 20, 23, 8]
+  [Di chuyen] C: o 8 -> o 12
+  [Dung o] C dung tai o 12 [CITY]
+  [Mua dat] C mua Cam co (o 12) gia $36,000
+  [Ket thuc luot] Tien: $13,000 | Dat: [6, 20, 23, 8, 12]
+  [Dice] D tung xuc xac: 2+6 = 8
+
+──────────────────────────────────────────────────
+  LUOT 7: Nguoi choi D
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 16 | Tien: $17,500 | Dat: [14, 2, 16]
+  [Di chuyen] D: o 16 -> o 24
+  [Dung o] D dung tai o 24 [CITY]
+  [Ket thuc luot] Tien: $17,500 | Dat: [14, 2, 16]
+  [Dice] A tung xuc xac: 5+3 = 8
+
+──────────────────────────────────────────────────
+  LUOT 8: Nguoi choi A
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 5 | Tien: $367,500 | Dat: [28, 30, 4, 15, 18, 22, 27, 5]
+  [Di chuyen] A: o 5 -> o 13
+  [Dung o] A dung tai o 13 [CHANCE]
+  [Rut the] A rut the 'IT_CA_7' -> EF_6
+  [Ket thuc luot] Tien: $367,500 | Dat: [28, 30, 4, 15, 18, 22, 27, 5]
+  [Dice] B tung xuc xac: 4+4 = 8  [DOI - duoc do lai!]
+
+──────────────────────────────────────────────────
+  LUOT 8: Nguoi choi B
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 3 | Tien: $1,024,000 | Dat: [11, 26]
+  [Di chuyen] B: o 3 -> o 11
+  [Dung o] B dung tai o 11 [CITY]
+  [Nang cap] B nang cap o 11 -> Nha L3, chi $75,000
+  [Do doi] B do doi - duoc do them 1 lan nua!
+  [Dice] B tung xuc xac: 4+2 = 6
+
+──────────────────────────────────────────────────
+  LUOT 8: Nguoi choi B
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 11 | Tien: $949,000 | Dat: [11, 26]
+  [Di chuyen] B: o 11 -> o 17
+  [Dung o] B dung tai o 17 [FESTIVAL]
+  [Le hoi] Cap do: 0, Phan thuong: $0
+  [Ket thuc luot] Tien: $929,000 | Dat: [11, 26]
+  [Dice] C tung xuc xac: 3+3 = 6  [DOI - duoc do lai!]
+
+──────────────────────────────────────────────────
+  LUOT 8: Nguoi choi C
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 12 | Tien: $13,000 | Dat: [6, 20, 23, 8, 12]
+  [Di chuyen] C: o 12 -> o 18
+  [Dung o] C dung tai o 18 [CITY]
+  [No thue] C phai tra cho A $325,000 (o 18) — khong du tien
+  [Ban dat] C ban dat o 12 thu $18,000
+  [Ban dat] C ban dat o 6 thu $57,000
+  [Ban dat] C ban dat o 8 thu $58,500
+  [Ban dat] C ban dat o 20 thu $143,500
+  [Ban dat] C ban dat o 23 thu $171,500
+  [Thanh toan no] A nhan duoc tu C: $461,500 / $325,000 (con thieu $-136,500)
+  [Do doi] C do doi - duoc do them 1 lan nua!
+  [Dice] C tung xuc xac: 3+1 = 4
+
+──────────────────────────────────────────────────
+  LUOT 8: Nguoi choi C
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 18 | Tien: $136,500 | Dat: chua co
+  [Di chuyen] C: o 18 -> o 22
+  [Dung o] C dung tai o 22 [CITY]
+  [No thue] C phai tra cho A $395,000 (o 22) — khong du tien
+  [Thanh toan no] A nhan duoc tu C: $136,500 / $395,000 (con thieu $258,500)
+  [Pha san] *** C DA PHA SAN ***
+  [Dice] D tung xuc xac: 6+6 = 12  [DOI - duoc do lai!]
+
+──────────────────────────────────────────────────
+  LUOT 8: Nguoi choi D
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 24 | Tien: $17,500 | Dat: [14, 2, 16]
+  [Nhan tien] D nhan $150,000 (passing_start)
+  [Di chuyen] D: o 24 -> o 4 (qua O xuat phat)
+  [Dung o] D dung tai o 4 [CITY]
+  [Thu tien] D tra tien thue $46,000 cho A (o 4)
+  [Cuop dat] D cuop dat o 4 tu A, tra $58,000
+  [Do doi] D do doi - duoc do them 1 lan nua!
+  [Dice] D tung xuc xac: 3+6 = 9
+
+──────────────────────────────────────────────────
+  LUOT 8: Nguoi choi D
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 4 | Tien: $63,500 | Dat: [14, 2, 16, 4]
+  [Di chuyen] D: o 4 -> o 13
+  [Dung o] D dung tai o 13 [CHANCE]
+  [Rut the] D rut the 'IT_CA_17' -> EF_15
+  [Ket thuc luot] Tien: $63,500 | Dat: [14, 2, 16, 4]
+  [Dice] A tung xuc xac: 5+4 = 9
+
+──────────────────────────────────────────────────
+  LUOT 9: Nguoi choi A
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 13 | Tien: $1,069,500 | Dat: [28, 30, 15, 18, 22, 27, 5]
+  [Di chuyen] A: o 13 -> o 22
+  [Dung o] A dung tai o 22 [CITY]
+  [Nang cap] A nang cap o 22 -> Landmark, chi $150,000
+  [Ket thuc luot] Tien: $919,500 | Dat: [28, 30, 15, 18, 22, 27, 5]
+  [Dice] B tung xuc xac: 4+1 = 5
+
+──────────────────────────────────────────────────
+  LUOT 9: Nguoi choi B
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 17 | Tien: $929,000 | Dat: [11, 26]
+  [Di chuyen] B: o 17 -> o 22
+  [Dung o] B dung tai o 22 [CITY]
+  [Thu tien] B tra tien thue $760,000 cho A (o 22)
+  [Ket thuc luot] Tien: $169,000 | Dat: [11, 26]
+  [Dice] D tung xuc xac: 4+6 = 10
+
+──────────────────────────────────────────────────
+  LUOT 9: Nguoi choi D
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 13 | Tien: $63,500 | Dat: [14, 2, 16, 4]
+  [Di chuyen] D: o 13 -> o 23
+  [Dung o] D dung tai o 23 [CITY]
+  [Ket thuc luot] Tien: $63,500 | Dat: [14, 2, 16, 4]
+  [Dice] A tung xuc xac: 2+3 = 5
+
+──────────────────────────────────────────────────
+  LUOT 10: Nguoi choi A
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 22 | Tien: $1,679,500 | Dat: [28, 30, 15, 18, 22, 27, 5]
+  [Di chuyen] A: o 22 -> o 27
+  [Dung o] A dung tai o 27 [CITY]
+  [Nang cap] A nang cap o 27 -> Landmark, chi $175,000
+  [Ket thuc luot] Tien: $1,504,500 | Dat: [28, 30, 15, 18, 22, 27, 5]
+  [Dice] B tung xuc xac: 2+1 = 3
+
+──────────────────────────────────────────────────
+  LUOT 10: Nguoi choi B
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 22 | Tien: $169,000 | Dat: [11, 26]
+  [Di chuyen] B: o 22 -> o 25
+  [Dung o] B dung tai o 25 [TRAVEL]
+  [Dung o] B dung tai o 25 [TRAVEL]
+  [Ket thuc luot] Tien: $169,000 | Dat: [11, 26]
+  [Dice] D tung xuc xac: 2+6 = 8
+
+──────────────────────────────────────────────────
+  LUOT 10: Nguoi choi D
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 23 | Tien: $63,500 | Dat: [14, 2, 16, 4]
+  [Di chuyen] D: o 23 -> o 31
+  [Dung o] D dung tai o 31 [TAX]
+  [Thue] D dong thue $41,000
+  [Ket thuc luot] Tien: $22,500 | Dat: [14, 2, 16, 4]
+  [Dice] A tung xuc xac: 1+5 = 6
+
+──────────────────────────────────────────────────
+  LUOT 11: Nguoi choi A
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 27 | Tien: $1,504,500 | Dat: [28, 30, 15, 18, 22, 27, 5]
+  [Nhan tien] A nhan $150,000 (passing_start)
+  [Di chuyen] A: o 27 -> o 1 (qua O xuat phat)
+  [Dung o] A dung tai o 1 [START]
+  [Nang cap] A nang cap o 18 -> Landmark, chi $125,000
+  [Ket thuc luot] Tien: $1,529,500 | Dat: [28, 30, 15, 18, 22, 27, 5]
+  [Di chuyen] B: o 25 -> o 13 (qua O xuat phat)
+  [Nhan tien] B nhan $150,000 (passing_start)
+  [Ket thuc luot] Tien: $299,000 | Dat: [11, 26]
+  [Dice] D tung xuc xac: 3+5 = 8
+
+──────────────────────────────────────────────────
+  LUOT 11: Nguoi choi D
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 31 | Tien: $22,500 | Dat: [14, 2, 16, 4]
+  [Nhan tien] D nhan $150,000 (passing_start)
+  [Di chuyen] D: o 31 -> o 7 (qua O xuat phat)
+  [Dung o] D dung tai o 7 [CITY]
+  [Mua dat] D mua Cam co, Nha L1, Nha L2, Nha L3 (o 7) gia $114,000
+  [Ket thuc luot] Tien: $58,500 | Dat: [14, 2, 16, 4, 7]
+  [Dice] A tung xuc xac: 2+4 = 6
+
+──────────────────────────────────────────────────
+  LUOT 12: Nguoi choi A
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 1 | Tien: $1,529,500 | Dat: [28, 30, 15, 18, 22, 27, 5]
+  [Di chuyen] A: o 1 -> o 7
+  [Dung o] A dung tai o 7 [CITY]
+  [Thu tien] A tra tien thue $95,000 cho D (o 7)
+  [Cuop dat] A cuop dat o 7 tu D, tra $114,000
+  [Ket thuc luot] Tien: $1,320,500 | Dat: [28, 30, 15, 18, 22, 27, 5, 7]
+  [Dice] B tung xuc xac: 3+5 = 8
+
+──────────────────────────────────────────────────
+  LUOT 12: Nguoi choi B
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 13 | Tien: $299,000 | Dat: [11, 26]
+  [Di chuyen] B: o 13 -> o 21
+  [Dung o] B dung tai o 21 [CHANCE]
+  [Rut the] B rut the 'IT_CA_9' -> EF_8
+  [Ket thuc luot] Tien: $299,000 | Dat: [11, 26]
+  [Dice] D tung xuc xac: 3+2 = 5
+
+──────────────────────────────────────────────────
+  LUOT 12: Nguoi choi D
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 7 | Tien: $267,500 | Dat: [14, 2, 16, 4]
+  [Di chuyen] D: o 7 -> o 12
+  [Dung o] D dung tai o 12 [CITY]
+  [Mua dat] D mua Cam co, Nha L1, Nha L2, Nha L3 (o 12) gia $171,000
+  [Ket thuc luot] Tien: $96,500 | Dat: [14, 2, 16, 4, 12]
+  [Dice] A tung xuc xac: 4+3 = 7
+
+──────────────────────────────────────────────────
+  LUOT 13: Nguoi choi A
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 7 | Tien: $1,320,500 | Dat: [28, 30, 15, 18, 22, 27, 5, 7]
+  [Di chuyen] A: o 7 -> o 14
+  [Dung o] A dung tai o 14 [CITY]
+  [Thu tien] A tra tien thue $450,000 cho D (o 14)
+  [Cuop dat] A cuop dat o 14 tu D, tra $227,000
+  [Ket thuc luot] Tien: $193,500 | Dat: [28, 30, 15, 18, 22, 27, 5, 7, 14]
+  [Dice] B tung xuc xac: 5+4 = 9
+
+──────────────────────────────────────────────────
+  LUOT 13: Nguoi choi B
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 21 | Tien: $299,000 | Dat: [11, 26]
+  [Di chuyen] B: o 21 -> o 30
+  [Dung o] B dung tai o 30 [CITY]
+  [Thu tien] B tra tien thue $45,000 cho A (o 30)
+  [Cuop dat] B cuop dat o 30 tu A, tra $136,000
+  [Ket thuc luot] Tien: $118,000 | Dat: [11, 26, 30]
+  [Dice] D tung xuc xac: 6+6 = 12  [DOI - duoc do lai!]
+
+──────────────────────────────────────────────────
+  LUOT 13: Nguoi choi D
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 12 | Tien: $1,223,500 | Dat: [2, 16, 4, 12]
+  [Di chuyen] D: o 12 -> o 24
+  [Dung o] D dung tai o 24 [CITY]
+  [Mua dat] D mua Cam co, Nha L1, Nha L2, Nha L3 (o 24) gia $343,000
+  [Do doi] D do doi - duoc do them 1 lan nua!
+  [Dice] D tung xuc xac: 6+2 = 8
+
+──────────────────────────────────────────────────
+  LUOT 13: Nguoi choi D
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 24 | Tien: $880,500 | Dat: [2, 16, 4, 12, 24]
+  [Di chuyen] D: o 24 -> o 32
+  [Dung o] D dung tai o 32 [CITY]
+  [Mua dat] D mua Cam co, Nha L1, Nha L2, Nha L3 (o 32) gia $460,000
+  [Ket thuc luot] Tien: $420,500 | Dat: [2, 16, 4, 12, 24, 32]
+  [Dice] A tung xuc xac: 5+1 = 6
 
 ──────────────────────────────────────────────────
   LUOT 14: Nguoi choi A
 ──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 4 | Tien: $519,000 | Dat: [4]
-  [Di chuyen] A: o 4 -> o 12
-  [Dung o] A dung tai o 12 [CITY]
-  [Thu tien] A tra tien thue $175,000 cho D (o 12)
-  [Cuop dat] A cuop dat o 12 tu D, tra $171,000
-  [Ket thuc luot] Tien: $173,000 | Dat: [4, 12]
-  [Dice] C tung xuc xac: 6+6 = 12  [DOI - duoc do lai!]
+  [Trang thai] Vi tri: o 14 | Tien: $374,500 | Dat: [28, 15, 18, 22, 27, 5, 7, 14]
+  [Di chuyen] A: o 14 -> o 20
+  [Dung o] A dung tai o 20 [CITY]
+  [Mua dat] A mua Cam co, Nha L1, Nha L2, Nha L3 (o 20) gia $287,000
+  [Ket thuc luot] Tien: $87,500 | Dat: [28, 15, 18, 22, 27, 5, 7, 14, 20]
+  [Dice] B tung xuc xac: 4+4 = 8  [DOI - duoc do lai!]
 
 ──────────────────────────────────────────────────
-  LUOT 14: Nguoi choi C
+  LUOT 14: Nguoi choi B
 ──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 5 | Tien: $900,400 | Dat: [7, 10, 27, 22, 30]
-  [Di chuyen] C: o 5 -> o 17
-  [Dung o] C dung tai o 17 [FESTIVAL]
-  [Le hoi] Cap do: 0, Phan thuong: $0
-  [Do doi] C do doi - duoc do them 1 lan nua!
-  [Dice] C tung xuc xac: 3+5 = 8
+  [Trang thai] Vi tri: o 30 | Tien: $118,000 | Dat: [11, 26, 30]
+  [Nhan tien] B nhan $150,000 (passing_start)
+  [Di chuyen] B: o 30 -> o 6 (qua O xuat phat)
+  [Dung o] B dung tai o 6 [CITY]
+  [Mua dat] B mua Cam co, Nha L1, Nha L2, Nha L3 (o 6) gia $114,000
+  [Do doi] B do doi - duoc do them 1 lan nua!
+  [Dice] B tung xuc xac: 2+5 = 7
 
 ──────────────────────────────────────────────────
-  LUOT 14: Nguoi choi C
+  LUOT 14: Nguoi choi B
 ──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 17 | Tien: $880,400 | Dat: [7, 10, 27, 22, 30]
-  [Di chuyen] C: o 17 -> o 25
-  [Dung o] C dung tai o 25 [TRAVEL]
-  [Dung o] C dung tai o 25 [TRAVEL]
-  [Ket thuc luot] Tien: $880,400 | Dat: [7, 10, 27, 22, 30]
-  [Thoat tu] D tra phi $50,000 de ra tu
-  [Nguc] D da tra phi - tu do!
-  [Dice] D tung xuc xac: 1+2 = 3
+  [Trang thai] Vi tri: o 6 | Tien: $154,000 | Dat: [11, 26, 30, 6]
+  [Di chuyen] B: o 6 -> o 13
+  [Dung o] B dung tai o 13 [CHANCE]
+  [Rut the] B rut the 'IT_CA_3' -> EF_3
+  [Ket thuc luot] Tien: $154,000 | Dat: [11, 26, 30, 6]
+  [Dice] D tung xuc xac: 5+6 = 11
 
 ──────────────────────────────────────────────────
   LUOT 14: Nguoi choi D
 ──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 9 | Tien: $1,085,000 | Dat: [19, 26, 5, 8, 20, 23, 32, 24, 2]
-  [Di chuyen] D: o 9 -> o 12
-  [Dung o] D dung tai o 12 [CITY]
-  [Thu tien] D tra tien thue $175,000 cho A (o 12)
-  [Cuop dat] D cuop dat o 12 tu A, tra $171,000
-  [Ket thuc luot] Tien: $739,000 | Dat: [19, 26, 5, 8, 20, 23, 32, 24, 2, 12]
-  [Dice] A tung xuc xac: 5+1 = 6
+  [Trang thai] Vi tri: o 32 | Tien: $420,500 | Dat: [2, 16, 4, 12, 24, 32]
+  [Nhan tien] D nhan $150,000 (passing_start)
+  [Di chuyen] D: o 32 -> o 11 (qua O xuat phat)
+  [Dung o] D dung tai o 11 [CITY]
+  [Thu tien] D tra tien thue $175,000 cho B (o 11)
+  [Cuop dat] D cuop dat o 11 tu B, tra $171,000
+  [Ket thuc luot] Tien: $224,500 | Dat: [2, 16, 4, 12, 24, 32, 11]
+  [Dice] A tung xuc xac: 4+4 = 8  [DOI - duoc do lai!]
 
 ──────────────────────────────────────────────────
   LUOT 15: Nguoi choi A
 ──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 12 | Tien: $519,000 | Dat: [4]
-  [Di chuyen] A: o 12 -> o 18
-  [Dung o] A dung tai o 18 [CITY]
-  [Mua dat] A mua Cam co, Nha L1, Nha L2, Nha L3 (o 18) gia $284,000
-  [Ket thuc luot] Tien: $235,000 | Dat: [4, 18]
-  [Di chuyen] C: o 25 -> o 29
-  [Ket thuc luot] Tien: $860,400 | Dat: [7, 10, 27, 22, 30]
-  [Dice] D tung xuc xac: 4+1 = 5
+  [Trang thai] Vi tri: o 20 | Tien: $87,500 | Dat: [28, 15, 18, 22, 27, 5, 7, 14, 20]
+  [Di chuyen] A: o 20 -> o 28
+  [Dung o] A dung tai o 28 [CITY]
+  [Do doi] A do doi - duoc do them 1 lan nua!
+  [Dice] A tung xuc xac: 4+6 = 10
+
+──────────────────────────────────────────────────
+  LUOT 15: Nguoi choi A
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 28 | Tien: $87,500 | Dat: [28, 15, 18, 22, 27, 5, 7, 14, 20]
+  [Nhan tien] A nhan $150,000 (passing_start)
+  [Di chuyen] A: o 28 -> o 6 (qua O xuat phat)
+  [Dung o] A dung tai o 6 [CITY]
+  [Thu tien] A tra tien thue $95,000 cho B (o 6)
+  [Cuop dat] A cuop dat o 6 tu B, tra $114,000
+  [Ket thuc luot] Tien: $28,500 | Dat: [28, 15, 18, 22, 27, 5, 7, 14, 20, 6]
+  [Dice] B tung xuc xac: 2+5 = 7
+
+──────────────────────────────────────────────────
+  LUOT 15: Nguoi choi B
+──────────────────────────────────────────────────
+  [Trang thai] Vi tri: o 13 | Tien: $709,000 | Dat: [26, 30]
+  [Di chuyen] B: o 13 -> o 20
+  [Dung o] B dung tai o 20 [CITY]
+  [Thu tien] B tra tien thue $670,000 cho A (o 20)
+  [Ket thuc luot] Tien: $39,000 | Dat: [26, 30]
+  [Dice] D tung xuc xac: 6+3 = 9
 
 ──────────────────────────────────────────────────
   LUOT 15: Nguoi choi D
 ──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 12 | Tien: $739,000 | Dat: [19, 26, 5, 8, 20, 23, 32, 24, 2, 12]
-  [Di chuyen] D: o 12 -> o 17
-  [Dung o] D dung tai o 17 [FESTIVAL]
-  [Le hoi] Cap do: 0, Phan thuong: $0
-  [Ket thuc luot] Tien: $719,000 | Dat: [19, 26, 5, 8, 20, 23, 32, 24, 2, 12]
-  [Dice] A tung xuc xac: 5+5 = 10  [DOI - duoc do lai!]
+  [Trang thai] Vi tri: o 11 | Tien: $224,500 | Dat: [2, 16, 4, 12, 24, 32, 11]
+  [Di chuyen] D: o 11 -> o 20
+  [Dung o] D dung tai o 20 [CITY]
+  [No thue] D phai tra cho A $670,000 (o 20) — khong du tien
+  [Ban dat] D ban dat o 2 thu $27,500
+  [Ban dat] D ban dat o 4 thu $29,000
+  [Ban dat] D ban dat o 16 thu $35,000
+  [Ban dat] D ban dat o 12 thu $85,500
+  [Ban dat] D ban dat o 11 thu $85,500
+  [Ban dat] D ban dat o 24 thu $171,500
+  [Ban dat] D ban dat o 32 thu $230,000
+  [Thanh toan no] A nhan duoc tu D: $888,500 / $670,000 (con thieu $-218,500)
+  [Ket thuc luot] Tien: $218,500 | Dat: chua co
+  [Dice] A tung xuc xac: 5+3 = 8
 
 ──────────────────────────────────────────────────
   LUOT 16: Nguoi choi A
 ──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 18 | Tien: $235,000 | Dat: [4, 18]
-  [Di chuyen] A: o 18 -> o 28
-  [Dung o] A dung tai o 28 [CITY]
-  [Mua dat] A mua Cam co, Nha L1, Nha L2 (o 28) gia $225,000
-  [Do doi] A do doi - duoc do them 1 lan nua!
-  [Dice] A tung xuc xac: 3+5 = 8
+  [Trang thai] Vi tri: o 6 | Tien: $1,587,000 | Dat: [28, 15, 18, 22, 27, 5, 7, 14, 20, 6]
+  [Di chuyen] A: o 6 -> o 14
+  [Dung o] A dung tai o 14 [CITY]
+  [Nang cap] A nang cap o 14 -> Landmark, chi $100,000
+  [Ket thuc luot] Tien: $1,487,000 | Dat: [28, 15, 18, 22, 27, 5, 7, 14, 20, 6]
+  [Dice] B tung xuc xac: 5+5 = 10  [DOI - duoc do lai!]
 
 ──────────────────────────────────────────────────
-  LUOT 16: Nguoi choi A
+  LUOT 16: Nguoi choi B
 ──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 28 | Tien: $10,000 | Dat: [4, 18, 28]
-  [Nhan tien] A nhan $150,000 (passing_start)
-  [Di chuyen] A: o 28 -> o 4 (qua O xuat phat)
-  [Dung o] A dung tai o 4 [CITY]
-  [Nang cap] A nang cap o 4 -> Landmark, chi $25,000
-  [Ket thuc luot] Tien: $135,000 | Dat: [4, 18, 28]
-  [Dice] C tung xuc xac: 6+6 = 12  [DOI - duoc do lai!]
+  [Trang thai] Vi tri: o 20 | Tien: $39,000 | Dat: [26, 30]
+  [Di chuyen] B: o 20 -> o 30
+  [Dung o] B dung tai o 30 [CITY]
+  [Do doi] B do doi - duoc do them 1 lan nua!
+  [Dice] B tung xuc xac: 4+2 = 6
 
 ──────────────────────────────────────────────────
-  LUOT 16: Nguoi choi C
+  LUOT 16: Nguoi choi B
 ──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 29 | Tien: $860,400 | Dat: [7, 10, 27, 22, 30]
-  [Nhan tien] C nhan $150,000 (passing_start)
-  [Di chuyen] C: o 29 -> o 9 (qua O xuat phat)
-  [Dung o] C dung tai o 9 [PRISON]
-  [Nguc] C bi giam vao tu, ngoi 3 luot
-  [Ket thuc luot] Tien: $1,010,400 | Dat: [7, 10, 27, 22, 30]
-  [Dice] D tung xuc xac: 3+4 = 7
+  [Trang thai] Vi tri: o 30 | Tien: $39,000 | Dat: [26, 30]
+  [Nhan tien] B nhan $150,000 (passing_start)
+  [Di chuyen] B: o 30 -> o 4 (qua O xuat phat)
+  [Dung o] B dung tai o 4 [CITY]
+  [Mua dat] B mua Cam co, Nha L1, Nha L2, Nha L3 (o 4) gia $58,000
+  [Ket thuc luot] Tien: $131,000 | Dat: [26, 30, 4]
+  [Dice] D tung xuc xac: 2+5 = 7
 
 ──────────────────────────────────────────────────
   LUOT 16: Nguoi choi D
 ──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 17 | Tien: $719,000 | Dat: [19, 26, 5, 8, 20, 23, 32, 24, 2, 12]
-  [Di chuyen] D: o 17 -> o 24
-  [Dung o] D dung tai o 24 [CITY]
-  [Nang cap] D nang cap o 24 -> Landmark, chi $150,000
-  [Ket thuc luot] Tien: $569,000 | Dat: [19, 26, 5, 8, 20, 23, 32, 24, 2, 12]
+  [Trang thai] Vi tri: o 20 | Tien: $218,500 | Dat: chua co
+  [Di chuyen] D: o 20 -> o 27
+  [Dung o] D dung tai o 27 [CITY]
+  [No thue] D phai tra cho A $1,760,000 (o 27) — khong du tien
+  [Thanh toan no] A nhan duoc tu D: $218,500 / $1,760,000 (con thieu $1,541,500)
+  [Pha san] *** D DA PHA SAN ***
   [Dice] A tung xuc xac: 3+1 = 4
 
 ──────────────────────────────────────────────────
   LUOT 17: Nguoi choi A
 ──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 4 | Tien: $135,000 | Dat: [4, 18, 28]
-  [Di chuyen] A: o 4 -> o 8
-  [Dung o] A dung tai o 8 [CITY]
-  [Thu tien] A tra tien thue $100,000 cho D (o 8)
-  [Ket thuc luot] Tien: $35,000 | Dat: [4, 18, 28]
-  [Thoat tu] C tra phi $50,000 de ra tu
-  [Nguc] C da tra phi - tu do!
-  [Dice] C tung xuc xac: 5+1 = 6
-
-──────────────────────────────────────────────────
-  LUOT 17: Nguoi choi C
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 9 | Tien: $960,400 | Dat: [7, 10, 27, 22, 30]
-  [Di chuyen] C: o 9 -> o 15
-  [Dung o] C dung tai o 15 [RESORT]
-  [Mua Resort] C mua Resort (o 15) gia $50,000
-  [Ket thuc luot] Tien: $910,400 | Dat: [7, 10, 27, 22, 30, 15]
-  [Dice] D tung xuc xac: 2+3 = 5
-
-──────────────────────────────────────────────────
-  LUOT 17: Nguoi choi D
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 24 | Tien: $669,000 | Dat: [19, 26, 5, 8, 20, 23, 32, 24, 2, 12]
-  [Di chuyen] D: o 24 -> o 29
-  [Dung o] D dung tai o 29 [CHANCE]
-  [Rut the] D rut the 'fortune_card'
-  [Ket thuc luot] Tien: $669,000 | Dat: [19, 26, 5, 8, 20, 23, 32, 24, 2, 12]
-  [Dice] A tung xuc xac: 4+2 = 6
-
-──────────────────────────────────────────────────
-  LUOT 18: Nguoi choi A
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 8 | Tien: $35,000 | Dat: [4, 18, 28]
-  [Di chuyen] A: o 8 -> o 14
-  [Dung o] A dung tai o 14 [CITY]
-  [Ket thuc luot] Tien: $35,000 | Dat: [4, 18, 28]
-  [Dice] C tung xuc xac: 1+3 = 4
-
-──────────────────────────────────────────────────
-  LUOT 18: Nguoi choi C
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 15 | Tien: $910,400 | Dat: [7, 10, 27, 22, 30, 15]
-  [Di chuyen] C: o 15 -> o 19
-  [Dung o] C dung tai o 19 [RESORT]
-  [Thu tien] C tra tien thue $160,000 cho D (o 19)
-  [Ket thuc luot] Tien: $750,400 | Dat: [7, 10, 27, 22, 30, 15]
-  [Dice] D tung xuc xac: 3+5 = 8
-
-──────────────────────────────────────────────────
-  LUOT 18: Nguoi choi D
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 29 | Tien: $829,000 | Dat: [19, 26, 5, 8, 20, 23, 32, 24, 2, 12]
-  [Nhan tien] D nhan $150,000 (passing_start)
-  [Di chuyen] D: o 29 -> o 5 (qua O xuat phat)
-  [Dung o] D dung tai o 5 [RESORT]
-  [Ket thuc luot] Tien: $979,000 | Dat: [19, 26, 5, 8, 20, 23, 32, 24, 2, 12]
-  [Dice] A tung xuc xac: 3+1 = 4
-
-──────────────────────────────────────────────────
-  LUOT 19: Nguoi choi A
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 14 | Tien: $35,000 | Dat: [4, 18, 28]
+  [Trang thai] Vi tri: o 14 | Tien: $1,705,500 | Dat: [28, 15, 18, 22, 27, 5, 7, 14, 20, 6]
   [Di chuyen] A: o 14 -> o 18
   [Dung o] A dung tai o 18 [CITY]
-  [Ket thuc luot] Tien: $35,000 | Dat: [4, 18, 28]
-  [Dice] C tung xuc xac: 4+3 = 7
+  [Ket thuc luot] Tien: $1,705,500 | Dat: [28, 15, 18, 22, 27, 5, 7, 14, 20, 6]
+  [Dice] B tung xuc xac: 1+3 = 4
 
 ──────────────────────────────────────────────────
-  LUOT 19: Nguoi choi C
+  LUOT 17: Nguoi choi B
 ──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 19 | Tien: $750,400 | Dat: [7, 10, 27, 22, 30, 15]
-  [Di chuyen] C: o 19 -> o 26
-  [Dung o] C dung tai o 26 [RESORT]
-  [Thu tien] C tra tien thue $80,000 cho D (o 26)
-  [Ket thuc luot] Tien: $670,400 | Dat: [7, 10, 27, 22, 30, 15]
-  [Dice] D tung xuc xac: 6+2 = 8
-
-──────────────────────────────────────────────────
-  LUOT 19: Nguoi choi D
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 5 | Tien: $1,059,000 | Dat: [19, 26, 5, 8, 20, 23, 32, 24, 2, 12]
-  [Di chuyen] D: o 5 -> o 13
-  [Dung o] D dung tai o 13 [CHANCE]
-  [Rut the] D rut the 'fortune_card'
-  [Ket thuc luot] Tien: $1,059,000 | Dat: [19, 26, 5, 8, 20, 23, 32, 24, 2, 12]
-  [Dice] A tung xuc xac: 4+6 = 10
-
-──────────────────────────────────────────────────
-  LUOT 20: Nguoi choi A
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 18 | Tien: $35,000 | Dat: [4, 18, 28]
-  [Di chuyen] A: o 18 -> o 28
-  [Dung o] A dung tai o 28 [CITY]
-  [Ket thuc luot] Tien: $35,000 | Dat: [4, 18, 28]
-  [Dice] C tung xuc xac: 4+3 = 7
-
-──────────────────────────────────────────────────
-  LUOT 20: Nguoi choi C
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 26 | Tien: $670,400 | Dat: [7, 10, 27, 22, 30, 15]
-  [Nhan tien] C nhan $150,000 (passing_start)
-  [Di chuyen] C: o 26 -> o 1 (qua O xuat phat)
-  [Dung o] C dung tai o 1 [START]
-  [Nang cap] C nang cap o 22 -> Landmark, chi $150,000
-  [Ket thuc luot] Tien: $670,400 | Dat: [7, 10, 27, 22, 30, 15]
-  [Dice] D tung xuc xac: 2+4 = 6
-
-──────────────────────────────────────────────────
-  LUOT 20: Nguoi choi D
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 13 | Tien: $1,059,000 | Dat: [19, 26, 5, 8, 20, 23, 32, 24, 2, 12]
-  [Di chuyen] D: o 13 -> o 19
-  [Dung o] D dung tai o 19 [RESORT]
-  [Ket thuc luot] Tien: $1,059,000 | Dat: [19, 26, 5, 8, 20, 23, 32, 24, 2, 12]
-  [Dice] A tung xuc xac: 2+6 = 8
-
-──────────────────────────────────────────────────
-  LUOT 21: Nguoi choi A
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 28 | Tien: $35,000 | Dat: [4, 18, 28]
-  [Nhan tien] A nhan $150,000 (passing_start)
-  [Di chuyen] A: o 28 -> o 4 (qua O xuat phat)
-  [Dung o] A dung tai o 4 [CITY]
-  [Ket thuc luot] Tien: $185,000 | Dat: [4, 18, 28]
-  [Dice] C tung xuc xac: 6+4 = 10
-
-──────────────────────────────────────────────────
-  LUOT 21: Nguoi choi C
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 1 | Tien: $670,400 | Dat: [7, 10, 27, 22, 30, 15]
-  [Di chuyen] C: o 1 -> o 11
-  [Dung o] C dung tai o 11 [CITY]
-  [Mua dat] C mua Cam co, Nha L1, Nha L2, Nha L3 (o 11) gia $171,000
-  [Ket thuc luot] Tien: $499,400 | Dat: [7, 10, 27, 22, 30, 15, 11]
-  [Dice] D tung xuc xac: 6+1 = 7
-
-──────────────────────────────────────────────────
-  LUOT 21: Nguoi choi D
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 19 | Tien: $1,059,000 | Dat: [19, 26, 5, 8, 20, 23, 32, 24, 2, 12]
-  [Di chuyen] D: o 19 -> o 26
-  [Dung o] D dung tai o 26 [RESORT]
-  [Ket thuc luot] Tien: $1,059,000 | Dat: [19, 26, 5, 8, 20, 23, 32, 24, 2, 12]
-  [Dice] A tung xuc xac: 1+2 = 3
-
-──────────────────────────────────────────────────
-  LUOT 22: Nguoi choi A
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 4 | Tien: $185,000 | Dat: [4, 18, 28]
-  [Di chuyen] A: o 4 -> o 7
-  [Dung o] A dung tai o 7 [CITY]
-  [No thue] A phai tra cho C $190,000 (o 7) — khong du tien
-  [Ban dat] A ban dat o 4 thu $41,500
-  [Thanh toan no] C nhan duoc tu A: $226,500 / $190,000 (con thieu $-36,500)
-  [Ket thuc luot] Tien: $36,500 | Dat: [18, 28]
-  [Dice] C tung xuc xac: 2+2 = 4  [DOI - duoc do lai!]
-
-──────────────────────────────────────────────────
-  LUOT 22: Nguoi choi C
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 11 | Tien: $725,900 | Dat: [7, 10, 27, 22, 30, 15, 11]
-  [Di chuyen] C: o 11 -> o 15
-  [Dung o] C dung tai o 15 [RESORT]
-  [Do doi] C do doi - duoc do them 1 lan nua!
-  [Dice] C tung xuc xac: 3+5 = 8
-
-──────────────────────────────────────────────────
-  LUOT 22: Nguoi choi C
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 15 | Tien: $725,900 | Dat: [7, 10, 27, 22, 30, 15, 11]
-  [Di chuyen] C: o 15 -> o 23
-  [Dung o] C dung tai o 23 [CITY]
-  [Thu tien] C tra tien thue $415,000 cho D (o 23)
-  [Ket thuc luot] Tien: $310,900 | Dat: [7, 10, 27, 22, 30, 15, 11]
-  [Dice] D tung xuc xac: 6+4 = 10
-
-──────────────────────────────────────────────────
-  LUOT 22: Nguoi choi D
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 26 | Tien: $1,474,000 | Dat: [19, 26, 5, 8, 20, 23, 32, 24, 2, 12]
-  [Nhan tien] D nhan $150,000 (passing_start)
-  [Di chuyen] D: o 26 -> o 4 (qua O xuat phat)
-  [Dung o] D dung tai o 4 [CITY]
-  [Mua dat] D mua Cam co, Nha L1, Nha L2, Nha L3 (o 4) gia $58,000
-  [Ket thuc luot] Tien: $1,566,000 | Dat: [19, 26, 5, 8, 20, 23, 32, 24, 2, 12, 4]
+  [Trang thai] Vi tri: o 4 | Tien: $131,000 | Dat: [26, 30, 4]
+  [Di chuyen] B: o 4 -> o 8
+  [Dung o] B dung tai o 8 [CITY]
+  [Mua dat] B mua Cam co, Nha L1, Nha L2, Nha L3 (o 8) gia $117,000
+  [Ket thuc luot] Tien: $14,000 | Dat: [26, 30, 4, 8]
   [Dice] A tung xuc xac: 2+4 = 6
 
 ──────────────────────────────────────────────────
-  LUOT 23: Nguoi choi A
+  LUOT 17: Nguoi choi A
 ──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 7 | Tien: $36,500 | Dat: [18, 28]
-  [Di chuyen] A: o 7 -> o 13
-  [Dung o] A dung tai o 13 [CHANCE]
-  [Rut the] A rut the 'fortune_card'
-  [Ket thuc luot] Tien: $36,500 | Dat: [18, 28]
-  [Dice] C tung xuc xac: 4+5 = 9
+  [Trang thai] Vi tri: o 18 | Tien: $1,705,500 | Dat: [28, 15, 18, 22, 27, 5, 7, 14, 20, 6]
+  [Di chuyen] A: o 18 -> o 24
+  [Dung o] A dung tai o 24 [CITY]
+  [Mua dat] A mua Cam co, Nha L1, Nha L2, Nha L3 (o 24) gia $343,000
+  [Ket thuc luot] Tien: $1,362,500 | Dat: [28, 15, 18, 22, 27, 5, 7, 14, 20, 6, 24]
+  [Dice] B tung xuc xac: 6+6 = 12  [DOI - duoc do lai!]
 
 ──────────────────────────────────────────────────
-  LUOT 23: Nguoi choi C
+  LUOT 17: Nguoi choi B
 ──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 23 | Tien: $310,900 | Dat: [7, 10, 27, 22, 30, 15, 11]
-  [Di chuyen] C: o 23 -> o 32
-  [Dung o] C dung tai o 32 [CITY]
-  [Thu tien] C tra tien thue $290,000 cho D (o 32)
-  [Ban dat] C ban dat o 10 thu $25,000
-  [Ban dat] C ban dat o 15 thu $25,000
-  [Ban dat] C ban dat o 7 thu $57,000
-  [Ban dat] C ban dat o 11 thu $85,500
-  [Ban dat] C ban dat o 27 thu $198,500
-  [Thanh toan no] D nhan duoc tu C: $701,900 / $580,000 (con thieu $-121,900)
-  [Ket thuc luot] Tien: $121,900 | Dat: [22, 30]
-  [Dice] D tung xuc xac: 4+3 = 7
-
-──────────────────────────────────────────────────
-  LUOT 23: Nguoi choi D
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 4 | Tien: $2,847,900 | Dat: [19, 26, 5, 8, 20, 23, 32, 24, 2, 12, 4]
-  [Di chuyen] D: o 4 -> o 11
-  [Dung o] D dung tai o 11 [CITY]
-  [Mua dat] D mua Cam co, Nha L1, Nha L2, Nha L3 (o 11) gia $171,000
-  [Ket thuc luot] Tien: $2,676,900 | Dat: [19, 26, 5, 8, 20, 23, 32, 24, 2, 12, 4, 11]
-  [Dice] A tung xuc xac: 2+5 = 7
-
-──────────────────────────────────────────────────
-  LUOT 24: Nguoi choi A
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 13 | Tien: $36,500 | Dat: [18, 28]
-  [Di chuyen] A: o 13 -> o 20
-  [Dung o] A dung tai o 20 [CITY]
-  [No thue] A phai tra cho D $335,000 (o 20) — khong du tien
-  [Ban dat] A ban dat o 28 thu $112,500
-  [Ban dat] A ban dat o 18 thu $142,000
-  [Thanh toan no] D nhan duoc tu A: $291,000 / $335,000 (con thieu $44,000)
-  [Pha san] *** A DA PHA SAN ***
-  [Dice] C tung xuc xac: 2+4 = 6
-
-──────────────────────────────────────────────────
-  LUOT 24: Nguoi choi C
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 32 | Tien: $121,900 | Dat: [22, 30]
-  [Nhan tien] C nhan $150,000 (passing_start)
-  [Di chuyen] C: o 32 -> o 6 (qua O xuat phat)
-  [Dung o] C dung tai o 6 [CITY]
-  [Mua dat] C mua Cam co, Nha L1, Nha L2, Nha L3 (o 6) gia $114,000
-  [Ket thuc luot] Tien: $157,900 | Dat: [22, 30, 6]
-  [Dice] D tung xuc xac: 4+1 = 5
-
-──────────────────────────────────────────────────
-  LUOT 24: Nguoi choi D
-──────────────────────────────────────────────────
-  [Trang thai] Vi tri: o 11 | Tien: $2,967,900 | Dat: [19, 26, 5, 8, 20, 23, 32, 24, 2, 12, 4, 11]
-  [Di chuyen] D: o 11 -> o 16
-  [Dung o] D dung tai o 16 [CITY]
-  [Mua dat] D mua Cam co, Nha L1, Nha L2, Nha L3 (o 16) gia $230,000
-  [Ket thuc luot] Tien: $2,737,900 | Dat: [19, 26, 5, 8, 20, 23, 32, 24, 2, 12, 4, 11, 16]
-
-[Game] Ket thuc: Het 25 luot
+  [Trang thai] Vi tri: o 8 | Tien: $14,000 | Dat: [26, 30, 4, 8]
+  [Di chuyen] B: o 8 -> o 20
+  [Dung o] B dung tai o 20 [CITY]
+  [No thue] B phai tra cho A $670,000 (o 20) — khong du tien
+  [Ban dat] B ban dat o 26 thu $25,000
+  [Ban dat] B ban dat o 4 thu $29,000
+  [Ban dat] B ban dat o 8 thu $58,500
+  [Ban dat] B ban dat o 30 thu $68,000
+  [Thanh toan no] A nhan duoc tu B: $194,500 / $670,000 (con thieu $475,500)
+  [Pha san] *** B DA PHA SAN ***
 
 ============================================================
 KET QUA VAN DAU
 ============================================================
-Tong so luot: 25
-NGUOI THANG: D
+Tong so luot: 17
+NGUOI THANG: A
 
 Xep hang cuoi van:
-  #1 Nguoi choi D: $2,737,900
-      Dat dang so huu: [19, 26, 5, 8, 20, 23, 32, 24, 2, 12, 4, 11, 16]
-  #2 Nguoi choi C: $157,900
-      Dat dang so huu: [22, 30, 6]
-  #3 Nguoi choi A: PHA SAN
-  #4 Nguoi choi B: PHA SAN
+  #1 Nguoi choi A: $1,557,000
+      Dat dang so huu: [28, 15, 18, 22, 27, 5, 7, 14, 20, 6, 24]
+  #2 Nguoi choi C: PHA SAN
+  #3 Nguoi choi B: PHA SAN
+  #4 Nguoi choi D: PHA SAN

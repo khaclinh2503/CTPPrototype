@@ -12,7 +12,6 @@ class TestPlayerPhase021Fields:
         player = Player(player_id="p1", cash=1_000_000)
         assert player.held_card is None
         assert player.accuracy_rate == 15
-        assert player.virus_turns == 0
         assert player.double_toll_turns == 0
 
     def test_player_backward_compatible(self):

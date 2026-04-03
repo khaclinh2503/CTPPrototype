@@ -25,25 +25,27 @@ def _get_held_card_effect(card_id: str) -> str:
 
 
 def apply_toll_modifiers(
-    player: Player, owner: Optional[Player], rent: float, event_bus
+    player: Player, owner: Optional[Player], tile, rent: float, event_bus
 ) -> tuple[float, bool]:
     """Apply virus/double_toll/held_card modifiers lên rent.
 
-    Per D-44 thứ tự: virus → double_toll → EF_20 Angel → EF_2 Discount.
+    Per D-44 thứ tự: tile_debuff → double_toll → EF_20 Angel → EF_2 Discount.
 
     Args:
         player: Player đang trả toll.
         owner: Owner của tile (có thể None).
+        tile: Tile đang trả toll (để check toll_debuff_turns).
         rent: Toll gốc đã tính.
         event_bus: Event bus.
 
     Returns:
         (modified_rent, skip_toll) — nếu skip_toll=True thì không trừ tiền.
     """
-    # Step 1: virus check — owner bị virus, player không trả toll (D-11)
-    if owner and owner.virus_turns > 0:
-        owner.virus_turns = 0  # clear khi có người visit
-        return 0.0, True  # no toll
+    # Step 1: tile-level toll debuff (EF_7/8) — giảm toll trên ô cụ thể
+    if tile is not None and tile.toll_debuff_turns > 0:
+        if tile.toll_debuff_rate == 0.0:
+            return 0.0, True  # EF_7: miễn phí hoàn toàn
+        rent = int(rent * tile.toll_debuff_rate)  # EF_8: giảm theo rate
 
     # Step 2: double_toll self-debuff (D-12)
     if player.double_toll_turns > 0:

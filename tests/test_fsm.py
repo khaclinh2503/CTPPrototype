@@ -464,16 +464,29 @@ class TestFSMIntegration:
         assert "position" in lowered_events[0].data
         assert isinstance(lowered_events[0].data["position"], int)
 
-    def test_virus_turns_decrements_in_end_turn(self, controller):
-        """player.virus_turns=2 → sau _do_end_turn(), virus_turns == 1."""
-        player = controller.current_player
-        player.virus_turns = 2
+    def test_toll_debuff_turns_decrements_in_end_turn(self, controller):
+        """tile.toll_debuff_turns=2 → sau _do_end_turn(), toll_debuff_turns == 1."""
+        tile = controller.board.board[1]  # pos 2 (CITY)
+        tile.toll_debuff_turns = 2
+        tile.toll_debuff_rate = 0.0
 
-        # Set phase to END_TURN directly
         controller.phase = TurnPhase.END_TURN
         controller.step()  # _do_end_turn
 
-        assert player.virus_turns == 1
+        assert tile.toll_debuff_turns == 1
+        assert tile.toll_debuff_rate == 0.0  # vẫn còn active
+
+    def test_toll_debuff_turns_clears_rate_when_expired(self, controller):
+        """tile.toll_debuff_turns=1 → sau END_TURN, toll_debuff_turns=0, rate=1.0."""
+        tile = controller.board.board[1]
+        tile.toll_debuff_turns = 1
+        tile.toll_debuff_rate = 0.0
+
+        controller.phase = TurnPhase.END_TURN
+        controller.step()
+
+        assert tile.toll_debuff_turns == 0
+        assert tile.toll_debuff_rate == 1.0
 
     def test_player_move_event_has_string_keys(self, board, players, event_bus):
         """PLAYER_MOVE event data có 'old_pos' và 'new_pos' là string keys."""

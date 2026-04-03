@@ -34,7 +34,8 @@
             "contentId": "eff_alien_invaion",
             "effect": "EF_6",
             "isActive": 0,
-            "rate": 5
+            "rate": 5,
+            "mapNotAvail": [1]
         },
         "IT_CA_7": {
             "contentId": "eff_earth_quake",
@@ -66,7 +67,8 @@
             "isActive": 0,
             "rate": 10,
             "mapNotAvail": [
-                2
+                2,
+                3
             ]
         },
         "IT_CA_12": {
@@ -191,6 +193,12 @@
                 3
             ]
         },
+        "IT_CA_28": {
+            "contentId": "eff_get_house_1",
+            "effect": "EF_28",
+            "isActive": 0,
+            "rate": 0
+        },
         "IT_CA_29": {
             "contentId": "eff_flag",
             "effect": "EF_29",
@@ -200,6 +208,16 @@
                 1,
                 2,
                 4
+            ]
+        },
+        "IT_CA_30": {
+            "contentId": "eff_water_slide",
+            "effect": "EF_30",
+            "isActive": 0,
+            "rate": 10,
+            "mapNotAvail": [
+                1,
+                2
             ]
         }
     },

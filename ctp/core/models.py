@@ -31,7 +31,6 @@ class Player:
     # Phase 02.1: Card draw + Căn lực fields
     held_card: str | None = None          # card_id đang giữ (ví dụ "IT_CA_3"), per D-09
     accuracy_rate: int = 15               # căn lực base rate (%), per D-10
-    virus_turns: int = 0                  # EF_7/8 debuff rounds remaining, per D-11
     double_toll_turns: int = 0            # EF_16 self-debuff rounds remaining, per D-12
 
     def can_afford(self, amount: float) -> bool:

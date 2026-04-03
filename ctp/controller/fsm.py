@@ -832,10 +832,12 @@ class GameController:
             ))
             return []
 
-        # [NEW D-46] Decrement virus_turns cho tất cả players sau mỗi END_TURN
-        for p in self.players:
-            if p.virus_turns > 0:
-                p.virus_turns -= 1
+        # [D-46] Decrement toll_debuff_turns trên tất cả tiles sau mỗi END_TURN
+        for tile in self.board.board:
+            if tile.toll_debuff_turns > 0:
+                tile.toll_debuff_turns -= 1
+                if tile.toll_debuff_turns == 0:
+                    tile.toll_debuff_rate = 1.0
 
         # Advance turn counter
         self._advance_to_next_player()

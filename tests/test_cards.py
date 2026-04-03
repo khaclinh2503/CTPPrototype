@@ -26,7 +26,7 @@ def event_bus():
 
 @pytest.fixture
 def space_positions():
-    """Board layout matching Board.json SpacePosition0 (map_id=1)."""
+    """Board layout matching Board.json SpacePosition7 (map_id=1). TAX tại pos 31."""
     return {
         "1": {"spaceId": 7, "opt": 0},    # START
         "2": {"spaceId": 3, "opt": 1},    # CITY
@@ -76,43 +76,82 @@ def board_map1(space_positions, land_config):
 
 @pytest.fixture
 def board_map2(land_config):
-    """Board for map_id=2 (includes IT_CA_22, IT_CA_23, excludes IT_CA_11)."""
-    # Thêm GOD tile cho map2
+    """Board for map_id=2 — SpacePosition1 từ Board.json (GOD tại pos 5,13,21,29)."""
     sp = {
-        "1": {"spaceId": 7, "opt": 0},
-        "2": {"spaceId": 3, "opt": 1},
-        "3": {"spaceId": 4, "opt": 0},
-        "4": {"spaceId": 3, "opt": 2},
-        "5": {"spaceId": 6, "opt": 101},
-        "6": {"spaceId": 3, "opt": 3},
-        "7": {"spaceId": 3, "opt": 4},
-        "8": {"spaceId": 3, "opt": 5},
-        "9": {"spaceId": 5, "opt": 0},
-        "10": {"spaceId": 10, "opt": 0},  # GOD tile for map2
-        "11": {"spaceId": 3, "opt": 6},
-        "12": {"spaceId": 3, "opt": 7},
-        "13": {"spaceId": 2, "opt": 0},
-        "14": {"spaceId": 3, "opt": 8},
-        "15": {"spaceId": 6, "opt": 101},
-        "16": {"spaceId": 3, "opt": 9},
-        "17": {"spaceId": 1, "opt": 0},
-        "18": {"spaceId": 3, "opt": 10},
-        "19": {"spaceId": 6, "opt": 101},
-        "20": {"spaceId": 3, "opt": 11},
-        "21": {"spaceId": 2, "opt": 0},
-        "22": {"spaceId": 3, "opt": 12},
-        "23": {"spaceId": 3, "opt": 13},
-        "24": {"spaceId": 3, "opt": 14},
-        "25": {"spaceId": 9, "opt": 0},
-        "26": {"spaceId": 6, "opt": 102},
-        "27": {"spaceId": 3, "opt": 15},
-        "28": {"spaceId": 3, "opt": 16},
-        "29": {"spaceId": 2, "opt": 0},
-        "30": {"spaceId": 3, "opt": 17},
-        "31": {"spaceId": 8, "opt": 0},
-        "32": {"spaceId": 3, "opt": 18},
+        "1":  {"spaceId": 7,  "opt": 0},
+        "2":  {"spaceId": 3,  "opt": 1},
+        "3":  {"spaceId": 4,  "opt": 2},
+        "4":  {"spaceId": 3,  "opt": 2},
+        "5":  {"spaceId": 10, "opt": 1},   # GOD
+        "6":  {"spaceId": 3,  "opt": 3},
+        "7":  {"spaceId": 3,  "opt": 4},
+        "8":  {"spaceId": 6,  "opt": 101},
+        "9":  {"spaceId": 5,  "opt": 0},   # PRISON
+        "10": {"spaceId": 2,  "opt": 0},   # CHANCE
+        "11": {"spaceId": 3,  "opt": 5},
+        "12": {"spaceId": 3,  "opt": 6},
+        "13": {"spaceId": 10, "opt": 2},   # GOD
+        "14": {"spaceId": 3,  "opt": 7},
+        "15": {"spaceId": 6,  "opt": 101},
+        "16": {"spaceId": 3,  "opt": 8},
+        "17": {"spaceId": 1,  "opt": 0},   # FESTIVAL
+        "18": {"spaceId": 3,  "opt": 9},
+        "19": {"spaceId": 2,  "opt": 0},   # CHANCE
+        "20": {"spaceId": 3,  "opt": 10},
+        "21": {"spaceId": 10, "opt": 3},   # GOD
+        "22": {"spaceId": 3,  "opt": 11},
+        "23": {"spaceId": 3,  "opt": 12},
+        "24": {"spaceId": 6,  "opt": 101},
+        "25": {"spaceId": 9,  "opt": 0},   # TRAVEL
+        "26": {"spaceId": 3,  "opt": 13},
+        "27": {"spaceId": 2,  "opt": 0},   # CHANCE
+        "28": {"spaceId": 3,  "opt": 14},
+        "29": {"spaceId": 10, "opt": 4},   # GOD
+        "30": {"spaceId": 3,  "opt": 15},
+        "31": {"spaceId": 6,  "opt": 102},
+        "32": {"spaceId": 3,  "opt": 16},
     }
     return Board(sp, land_config, map_id=2)
+
+
+@pytest.fixture
+def board_map3(land_config):
+    """Board for map_id=3 — SpacePosition6 từ Board.json (WATER_SLIDE tại pos 2,10,18,26)."""
+    sp = {
+        "1":  {"spaceId": 7,  "opt": 0},
+        "2":  {"spaceId": 40, "opt": 1},   # WATER_SLIDE
+        "3":  {"spaceId": 3,  "opt": 1},
+        "4":  {"spaceId": 4,  "opt": 2},
+        "5":  {"spaceId": 3,  "opt": 2},
+        "6":  {"spaceId": 3,  "opt": 3},
+        "7":  {"spaceId": 3,  "opt": 4},
+        "8":  {"spaceId": 6,  "opt": 101},
+        "9":  {"spaceId": 1,  "opt": 0},
+        "10": {"spaceId": 40, "opt": 2},   # WATER_SLIDE
+        "11": {"spaceId": 2,  "opt": 0},   # CHANCE
+        "12": {"spaceId": 3,  "opt": 5},
+        "13": {"spaceId": 3,  "opt": 6},
+        "14": {"spaceId": 3,  "opt": 7},
+        "15": {"spaceId": 6,  "opt": 101},
+        "16": {"spaceId": 3,  "opt": 8},
+        "17": {"spaceId": 5,  "opt": 0},   # PRISON
+        "18": {"spaceId": 40, "opt": 3},   # WATER_SLIDE
+        "19": {"spaceId": 3,  "opt": 9},
+        "20": {"spaceId": 2,  "opt": 0},   # CHANCE
+        "21": {"spaceId": 3,  "opt": 10},
+        "22": {"spaceId": 3,  "opt": 11},
+        "23": {"spaceId": 3,  "opt": 12},
+        "24": {"spaceId": 6,  "opt": 101},
+        "25": {"spaceId": 9,  "opt": 0},   # TRAVEL
+        "26": {"spaceId": 40, "opt": 4},   # WATER_SLIDE
+        "27": {"spaceId": 3,  "opt": 13},
+        "28": {"spaceId": 2,  "opt": 0},   # CHANCE
+        "29": {"spaceId": 3,  "opt": 14},
+        "30": {"spaceId": 3,  "opt": 15},
+        "31": {"spaceId": 6,  "opt": 102},
+        "32": {"spaceId": 3,  "opt": 16},
+    }
+    return Board(sp, land_config, map_id=3)
 
 
 @pytest.fixture
@@ -144,10 +183,13 @@ class TestLoadCardPool:
         assert "IT_CA_22" in pool, "IT_CA_22 phải có trong map 2"
         assert "IT_CA_23" in pool, "IT_CA_23 phải có trong map 2"
 
-    def test_map2_excludes_it_ca_11(self):
-        """IT_CA_11 có mapNotAvail=[2] → không có trong map_id=2 pool."""
-        pool = _load_card_pool(map_id=2)
-        assert "IT_CA_11" not in pool, "IT_CA_11 phải bị lọc ra khỏi map 2"
+
+    def test_it_ca_11_map_availability(self):
+        """IT_CA_11 có trong map 1 (có TAX), không có trong map 2 và 3 (không có TAX)."""
+        assert "IT_CA_11" in _load_card_pool(map_id=1), "IT_CA_11 phải có trong map 1"
+        for map_id in [2, 3]:
+            pool = _load_card_pool(map_id=map_id)
+            assert "IT_CA_11" not in pool, f"IT_CA_11 không được có trong map {map_id}"
 
     def test_pool_excludes_rate_zero_cards(self):
         """Cards với rate=0 phải bị loại khỏi pool."""
@@ -289,15 +331,73 @@ class TestInstantCardEffects:
         assert card_events[0].data["card_id"] == "IT_CA_3"
 
     def test_ef7_virus_on_land(self, board_map1, event_bus, player, opponent):
-        """IT_CA_8 (EF_7 virus) → opponent.virus_turns = 3."""
+        """IT_CA_8 (EF_7 virus) → CITY tiles của opponent có toll_debuff_turns=5, rate=0.0."""
         strategy = FortuneStrategy()
         tile = board_map1.get_tile(13)
-        players = [player, opponent]
 
+        # Opponent sở hữu một CITY tile tại pos 2
+        opponent.add_property(2)
+        city_tile = board_map1.get_tile(2)
+        city_tile.owner_id = opponent.player_id
+        city_tile.building_level = 1
+
+        players = [player, opponent]
         with patch("ctp.tiles.fortune._draw_card", return_value="IT_CA_8"):
             events = strategy.on_land(player, tile, board_map1, event_bus, players=players)
 
-        assert opponent.virus_turns == 3, "Opponent phải bị virus_turns = 3"
+        assert city_tile.toll_debuff_turns == 5, "CITY tile của opponent phải có toll_debuff_turns=5"
+        assert city_tile.toll_debuff_rate == 0.0, "EF_7: toll_debuff_rate phải = 0.0 (miễn phí)"
+
+    def test_ef8_yellow_sand_on_land(self, board_map1, event_bus, player, opponent):
+        """IT_CA_9 (EF_8 yellow_sand) → CITY tiles của opponent có toll_debuff_turns=5, rate=0.5."""
+        strategy = FortuneStrategy()
+        tile = board_map1.get_tile(13)
+
+        opponent.add_property(2)
+        city_tile = board_map1.get_tile(2)
+        city_tile.owner_id = opponent.player_id
+        city_tile.building_level = 1
+
+        players = [player, opponent]
+        with patch("ctp.tiles.fortune._draw_card", return_value="IT_CA_9"):
+            strategy.on_land(player, tile, board_map1, event_bus, players=players)
+
+        assert city_tile.toll_debuff_turns == 5, "CITY tile của opponent phải có toll_debuff_turns=5"
+        assert city_tile.toll_debuff_rate == 0.5, "EF_8: toll_debuff_rate phải = 0.5 (giảm 50%)"
+
+    def test_ef21_go_to_god(self, board_map2, event_bus, player):
+        """IT_CA_22 (EF_21) → player teleport đến GOD tile gần nhất.
+        Player ở pos 10 (CHANCE) → GOD gần nhất theo chiều tiến là pos 13.
+        """
+        strategy = FortuneStrategy()
+        tile = board_map2.get_tile(10)  # CHANCE tile trên Map 2
+        player.position = 10
+
+        with patch("ctp.tiles.fortune._draw_card", return_value="IT_CA_22"):
+            strategy.on_land(player, tile, board_map2, event_bus)
+
+        assert player.position == 13, "Player phải được teleport đến GOD tile gần nhất (pos 13)"
+        god_events = [e for e in event_bus.get_events()
+                      if e.event_type == EventType.CARD_EFFECT_GO_TO_GOD]
+        assert len(god_events) == 1
+        assert god_events[0].data["target_position"] == 13
+
+    def test_ef30_go_to_water_slide(self, board_map3, event_bus, player):
+        """IT_CA_30 (EF_30) → player teleport đến WATER_SLIDE tile gần nhất.
+        Player ở pos 11 (CHANCE) → WATER_SLIDE gần nhất theo chiều tiến là pos 18.
+        """
+        strategy = FortuneStrategy()
+        tile = board_map3.get_tile(11)  # CHANCE tile trên Map 3
+        player.position = 11
+
+        with patch("ctp.tiles.fortune._draw_card", return_value="IT_CA_30"):
+            strategy.on_land(player, tile, board_map3, event_bus)
+
+        assert player.position == 18, "Player phải được teleport đến WATER_SLIDE gần nhất (pos 18)"
+        ws_events = [e for e in event_bus.get_events()
+                     if e.event_type == EventType.CARD_EFFECT_GO_TO_WATER_SLIDE]
+        assert len(ws_events) == 1
+        assert ws_events[0].data["target_position"] == 18
 
 
 # ---------------------------------------------------------------------------
@@ -312,15 +412,16 @@ class TestLandTollModifiers:
         return Board(space_positions, land_config, map_id=1)
 
     def test_virus_skip_toll(self, board_land, event_bus):
-        """owner.virus_turns=3 → player không trả toll, virus_turns reset về 0."""
+        """tile.toll_debuff_turns>0, rate=0.0 → visitor không trả toll."""
         from ctp.tiles.land import LandStrategy
 
         owner = Player(player_id="owner", cash=500_000)
-        owner.virus_turns = 3
         owner.add_property(2)
         tile = board_land.get_tile(2)
         tile.owner_id = "owner"
         tile.building_level = 1
+        tile.toll_debuff_turns = 3
+        tile.toll_debuff_rate = 0.0
 
         visitor = Player(player_id="visitor", cash=1_000_000)
         initial_visitor_cash = visitor.cash
@@ -328,8 +429,30 @@ class TestLandTollModifiers:
         strategy = LandStrategy()
         strategy.on_land(visitor, tile, board_land, event_bus, players=[owner, visitor])
 
-        assert visitor.cash == initial_visitor_cash, "Visitor không trả tiền khi owner bị virus"
-        assert owner.virus_turns == 0, "virus_turns phải reset về 0 khi có người visit"
+        assert visitor.cash == initial_visitor_cash, "Visitor không trả tiền khi tile bị EF_7 debuff"
+
+    def test_yellow_sand_half_toll(self, board_land, event_bus):
+        """tile.toll_debuff_turns>0, rate=0.5 → visitor trả 50% toll (EF_8 yellow_sand)."""
+        from ctp.tiles.land import LandStrategy
+        from ctp.core.constants import BASE_UNIT
+
+        owner = Player(player_id="owner", cash=500_000)
+        owner.add_property(2)
+        tile = board_land.get_tile(2)
+        tile.owner_id = "owner"
+        tile.building_level = 1
+        tile.toll_debuff_turns = 5
+        tile.toll_debuff_rate = 0.5
+
+        visitor = Player(player_id="visitor", cash=1_000_000)
+        initial_visitor_cash = visitor.cash
+
+        strategy = LandStrategy()
+        strategy.on_land(visitor, tile, board_land, event_bus, players=[owner, visitor])
+
+        full_toll = 2 * BASE_UNIT  # building level 1, toll=2 per land_config fixture
+        expected_paid = int(full_toll * 0.5)
+        assert visitor.cash == initial_visitor_cash - expected_paid, "Visitor phải trả 50% toll khi tile bị EF_8 debuff"
 
     def test_double_toll_doubles_rent(self, board_land, event_bus):
         """player.double_toll_turns=1 → trả toll × 2."""
@@ -397,15 +520,16 @@ class TestLandTollModifiers:
         assert visitor.held_card is None, "Discount card phải được consume"
 
     def test_priority_order_virus_beats_double_toll(self, board_land, event_bus):
-        """Virus > double_toll: nếu owner bị virus, player không trả gì dù có double_toll."""
+        """tile debuff (rate=0.0) > double_toll: không trả gì dù có double_toll."""
         from ctp.tiles.land import LandStrategy
 
         owner = Player(player_id="owner", cash=0)
-        owner.virus_turns = 3
         owner.add_property(2)
         tile = board_land.get_tile(2)
         tile.owner_id = "owner"
         tile.building_level = 1
+        tile.toll_debuff_turns = 3
+        tile.toll_debuff_rate = 0.0
 
         visitor = Player(player_id="visitor", cash=1_000_000)
         visitor.double_toll_turns = 1
@@ -414,24 +538,7 @@ class TestLandTollModifiers:
         strategy = LandStrategy()
         strategy.on_land(visitor, tile, board_land, event_bus, players=[owner, visitor])
 
-        assert visitor.cash == initial_cash, "Virus phải có priority cao hơn double_toll"
-        assert owner.virus_turns == 0
-
-    def test_virus_clear_when_owner_visits_own_tile(self, board_land, event_bus):
-        """RISK-03: chủ đất tự ghé tile của mình với virus_turns > 0 → virus vẫn được clear."""
-        from ctp.tiles.land import LandStrategy
-
-        owner = Player(player_id="owner", cash=1_000_000)
-        owner.virus_turns = 3
-        owner.add_property(2)
-        tile = board_land.get_tile(2)
-        tile.owner_id = "owner"
-        tile.building_level = 1
-
-        strategy = LandStrategy()
-        strategy.on_land(owner, tile, board_land, event_bus, players=[owner])
-
-        assert owner.virus_turns == 0, "virus_turns phải clear khi chủ đất tự ghé tile"
+        assert visitor.cash == initial_cash, "Tile debuff phải có priority cao hơn double_toll"
 
 
 # ---------------------------------------------------------------------------
@@ -447,15 +554,16 @@ class TestResortTollModifiers:
         return Board(space_positions, land_config, resort_config=resort_config, map_id=1)
 
     def test_resort_virus_skip_toll(self, board_resort, event_bus):
-        """Resort: owner.virus_turns > 0 → visitor không trả toll."""
+        """Resort: tile.toll_debuff_turns>0, rate=0.0 → visitor không trả toll."""
         from ctp.tiles.resort import ResortStrategy
 
         owner = Player(player_id="owner", cash=0)
-        owner.virus_turns = 2
         owner.add_property(5)
         tile = board_resort.get_tile(5)  # RESORT position 5
         tile.owner_id = "owner"
         tile.building_level = 1
+        tile.toll_debuff_turns = 2
+        tile.toll_debuff_rate = 0.0
 
         visitor = Player(player_id="visitor", cash=1_000_000)
         initial_cash = visitor.cash
@@ -463,8 +571,7 @@ class TestResortTollModifiers:
         strategy = ResortStrategy()
         strategy.on_land(visitor, tile, board_resort, event_bus, players=[owner, visitor])
 
-        assert visitor.cash == initial_cash, "Resort: visitor không trả toll khi owner bị virus"
-        assert owner.virus_turns == 0, "virus_turns phải reset"
+        assert visitor.cash == initial_cash, "Resort: visitor không trả toll khi tile bị EF_7 debuff"
 
     def test_resort_angel_waive_toll(self, board_resort, event_bus):
         """Resort: player giữ Angel card → toll = 0."""

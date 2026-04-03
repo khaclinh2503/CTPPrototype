@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-01)
 
 **Core value:** AI tự động hoàn chỉnh một ván đấu, lưu kết quả, và dùng lịch sử đó để chơi tốt hơn ở ván tiếp theo.
-**Current focus:** Phase 02 — player-property-rules
+**Current focus:** Phase 02.1 — card-draw-and-ch-nh-x-c
 
 ## Current Position
 
-Phase: 2.5
-Plan: Not started
-Status: Phase complete — ready for verification
-Last activity: 2026-04-03
+Phase: 02.1 (card-draw-and-ch-nh-x-c) — EXECUTING
+Plan: 1 of 4
+Status: Executing Phase 02.1
+Last activity: 2026-04-03 -- Phase 02.1 execution started
 
 Progress: [░░░░░░░░░░] 0%
 

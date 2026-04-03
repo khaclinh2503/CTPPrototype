@@ -42,10 +42,7 @@ class LandStrategy(TileStrategy):
             pass
 
         elif tile.owner_id == player.player_id:
-            # Chủ đất tự ghé: clear virus nếu có (RISK-03)
-            if owner := next((p for p in (players or []) if p.player_id == tile.owner_id), None):
-                if owner.virus_turns > 0:
-                    owner.virus_turns = 0
+            pass  # Chủ đất tự ghé: không có hiệu ứng đặc biệt
 
         elif not player.is_bankrupt:
             # Đất người khác: thu tiền thuê
@@ -74,7 +71,7 @@ class LandStrategy(TileStrategy):
 
             # Toll modifier checks (Phase 02.1, per D-44)
             owner = next((p for p in (players or []) if p.player_id == tile.owner_id), None)
-            rent, skip = apply_toll_modifiers(player, owner, rent, event_bus)
+            rent, skip = apply_toll_modifiers(player, owner, tile, rent, event_bus)
             if skip:
                 return events
 

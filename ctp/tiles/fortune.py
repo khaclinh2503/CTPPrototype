@@ -162,7 +162,7 @@ def _apply_instant(
         "EF_5":  _ef_swap_city,
         "EF_6":  _ef_downgrade,
         "EF_7":  _ef_virus,
-        "EF_8":  _ef_virus,
+        "EF_8":  _ef_yellow_sand,
         "EF_10": _ef_go_to_festival,
         "EF_11": _ef_go_to_festival_tile,
         "EF_12": _ef_go_to_travel,
@@ -174,6 +174,7 @@ def _apply_instant(
         "EF_18": _ef_charity,
         "EF_21": _ef_go_to_god,
         "EF_26": _ef_go_to_tax,
+        "EF_30": _ef_go_to_water_slide,
     }
     handler = dispatch.get(effect_id)
     if handler:
@@ -291,18 +292,45 @@ def _ef_downgrade(card_id, player, board, players, event_bus):
 
 
 def _ef_virus(card_id, player, board, players, event_bus):
-    """EF_7/8: virus debuff — opponent.virus_turns = 3. IT_CA_8, IT_CA_9, IT_CA_10."""
+    """EF_7: toll = 0 trên CITY cùng cặp màu của opponent trong 5 lượt. IT_CA_8, IT_CA_10."""
+    return _apply_color_pair_debuff(card_id, player, board, players, event_bus, debuff_rate=0.0)
+
+
+def _ef_yellow_sand(card_id, player, board, players, event_bus):
+    """EF_8: toll giảm 50% trên CITY cùng cặp màu của opponent trong 5 lượt. IT_CA_9."""
+    return _apply_color_pair_debuff(card_id, player, board, players, event_bus, debuff_rate=0.5)
+
+
+def _apply_color_pair_debuff(card_id, player, board, players, event_bus, debuff_rate: float):
+    """Áp toll debuff lên tất cả CITY tiles (cặp màu) đang sở hữu bởi opponent."""
     events = []
     opponent = _richest_opponent(player, players)
     if not opponent:
         return events
     if _try_block_attack(opponent, card_id, event_bus):
         return events
-    opponent.virus_turns = 3
+
+    affected_tiles = [
+        board.get_tile(pos)
+        for pos in opponent.owned_properties
+        if board.get_tile(pos).space_id == SpaceId.CITY
+    ]
+    if not affected_tiles:
+        return events
+
+    for tile in affected_tiles:
+        tile.toll_debuff_turns = 5
+        tile.toll_debuff_rate = debuff_rate
+
     events.append(GameEvent(
         event_type=EventType.CARD_EFFECT_VIRUS,
         player_id=player.player_id,
-        data={"target_player": opponent.player_id, "duration": 3}
+        data={
+            "target_player": opponent.player_id,
+            "duration": 5,
+            "debuff_rate": debuff_rate,
+            "tiles": [t.position for t in affected_tiles],
+        }
     ))
     event_bus.publish(events[-1])
     return events
@@ -431,6 +459,22 @@ def _ef_go_to_tax(card_id, player, board, players, event_bus):
         event_type=EventType.CARD_EFFECT_GO_TO_TAX,
         player_id=player.player_id,
         data={"target_position": tax_pos}
+    ))
+    event_bus.publish(events[-1])
+    return events
+
+
+def _ef_go_to_water_slide(card_id, player, board, players, event_bus):
+    """EF_30: Teleport đến WATER_SLIDE tile gần nhất. IT_CA_30 (Map 3 only)."""
+    events = []
+    ws_pos = board.find_nearest_tile_by_space_id(player.position, SpaceId.WATER_SLIDE)
+    if ws_pos is None:
+        return events
+    player.move_to(ws_pos)
+    events.append(GameEvent(
+        event_type=EventType.CARD_EFFECT_GO_TO_WATER_SLIDE,
+        player_id=player.player_id,
+        data={"target_position": ws_pos}
     ))
     event_bus.publish(events[-1])
     return events

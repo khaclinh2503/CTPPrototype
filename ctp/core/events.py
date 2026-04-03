@@ -64,6 +64,7 @@ class EventType(Enum):
     CARD_EFFECT_HOST_FESTIVAL = auto()       # EF_15: set festival marker free
     CARD_EFFECT_DONATE_CITY = auto()         # EF_17: donate tile to another player
     CARD_EFFECT_CHARITY = auto()             # EF_18: charity — all pay poorest
+    CARD_EFFECT_GO_TO_WATER_SLIDE = auto()  # EF_30: teleport to nearest WATER_SLIDE tile
 
 
 @dataclass
