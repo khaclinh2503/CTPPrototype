@@ -125,6 +125,6 @@ Phases execute in numeric order: 1 → 2 → 2.1 → 2.5 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Headless Core | 3/3 | Complete   | 2026-04-02 |
 | 2. Player + Property Rules | 0/2 | Not started | - |
-| 2.1. Card Draw + Căn Lực | 0/3 | Not started | - |
+| 2.1. Card Draw + Căn Lực | 0/3 | Complete    | 2026-04-03 |
 | 3. AI Engine + History | 0/3 | Not started | - |
 | 4. Pygame Visualization | 0/3 | Not started | - |
