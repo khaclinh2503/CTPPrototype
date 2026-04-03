@@ -54,6 +54,18 @@ Plans:
 - [x] 02-01: Fix SpaceId enum, update TileStrategy registry, fix rent transfer (owner nhận tiền), fix TaxSpace (10% × tổng nhà), update starting_cash=1,000,000, BASE_UNIT=1,000
 - [x] 02-02: Acquisition flow (A mua đất B forced, toll trước → mua → upgrade stub), MiniGame 3-round đỏ đen, debt resolution (bán cả ô rẻ nhất trước), GodStrategy stub, WaterSlideStrategy stub
 
+### Phase 02.1: Card Draw and Đổ Chính Xác (INSERTED)
+
+**Goal:** FortuneStrategy đầy đủ 23 card effects hoạt động (weighted random, held/instant cards, toll modifiers) và cơ chế Đổ Chính Xác (căn lực) 15% base accuracy tích hợp vào FSM.
+**Requirements**: CARD-01, CARD-02, CARD-03, CARD-04, CARD-05
+**Depends on:** Phase 2
+**Plans:** 3 plans
+
+Plans:
+- [ ] 02.1-01-PLAN.md — Foundation: Player 4 new fields, 20 EventType constants, Board.map_id + find_nearest_tile_by_space_id()
+- [ ] 02.1-02-PLAN.md — Card Effects: FortuneStrategy full implementation (23 cards), toll modifiers in LandStrategy/ResortStrategy
+- [ ] 02.1-03-PLAN.md — Căn Lực + FSM Integration: _resolve_can_luc(), FSM ROLL/MOVE/END_TURN updates, dict key bug fix
+
 ### Phase 2.5: Skill / Pendant / Pet System
 **Goal**: Hệ thống passive buff hoạt động hoàn chỉnh — mỗi player có bộ skill/pendant/pet ngẫu nhiên, `effective_stat()` stack đúng tất cả buffs, game loop tích hợp buff vào mọi tính toán kinh tế.
 **Depends on**: Phase 2
@@ -107,11 +119,12 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4
+Phases execute in numeric order: 1 → 2 → 2.1 → 2.5 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Headless Core | 3/3 | Complete   | 2026-04-02 |
 | 2. Player + Property Rules | 0/2 | Not started | - |
+| 2.1. Card Draw + Căn Lực | 0/3 | Not started | - |
 | 3. AI Engine + History | 0/3 | Not started | - |
 | 4. Pygame Visualization | 0/3 | Not started | - |
