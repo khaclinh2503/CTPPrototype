@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: verifying
-stopped_at: Completed 02.1-03-PLAN.md
-last_updated: "2026-04-03T09:47:50.473Z"
+stopped_at: Completed 02.1-GAP-PLAN.md
+last_updated: "2026-04-03T16:21:20.291Z"
 last_activity: 2026-04-03
 progress:
   total_phases: 6
   completed_phases: 2
-  total_plans: 9
-  completed_plans: 8
+  total_plans: 10
+  completed_plans: 9
   percent: 0
 ---
 
@@ -55,6 +55,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02.1-card-draw-and-ch-nh-x-c P01 | 15 | 3 tasks | 6 files |
 | Phase 02.1-card-draw-and-ch-nh-x-c P02 | 45 | 2 tasks | 7 files |
 | Phase 02.1-card-draw-and-ch-nh-x-c P03 | 25 | 2 tasks | 6 files |
+| Phase 02.1-card-draw-and-ch-nh-x-c PGAP | 5 | 2 tasks | 0 files |
 
 ## Accumulated Context
 
@@ -87,6 +88,7 @@ Recent decisions affecting current work:
 - [Phase 02.1-card-draw-and-ch-nh-x-c]: _toll_modifiers.py shared helper: virus→double_toll→angel→discount thứ tự D-44
 - [Phase 02.1-card-draw-and-ch-nh-x-c]: double_toll_turns decrement TRƯỚC prison check trong ROLL phase (D-42 thứ tự)
 - [Phase 02.1-card-draw-and-ch-nh-x-c]: EF_22 bypass: clear board.elevated_tile=None và elevated_pos=None để skip elevated block trong MOVE
+- [Phase 02.1-card-draw-and-ch-nh-x-c]: virus_turns is player-level field (not tile-level): one field on Player covers all owned tiles per D-11/D-22/D-44
 
 ### Pending Todos
 
@@ -100,6 +102,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-03T09:26:44.021Z
-Stopped at: Completed 02.1-03-PLAN.md
+Last session: 2026-04-03T16:21:20.285Z
+Stopped at: Completed 02.1-GAP-PLAN.md
 Resume file: None
