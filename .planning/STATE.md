@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: verifying
-stopped_at: Completed 02-02-PLAN.md
-last_updated: "2026-04-02T05:12:37.935Z"
+stopped_at: Completed 02.1-03-PLAN.md
+last_updated: "2026-04-03T09:26:44.025Z"
 last_activity: 2026-04-02
 progress:
-  total_phases: 5
-  completed_phases: 2
-  total_plans: 5
-  completed_plans: 5
+  total_phases: 6
+  completed_phases: 1
+  total_plans: 9
+  completed_plans: 6
   percent: 0
 ---
 
@@ -52,6 +52,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01-headless-core P03 | 5 | 3 tasks | 18 files |
 | Phase 02-player-property-rules P01 | 832 | 2 tasks | 17 files |
 | Phase 02-player-property-rules P02 | 30 | 2 tasks | 9 files |
+| Phase 02.1-card-draw-and-ch-nh-x-c P03 | 25 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -79,6 +80,8 @@ Recent decisions affecting current work:
 - [Phase 02]: Acquisition price formula: build_level1 * BASE_UNIT * acquireRate (per D-16)
 - [Phase 02]: FSM 7 phases: ROLL->MOVE->RESOLVE_TILE->ACQUIRE->UPGRADE->CHECK_BANKRUPTCY->END_TURN
 - [Phase 02]: MiniGame stub AI: chon min bet, dung sau round 1, full 3-round deferred to later phase
+- [Phase 02.1-card-draw-and-ch-nh-x-c]: double_toll_turns decrement TRƯỚC prison check trong ROLL phase (D-42 thứ tự)
+- [Phase 02.1-card-draw-and-ch-nh-x-c]: EF_22 bypass: clear board.elevated_tile=None và elevated_pos=None để skip elevated block trong MOVE
 
 ### Pending Todos
 
@@ -92,6 +95,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-02T04:56:50.027Z
-Stopped at: Completed 02-02-PLAN.md
+Last session: 2026-04-03T09:26:44.021Z
+Stopped at: Completed 02.1-03-PLAN.md
 Resume file: None

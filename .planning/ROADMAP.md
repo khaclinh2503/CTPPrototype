@@ -59,12 +59,12 @@ Plans:
 **Goal:** FortuneStrategy đầy đủ 23 card effects hoạt động (weighted random, held/instant cards, toll modifiers) và cơ chế Đổ Chính Xác (căn lực) 15% base accuracy tích hợp vào FSM.
 **Requirements**: CARD-01, CARD-02, CARD-03, CARD-04, CARD-05
 **Depends on:** Phase 2
-**Plans:** 3 plans
+**Plans:** 1/3 plans executed
 
 Plans:
 - [ ] 02.1-01-PLAN.md — Foundation: Player 4 new fields, 20 EventType constants, Board.map_id + find_nearest_tile_by_space_id()
 - [ ] 02.1-02-PLAN.md — Card Effects: FortuneStrategy full implementation (23 cards), toll modifiers in LandStrategy/ResortStrategy
-- [ ] 02.1-03-PLAN.md — Căn Lực + FSM Integration: _resolve_can_luc(), FSM ROLL/MOVE/END_TURN updates, dict key bug fix
+- [x] 02.1-03-PLAN.md — Căn Lực + FSM Integration: _resolve_can_luc(), FSM ROLL/MOVE/END_TURN updates, dict key bug fix
 
 ### Phase 2.5: Skill / Pendant / Pet System
 **Goal**: Hệ thống passive buff hoạt động hoàn chỉnh — mỗi player có bộ skill/pendant/pet ngẫu nhiên, `effective_stat()` stack đúng tất cả buffs, game loop tích hợp buff vào mọi tính toán kinh tế.
