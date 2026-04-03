@@ -386,6 +386,101 @@ class TestCanLuc:
         assert 0 <= result <= 3
 
 
+class TestFSMIntegration:
+    """Tests cho FSM integration — _do_roll, _do_move, _do_end_turn với card effects."""
+
+    def test_ef19_escape_card_auto_use_in_prison(self, controller, event_bus):
+        """Player có prison_turns_remaining=2 và held_card EF_19 → thoát tù khi roll."""
+        player = controller.current_player
+        player.prison_turns_remaining = 2
+        player.held_card = "IT_CA_21"  # EF_19
+        player.cash = 0  # đảm bảo không thể trả phí tù
+
+        controller.step()  # _do_roll
+
+        assert player.prison_turns_remaining == 0  # đã thoát tù
+        assert player.held_card is None  # card đã consumed
+
+    def test_double_toll_turns_decrements_in_roll(self, controller):
+        """player.double_toll_turns=1 → sau _do_roll(), giảm xuống 0."""
+        player = controller.current_player
+        player.double_toll_turns = 1
+        player.prison_turns_remaining = 0
+
+        controller.step()  # _do_roll
+
+        assert player.double_toll_turns == 0
+
+    def test_dice_roll_event_has_chosen_range_and_precision_hit(self, controller, event_bus):
+        """DICE_ROLL event data phải có 'chosen_range' và 'precision_hit' keys."""
+        controller.step()  # _do_roll
+
+        dice_events = event_bus.get_events(EventType.DICE_ROLL)
+        assert len(dice_events) > 0
+        event_data = dice_events[0].data
+        assert "chosen_range" in event_data
+        assert "precision_hit" in event_data
+
+    def test_ef22_pinwheel_bypass_elevated_tile(self, board, players, event_bus):
+        """Player có held_card EF_22 và có elevated tile trong path → bypass."""
+        ctrl = GameController(board=board, players=players, max_turns=25, event_bus=event_bus)
+        player = ctrl.current_player
+        player.held_card = "IT_CA_23"  # EF_22
+
+        # Đặt elevated tile tại position 3 (2 bước từ start)
+        board.elevate_tile(3)
+        ctrl._current_dice = (1, 1)  # tổng 2 → sẽ gặp ô 3
+        ctrl.phase = TurnPhase.MOVE
+
+        ctrl.step()  # _do_move
+
+        assert player.held_card is None       # card consumed
+        assert board.elevated_tile is None    # elevated cleared
+
+    def test_dict_key_bug_tile_lowered_event_has_string_keys(self, board, players, event_bus):
+        """TILE_LOWERED event data['position'] là integer, không phải variable reference."""
+        ctrl = GameController(board=board, players=players, max_turns=25, event_bus=event_bus)
+        # Đặt elevated tile và di chuyển qua nó
+        board.elevate_tile(3)
+        ctrl._current_dice = (1, 1)  # đi 2 bước, ô 3 elevated
+        ctrl.phase = TurnPhase.MOVE
+
+        ctrl.step()  # _do_move
+
+        lowered_events = event_bus.get_events(EventType.TILE_LOWERED)
+        assert len(lowered_events) > 0
+        assert "position" in lowered_events[0].data
+        assert isinstance(lowered_events[0].data["position"], int)
+
+    def test_virus_turns_decrements_in_end_turn(self, controller):
+        """player.virus_turns=2 → sau _do_end_turn(), virus_turns == 1."""
+        player = controller.current_player
+        player.virus_turns = 2
+
+        # Set phase to END_TURN directly
+        controller.phase = TurnPhase.END_TURN
+        controller.step()  # _do_end_turn
+
+        assert player.virus_turns == 1
+
+    def test_player_move_event_has_string_keys(self, board, players, event_bus):
+        """PLAYER_MOVE event data có 'old_pos' và 'new_pos' là string keys."""
+        ctrl = GameController(board=board, players=players, max_turns=25, event_bus=event_bus)
+        board.elevate_tile(3)
+        ctrl._current_dice = (1, 1)
+        ctrl.phase = TurnPhase.MOVE
+
+        ctrl.step()  # _do_move
+
+        move_events = event_bus.get_events(EventType.PLAYER_MOVE)
+        assert len(move_events) > 0
+        data = move_events[0].data
+        assert "old_pos" in data
+        assert "new_pos" in data
+        assert isinstance(data["old_pos"], int)
+        assert isinstance(data["new_pos"], int)
+
+
 class TestBankruptcyResolution:
     """Test bankruptcy resolution."""
 

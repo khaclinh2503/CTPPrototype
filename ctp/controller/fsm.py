@@ -214,6 +214,26 @@ class GameController:
             self.phase = TurnPhase.END_TURN
             return []
 
+        # [NEW D-42 Step A] EF_19 Escape card — auto-use khi ở tù (D-16)
+        if (self.current_player.prison_turns_remaining > 0
+                and self.current_player.held_card is not None):
+            from ctp.tiles.fortune import _load_raw_card_data
+            raw = _load_raw_card_data()
+            held_effect = raw.get(self.current_player.held_card, {}).get("effect", "")
+            if held_effect == "EF_19":
+                self.current_player.held_card = None  # consume (D-08)
+                self.current_player.exit_prison()     # prison_turns = 0
+                self.event_bus.publish(GameEvent(
+                    event_type=EventType.CARD_EFFECT_ESCAPE_USED,
+                    player_id=self.current_player.player_id,
+                    data={}
+                ))
+                # Tiếp tục roll bình thường (không return, fall through)
+
+        # [NEW D-42 Step B] Decrement double_toll_turns ở đầu ROLL phase
+        if self.current_player.double_toll_turns > 0:
+            self.current_player.double_toll_turns -= 1
+
         if self.current_player.prison_turns_remaining > 0:
             result = self._resolve_prison_attempt()
             if result == 'skip':
@@ -239,7 +259,19 @@ class GameController:
             self.phase = TurnPhase.MOVE
             return []
 
-        dice = self.roll_dice()
+        # [NEW D-42 Step C] AI chọn khoảng lực
+        chosen_range = self._choose_range_ai()
+        # [NEW D-42 Step D] Precision roll
+        precision_dice = self._resolve_can_luc(chosen_range)
+        precision_hit = False
+        # Xác định hit: sum trong khoảng đã chọn
+        lo, hi = _CAN_LUC_RANGES[chosen_range]
+        if lo <= sum(precision_dice) <= hi:
+            precision_hit = True
+
+        # Set dice result
+        self._current_dice = precision_dice
+        dice = precision_dice
         self._rolled_doubles = (dice[0] == dice[1])
 
         if self._rolled_doubles:
@@ -250,8 +282,14 @@ class GameController:
         self.event_bus.publish(GameEvent(
             event_type=EventType.DICE_ROLL,
             player_id=self.current_player.player_id,
-            data={"dice": dice, "total": sum(dice), "doubles": self._rolled_doubles,
-                  "doubles_streak": self._doubles_streak}
+            data={
+                "dice": dice,
+                "total": sum(dice),
+                "doubles": self._rolled_doubles,
+                "doubles_streak": self._doubles_streak,
+                "chosen_range": chosen_range,     # [NEW]
+                "precision_hit": precision_hit,   # [NEW]
+            }
         ))
 
         # Đổ đôi 3 lần liên tiếp → vào tù ngay, bỏ lượt
@@ -472,6 +510,22 @@ class GameController:
 
         # Check for elevated tile in path
         elevated_pos = self.board.find_elevated_in_path(old_pos, dice_total)
+
+        # [NEW D-43] EF_22 Pinwheel bypass — bỏ qua elevated tile nếu player giữ Pinwheel card
+        if elevated_pos is not None and self.current_player.held_card is not None:
+            from ctp.tiles.fortune import _load_raw_card_data
+            raw = _load_raw_card_data()
+            held_effect = raw.get(self.current_player.held_card, {}).get("effect", "")
+            if held_effect == "EF_22":
+                self.current_player.held_card = None   # consume (D-08)
+                self.board.elevated_tile = None         # clear elevated state
+                elevated_pos = None                     # skip elevated block
+                self.event_bus.publish(GameEvent(
+                    event_type=EventType.CARD_EFFECT_PINWHEEL_BYPASS,
+                    player_id=self.current_player.player_id,
+                    data={}
+                ))
+
         if elevated_pos is not None:
             # Tính xem có qua Start không (so với ô nâng, không phải đích ban đầu)
             steps_to_elevated = 0
@@ -499,16 +553,16 @@ class GameController:
             self.event_bus.publish(GameEvent(
                 event_type=EventType.TILE_LOWERED,
                 player_id=self.current_player.player_id,
-                data={position: elevated_pos}
+                data={"position": elevated_pos}
             ))
             self.event_bus.publish(GameEvent(
                 event_type=EventType.PLAYER_MOVE,
                 player_id=self.current_player.player_id,
                 data={
-                    old_pos: old_pos,
-                    new_pos: elevated_pos,
-                    passed_start: self._passed_start,
-                    blocked_by_elevated: True,
+                    "old_pos": old_pos,
+                    "new_pos": elevated_pos,
+                    "passed_start": self._passed_start,
+                    "blocked_by_elevated": True,
                 }
             ))
             self.phase = TurnPhase.RESOLVE_TILE
@@ -777,6 +831,11 @@ class GameController:
                 }
             ))
             return []
+
+        # [NEW D-46] Decrement virus_turns cho tất cả players sau mỗi END_TURN
+        for p in self.players:
+            if p.virus_turns > 0:
+                p.virus_turns -= 1
 
         # Advance turn counter
         self._advance_to_next_player()
