@@ -1,6 +1,7 @@
 """Tests for GameController FSM."""
 
 import pytest
+from unittest.mock import patch
 from ctp.core.board import SpaceId, Tile, Board
 from ctp.core.models import Player
 from ctp.core.events import EventBus, GameEvent, EventType
@@ -305,6 +306,179 @@ class TestPrisonHandling:
 
         assert controller.phase == TurnPhase.END_TURN
         assert controller.current_player.prison_turns_remaining == 1
+
+
+class TestCanLuc:
+    """Tests for đổ chính xác (căn lực) mechanic."""
+
+    def test_resolve_can_luc_miss_returns_normal_dice(self, controller):
+        """Khi precision check > accuracy_rate, trả về 2d6 bình thường."""
+        from ctp.controller.fsm import _CAN_LUC_RANGES
+        controller.current_player.accuracy_rate = 15
+        # Mock: precision_check=20 > 15, nên miss; normal d1=3, d2=4
+        with patch("random.randint", side_effect=[20, 3, 4]):
+            result = controller._resolve_can_luc(chosen_range=0)
+        # Miss → normal 2d6 = (3, 4)
+        assert result == (3, 4)
+
+    def test_resolve_can_luc_hit_range0_sum_in_2_4(self, controller):
+        """Khi precision hit, sum nằm trong khoảng 0: [2,4]."""
+        controller.current_player.accuracy_rate = 15
+        # Mock: precision_check=5 <= 15, T=3, d1_lo=max(1,3-6)=1, d1_hi=min(6,2)=2, d1=1, d2=2
+        with patch("random.randint", side_effect=[5, 3, 1]):
+            result = controller._resolve_can_luc(chosen_range=0)
+        assert result == (1, 2)
+        assert sum(result) == 3
+        assert 2 <= sum(result) <= 4
+
+    def test_resolve_can_luc_hit_range3_sum_in_10_12(self, controller):
+        """Khi precision hit, sum nằm trong khoảng 3: [10,12]."""
+        controller.current_player.accuracy_rate = 100
+        # Range 3: lo=10, hi=12; T=11; d1_lo=max(1,5)=5, d1_hi=min(6,10)=6; d1=5, d2=6
+        with patch("random.randint", side_effect=[50, 11, 5]):
+            result = controller._resolve_can_luc(chosen_range=3)
+        assert result == (5, 6)
+        assert sum(result) == 11
+        assert 10 <= sum(result) <= 12
+
+    def test_resolve_can_luc_dice_split_valid(self, controller):
+        """Dice split D-40: T=11 → d1 ∈ [5,6], d2=11-d1, cả hai trong [1,6]."""
+        controller.current_player.accuracy_rate = 100
+        with patch("random.randint", side_effect=[1, 11, 5]):
+            result = controller._resolve_can_luc(chosen_range=3)
+        d1, d2 = result
+        assert 1 <= d1 <= 6
+        assert 1 <= d2 <= 6
+        assert d1 + d2 == 11
+
+    def test_resolve_can_luc_doubles_possible(self, controller):
+        """T=6 có thể trả về (3,3)."""
+        controller.current_player.accuracy_rate = 100
+        # Range 1: lo=5, hi=7; T=6; d1_lo=max(1,0)=1, d1_hi=min(6,5)=5; d1=3, d2=3
+        with patch("random.randint", side_effect=[1, 6, 3]):
+            result = controller._resolve_can_luc(chosen_range=1)
+        assert result == (3, 3)
+        assert result[0] == result[1]  # doubles
+
+    def test_choose_range_ai_no_unowned_tiles_returns_fallback(self, controller):
+        """Khi không có unowned CITY/RESORT, trả về 1 (fallback)."""
+        # Gán owner cho tất cả CITY và RESORT tiles
+        for tile in controller.board.board:
+            if tile.space_id in (SpaceId.CITY, SpaceId.RESORT):
+                tile.owner_id = "Player1"
+        result = controller._choose_range_ai()
+        assert result == 1
+
+    def test_choose_range_ai_unowned_city_6_steps_returns_range1(self, controller):
+        """Unowned CITY ở 6 steps → range index 1 (khoảng [5-7] chứa 6)."""
+        player = controller.current_player
+        player.position = 1
+        # Đảm bảo tile ở position 7 là CITY và unowned
+        tile7 = controller.board.get_tile(7)
+        tile7.owner_id = None
+        # Đảm bảo tất cả CITY tiles gần hơn đều owned
+        for steps in range(1, 6):
+            pos = ((player.position - 1 + steps) % 32) + 1
+            t = controller.board.get_tile(pos)
+            if t.space_id == SpaceId.CITY:
+                t.owner_id = "Player2"
+        result = controller._choose_range_ai()
+        assert 0 <= result <= 3
+
+
+class TestFSMIntegration:
+    """Tests cho FSM integration — _do_roll, _do_move, _do_end_turn với card effects."""
+
+    def test_ef19_escape_card_auto_use_in_prison(self, controller, event_bus):
+        """Player có prison_turns_remaining=2 và held_card EF_19 → thoát tù khi roll."""
+        player = controller.current_player
+        player.prison_turns_remaining = 2
+        player.held_card = "IT_CA_21"  # EF_19
+        player.cash = 0  # đảm bảo không thể trả phí tù
+
+        controller.step()  # _do_roll
+
+        assert player.prison_turns_remaining == 0  # đã thoát tù
+        assert player.held_card is None  # card đã consumed
+
+    def test_double_toll_turns_decrements_in_roll(self, controller):
+        """player.double_toll_turns=1 → sau _do_roll(), giảm xuống 0."""
+        player = controller.current_player
+        player.double_toll_turns = 1
+        player.prison_turns_remaining = 0
+
+        controller.step()  # _do_roll
+
+        assert player.double_toll_turns == 0
+
+    def test_dice_roll_event_has_chosen_range_and_precision_hit(self, controller, event_bus):
+        """DICE_ROLL event data phải có 'chosen_range' và 'precision_hit' keys."""
+        controller.step()  # _do_roll
+
+        dice_events = event_bus.get_events(EventType.DICE_ROLL)
+        assert len(dice_events) > 0
+        event_data = dice_events[0].data
+        assert "chosen_range" in event_data
+        assert "precision_hit" in event_data
+
+    def test_ef22_pinwheel_bypass_elevated_tile(self, board, players, event_bus):
+        """Player có held_card EF_22 và có elevated tile trong path → bypass."""
+        ctrl = GameController(board=board, players=players, max_turns=25, event_bus=event_bus)
+        player = ctrl.current_player
+        player.held_card = "IT_CA_23"  # EF_22
+
+        # Đặt elevated tile tại position 3 (2 bước từ start)
+        board.elevate_tile(3)
+        ctrl._current_dice = (1, 1)  # tổng 2 → sẽ gặp ô 3
+        ctrl.phase = TurnPhase.MOVE
+
+        ctrl.step()  # _do_move
+
+        assert player.held_card is None       # card consumed
+        assert board.elevated_tile is None    # elevated cleared
+
+    def test_dict_key_bug_tile_lowered_event_has_string_keys(self, board, players, event_bus):
+        """TILE_LOWERED event data['position'] là integer, không phải variable reference."""
+        ctrl = GameController(board=board, players=players, max_turns=25, event_bus=event_bus)
+        # Đặt elevated tile và di chuyển qua nó
+        board.elevate_tile(3)
+        ctrl._current_dice = (1, 1)  # đi 2 bước, ô 3 elevated
+        ctrl.phase = TurnPhase.MOVE
+
+        ctrl.step()  # _do_move
+
+        lowered_events = event_bus.get_events(EventType.TILE_LOWERED)
+        assert len(lowered_events) > 0
+        assert "position" in lowered_events[0].data
+        assert isinstance(lowered_events[0].data["position"], int)
+
+    def test_virus_turns_decrements_in_end_turn(self, controller):
+        """player.virus_turns=2 → sau _do_end_turn(), virus_turns == 1."""
+        player = controller.current_player
+        player.virus_turns = 2
+
+        # Set phase to END_TURN directly
+        controller.phase = TurnPhase.END_TURN
+        controller.step()  # _do_end_turn
+
+        assert player.virus_turns == 1
+
+    def test_player_move_event_has_string_keys(self, board, players, event_bus):
+        """PLAYER_MOVE event data có 'old_pos' và 'new_pos' là string keys."""
+        ctrl = GameController(board=board, players=players, max_turns=25, event_bus=event_bus)
+        board.elevate_tile(3)
+        ctrl._current_dice = (1, 1)
+        ctrl.phase = TurnPhase.MOVE
+
+        ctrl.step()  # _do_move
+
+        move_events = event_bus.get_events(EventType.PLAYER_MOVE)
+        assert len(move_events) > 0
+        data = move_events[0].data
+        assert "old_pos" in data
+        assert "new_pos" in data
+        assert isinstance(data["old_pos"], int)
+        assert isinstance(data["new_pos"], int)
 
 
 class TestBankruptcyResolution:

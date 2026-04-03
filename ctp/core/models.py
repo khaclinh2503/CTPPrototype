@@ -28,6 +28,10 @@ class Player:
     prison_turns_remaining: int = 0  # 0 = not in prison
     pending_travel: bool = False     # True = đầu lượt sau phải xử lý travel
     turns_taken: int = 0              # Số lượt đã hoàn thành (dùng cho God tile)
+    held_card: str | None = None      # Card ID đang giữ (vd "IT_CA_21") hoặc None
+    accuracy_rate: int = 15           # % cơ hội đổ chính xác (căn lực), default 15%
+    virus_turns: int = 0              # Số lượt còn bị virus (EF_7)
+    double_toll_turns: int = 0        # Số lượt còn bị tăng gấp đôi thuê (EF_8)
 
     # Phase 02.1: Card draw + Căn lực fields
     held_card: str | None = None          # card_id đang giữ (ví dụ "IT_CA_3"), per D-09

@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: verifying
-stopped_at: Completed 02.1-02-PLAN.md
-last_updated: "2026-04-03T09:14:12.609Z"
+stopped_at: Completed 02.1-03-PLAN.md
+last_updated: "2026-04-03T09:26:44.025Z"
 last_activity: 2026-04-02
 progress:
   total_phases: 6
@@ -54,6 +54,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02-player-property-rules P02 | 30 | 2 tasks | 9 files |
 | Phase 02.1-card-draw-and-ch-nh-x-c P01 | 15 | 3 tasks | 6 files |
 | Phase 02.1-card-draw-and-ch-nh-x-c P02 | 45 | 2 tasks | 7 files |
+| Phase 02.1-card-draw-and-ch-nh-x-c P03 | 25 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -84,6 +85,8 @@ Recent decisions affecting current work:
 - [Phase 02.1-card-draw-and-ch-nh-x-c]: Board nhận thêm travel_config=None param cùng lúc với map_id=1 để sẵn sàng cho Plan 02 và 03
 - [Phase 02.1-card-draw-and-ch-nh-x-c]: FortuneStrategy dùng dispatch dict pattern cho 16 instant effects, held effects check trước khi dispatch
 - [Phase 02.1-card-draw-and-ch-nh-x-c]: _toll_modifiers.py shared helper: virus→double_toll→angel→discount thứ tự D-44
+- [Phase 02.1-card-draw-and-ch-nh-x-c]: double_toll_turns decrement TRƯỚC prison check trong ROLL phase (D-42 thứ tự)
+- [Phase 02.1-card-draw-and-ch-nh-x-c]: EF_22 bypass: clear board.elevated_tile=None và elevated_pos=None để skip elevated block trong MOVE
 
 ### Pending Todos
 
@@ -97,6 +100,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-03T09:14:12.604Z
-Stopped at: Completed 02.1-02-PLAN.md
+Last session: 2026-04-03T09:26:44.021Z
+Stopped at: Completed 02.1-03-PLAN.md
 Resume file: None
