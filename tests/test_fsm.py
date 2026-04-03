@@ -1,6 +1,7 @@
 """Tests for GameController FSM."""
 
 import pytest
+from unittest.mock import patch
 from ctp.core.board import SpaceId, Tile, Board
 from ctp.core.models import Player
 from ctp.core.events import EventBus, GameEvent, EventType
@@ -305,6 +306,84 @@ class TestPrisonHandling:
 
         assert controller.phase == TurnPhase.END_TURN
         assert controller.current_player.prison_turns_remaining == 1
+
+
+class TestCanLuc:
+    """Tests for đổ chính xác (căn lực) mechanic."""
+
+    def test_resolve_can_luc_miss_returns_normal_dice(self, controller):
+        """Khi precision check > accuracy_rate, trả về 2d6 bình thường."""
+        from ctp.controller.fsm import _CAN_LUC_RANGES
+        controller.current_player.accuracy_rate = 15
+        # Mock: precision_check=20 > 15, nên miss; normal d1=3, d2=4
+        with patch("random.randint", side_effect=[20, 3, 4]):
+            result = controller._resolve_can_luc(chosen_range=0)
+        # Miss → normal 2d6 = (3, 4)
+        assert result == (3, 4)
+
+    def test_resolve_can_luc_hit_range0_sum_in_2_4(self, controller):
+        """Khi precision hit, sum nằm trong khoảng 0: [2,4]."""
+        controller.current_player.accuracy_rate = 15
+        # Mock: precision_check=5 <= 15, T=3, d1_lo=max(1,3-6)=1, d1_hi=min(6,2)=2, d1=1, d2=2
+        with patch("random.randint", side_effect=[5, 3, 1]):
+            result = controller._resolve_can_luc(chosen_range=0)
+        assert result == (1, 2)
+        assert sum(result) == 3
+        assert 2 <= sum(result) <= 4
+
+    def test_resolve_can_luc_hit_range3_sum_in_10_12(self, controller):
+        """Khi precision hit, sum nằm trong khoảng 3: [10,12]."""
+        controller.current_player.accuracy_rate = 100
+        # Range 3: lo=10, hi=12; T=11; d1_lo=max(1,5)=5, d1_hi=min(6,10)=6; d1=5, d2=6
+        with patch("random.randint", side_effect=[50, 11, 5]):
+            result = controller._resolve_can_luc(chosen_range=3)
+        assert result == (5, 6)
+        assert sum(result) == 11
+        assert 10 <= sum(result) <= 12
+
+    def test_resolve_can_luc_dice_split_valid(self, controller):
+        """Dice split D-40: T=11 → d1 ∈ [5,6], d2=11-d1, cả hai trong [1,6]."""
+        controller.current_player.accuracy_rate = 100
+        with patch("random.randint", side_effect=[1, 11, 5]):
+            result = controller._resolve_can_luc(chosen_range=3)
+        d1, d2 = result
+        assert 1 <= d1 <= 6
+        assert 1 <= d2 <= 6
+        assert d1 + d2 == 11
+
+    def test_resolve_can_luc_doubles_possible(self, controller):
+        """T=6 có thể trả về (3,3)."""
+        controller.current_player.accuracy_rate = 100
+        # Range 1: lo=5, hi=7; T=6; d1_lo=max(1,0)=1, d1_hi=min(6,5)=5; d1=3, d2=3
+        with patch("random.randint", side_effect=[1, 6, 3]):
+            result = controller._resolve_can_luc(chosen_range=1)
+        assert result == (3, 3)
+        assert result[0] == result[1]  # doubles
+
+    def test_choose_range_ai_no_unowned_tiles_returns_fallback(self, controller):
+        """Khi không có unowned CITY/RESORT, trả về 1 (fallback)."""
+        # Gán owner cho tất cả CITY và RESORT tiles
+        for tile in controller.board.board:
+            if tile.space_id in (SpaceId.CITY, SpaceId.RESORT):
+                tile.owner_id = "Player1"
+        result = controller._choose_range_ai()
+        assert result == 1
+
+    def test_choose_range_ai_unowned_city_6_steps_returns_range1(self, controller):
+        """Unowned CITY ở 6 steps → range index 1 (khoảng [5-7] chứa 6)."""
+        player = controller.current_player
+        player.position = 1
+        # Đảm bảo tile ở position 7 là CITY và unowned
+        tile7 = controller.board.get_tile(7)
+        tile7.owner_id = None
+        # Đảm bảo tất cả CITY tiles gần hơn đều owned
+        for steps in range(1, 6):
+            pos = ((player.position - 1 + steps) % 32) + 1
+            t = controller.board.get_tile(pos)
+            if t.space_id == SpaceId.CITY:
+                t.owner_id = "Player2"
+        result = controller._choose_range_ai()
+        assert 0 <= result <= 3
 
 
 class TestBankruptcyResolution:

@@ -81,6 +81,7 @@ class Board:
         self.festival_level: int = 0
         self.festival_tile_position: int | None = None  # Ô đang tổ chức lễ hội
         self.elevated_tile: int | None = None  # chỉ 1 ô được nâng trên toàn map
+        self.water_wave: tuple[int, int] | None = None  # (source_pos, dest_pos) hoặc None
 
         # Build 32 tiles from SpacePosition0
         self.board: list[Tile] = []
@@ -198,3 +199,55 @@ class Board:
             if self.is_elevated(pos):
                 return pos
         return None
+
+    def get_wave_zone(self) -> list[int]:
+        """Trả về danh sách vị trí nằm trong vùng sóng water_wave.
+
+        Vùng sóng gồm các ô từ source đến dest (theo chiều board).
+        Nếu không có sóng, trả về list rỗng.
+
+        Returns:
+            List of tile positions in the wave zone.
+        """
+        if self.water_wave is None:
+            return []
+        source, dest = self.water_wave
+        zone = []
+        pos = source
+        while pos != dest:
+            zone.append(pos)
+            pos = (pos % 32) + 1
+        zone.append(dest)
+        return zone
+
+    def get_row_non_corner_positions(self, water_tile_pos: int) -> list[int]:
+        """Lấy các ô không phải góc trong cùng hàng với water_tile_pos.
+
+        Bàn cờ 32 ô chia 4 hàng: [1-9], [9-17], [17-25], [25-1] (9 là góc).
+        Góc: 1, 9, 17, 25. Không phải ô WaterSlide.
+
+        Args:
+            water_tile_pos: Vị trí ô Water Slide.
+
+        Returns:
+            List of valid tile positions in the same row.
+        """
+        corners = {1, 9, 17, 25}
+        # Xác định hàng chứa water_tile_pos
+        rows = [
+            list(range(1, 10)),   # hàng 0: 1-9
+            list(range(9, 18)),   # hàng 1: 9-17
+            list(range(17, 26)),  # hàng 2: 17-25
+            list(range(25, 33)) + [1],  # hàng 3: 25-32, 1
+        ]
+        my_row = None
+        for row in rows:
+            if water_tile_pos in row:
+                my_row = row
+                break
+        if my_row is None:
+            return []
+        return [
+            p for p in my_row
+            if p not in corners and p != water_tile_pos
+        ]

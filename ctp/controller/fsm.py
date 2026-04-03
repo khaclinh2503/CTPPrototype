@@ -10,6 +10,15 @@ from ctp.core.constants import BASE_UNIT
 from ctp.tiles.registry import TileRegistry
 
 
+# Căn lực: 4 khoảng xúc xắc (D-37)
+_CAN_LUC_RANGES = [
+    (2, 4),    # Khoảng 0: low
+    (5, 7),    # Khoảng 1: mid-low (default fallback)
+    (7, 9),    # Khoảng 2: mid-high (7 overlap với khoảng 1 — by design)
+    (10, 12),  # Khoảng 3: high
+]
+
+
 class TurnPhase(Enum):
     """FSM states for each turn.
 
@@ -122,6 +131,77 @@ class GameController:
                 return self._do_check_bankruptcy()
             case TurnPhase.END_TURN:
                 return self._do_end_turn()
+
+    def _choose_range_ai(self) -> int:
+        """Chọn khoảng lực tối ưu dựa trên vị trí đích (stub AI per D-39).
+
+        Strategy:
+        1. Tìm unowned CITY/RESORT gần nhất (ưu tiên opt cao hơn).
+        2. Nếu steps nằm trong khoảng nào đó → ưu tiên khoảng đó.
+        3. Nếu khoảng ưu tiên trùng với đất đối thủ → giảm ưu tiên.
+        4. Trong các khoảng còn lại → ưu tiên khoảng chứa doubles values.
+        5. Fallback: khoảng 1 [5-7].
+
+        Returns:
+            Index của khoảng (0-3).
+        """
+        player = self.current_player
+        board = self.board
+        # Tìm unowned CITY/RESORT gần nhất (trong 12 bước)
+        best_step = None
+        for steps in range(1, 13):
+            target_pos = ((player.position - 1 + steps) % 32) + 1
+            tile = board.get_tile(target_pos)
+            if tile.space_id in (SpaceId.CITY, SpaceId.RESORT) and tile.owner_id is None:
+                best_step = steps
+                break  # first unowned, stop
+
+        if best_step is None:
+            return 1  # Fallback
+
+        # Tìm khoảng khớp
+        for i, (lo, hi) in enumerate(_CAN_LUC_RANGES):
+            if lo <= best_step <= hi:
+                # Kiểm tra target có phải đất đối thủ không
+                target_pos = ((player.position - 1 + best_step) % 32) + 1
+                tile = board.get_tile(target_pos)
+                if tile.owner_id and tile.owner_id != player.player_id:
+                    continue  # bỏ qua khoảng này
+                return i
+
+        # Fallback: khoảng có doubles (6 và 8 là doubles values trong các khoảng)
+        for i, (lo, hi) in enumerate(_CAN_LUC_RANGES):
+            doubles_in_range = [v for v in range(lo, hi + 1) if v % 2 == 0 and 2 <= v <= 12]
+            if doubles_in_range:
+                return i
+        return 1
+
+    def _resolve_can_luc(self, chosen_range: int) -> tuple[int, int]:
+        """Precision dice roll cho căn lực (D-38).
+
+        15% cơ hội hit khoảng đã chọn (player.accuracy_rate).
+        Nếu hit: random T trong [lo, hi], split theo D-40.
+        Nếu miss: normal 2d6.
+
+        Args:
+            chosen_range: Index khoảng lực (0-3).
+
+        Returns:
+            (d1, d2) dice pair.
+        """
+        lo, hi = _CAN_LUC_RANGES[chosen_range]
+        precision_check = random.randint(1, 100)
+        if precision_check <= self.current_player.accuracy_rate:
+            # Hit: random T trong khoảng, split thành (d1, d2) per D-40
+            T = random.randint(lo, hi)
+            d1_lo = max(1, T - 6)
+            d1_hi = min(6, T - 1)
+            d1 = random.randint(d1_lo, d1_hi)
+            d2 = T - d1
+            return (d1, d2)
+        else:
+            # Miss: normal 2d6
+            return (random.randint(1, 6), random.randint(1, 6))
 
     def _do_roll(self) -> list[GameEvent]:
         """Roll dice and transition to MOVE.
