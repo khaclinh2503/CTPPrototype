@@ -63,6 +63,8 @@ class Board:
         resort_config: Optional[dict] = None,
         festival_config: Optional[dict] = None,
         prison_config: Optional[dict] = None,
+        travel_config: Optional[dict] = None,
+        map_id: int = 1,          # [NEW per D-02] 1=Map1, 2=Map2, 3=Map3
     ):
         """Initialize board from config data.
 
@@ -78,6 +80,8 @@ class Board:
         self.resort_config = resort_config
         self.festival_config = festival_config
         self.prison_config = prison_config
+        self.travel_config = travel_config
+        self.map_id: int = map_id  # map_id để filter card mapNotAvail
         self.festival_level: int = 0
         self.festival_tile_position: int | None = None  # Ô đang tổ chức lễ hội
         self.elevated_tile: int | None = None  # chỉ 1 ô được nâng trên toàn map
@@ -141,6 +145,28 @@ class Board:
             Festival config dict or None if not configured.
         """
         return self.festival_config
+
+    def find_nearest_tile_by_space_id(
+        self, from_pos: int, space_id: SpaceId
+    ) -> int | None:
+        """Tìm tile gần nhất theo chiều tiến từ from_pos có space_id khớp.
+
+        Tìm kiếm theo hướng tiến (forward), wrap-around, tìm trong tối đa 32 bước.
+        Không tính ô from_pos chính nó.
+
+        Args:
+            from_pos: Vị trí xuất phát (1-32).
+            space_id: Loại tile cần tìm (SpaceId enum).
+
+        Returns:
+            Position (1-32) của tile gần nhất, hoặc None nếu không có.
+        """
+        for steps in range(1, 33):
+            candidate = ((from_pos - 1 + steps) % 32) + 1
+            tile = self.get_tile(candidate)
+            if tile.space_id == space_id:
+                return candidate
+        return None
 
     def get_color_group_positions(self, opt: int) -> list[int]:
         """Get all board positions of CITY tiles that share the same color as opt.
