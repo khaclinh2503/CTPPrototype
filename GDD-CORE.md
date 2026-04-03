@@ -1,5 +1,5 @@
 # Game Design Document — CTPPrototype Core Game
-> Trạng thái: **Phase 1 + Phase 2 đã implement** (Phase 2.5 trở đi chưa có)
+> Trạng thái: **Phase 1 + Phase 2 + Phase 2.1 đã implement** (Phase 2.5 trở đi chưa có)
 > Cập nhật: 2026-04-03
 
 ---
@@ -184,6 +184,7 @@ ROLL → MOVE → RESOLVE_TILE ─┬─ (cash < 0) → CHECK_BANKRUPTCY → END
 - **Đổ đôi (doubles):** player được đổ lại ngay trong cùng lượt.
 - **Đổ đôi 3 lần liên tiếp:** vào tù ngay, không di chuyển.
 - **Đang ở tù:** xem mục 4.7.
+- **Đổ Chính Xác (Căn Lực):** trước khi tung xúc xắc, player có thể kích hoạt căn lực — chọn 1 trong 4 khoảng đích `[(2,4),(5,7),(7,9),(10,12)]`, sau đó tung xúc xắc thông thường. Nếu tổng xúc xắc nằm trong khoảng đã chọn, precision check pass (`random() < accuracy_rate`), xúc xắc được giữ trong khoảng; nếu không pass, tung lại ngẫu nhiên. AI ưu tiên chọn khoảng đưa đến ô CITY/RESORT chưa có chủ gần nhất. Base accuracy: `accuracy_rate = 15%` (Player field). Decrement `double_toll_turns` xảy ra đầu phase ROLL (trước căn lực).
 
 ### 4.2 MOVE — Di chuyển
 
@@ -533,9 +534,58 @@ Events: `WATER_SLIDE_WAVE_SET` (sóng tạo/thay thế), `WATER_SLIDE_PUSHED` (p
 
 ## 13. Ô Cơ hội (CHANCE — vị trí 10, 19, 27)
 
-**Stub hiện tại:** publish event `CARD_DRAWN` nhưng không áp dụng hiệu ứng thẻ.
+**Đã implement đầy đủ (Phase 2.1).** Khi player dừng tại ô CHANCE, `FortuneStrategy.on_land` rút 1 thẻ từ pool và áp dụng hiệu ứng ngay.
 
-Config: `Card.json` đã load, schema validate, nhưng card effects chưa implement.
+### 13.1 Rút thẻ
+
+- Pool load từ `Card.json`, lọc bỏ thẻ `mapNotAvail` cho map hiện tại và thẻ `rate = 0`.
+- Rút theo **weighted random** dựa trên trường `rate` của từng thẻ.
+- 23 thẻ in-scope (IT_CA_1 – IT_CA_23 theo Card.json, trừ các thẻ bị lọc).
+
+### 13.2 Held cards (lưu trữ, dùng sau)
+
+5 thẻ được lưu vào `player.held_card` thay vì áp dụng ngay. Player dùng khi muốn trong lượt tiếp theo (kích hoạt qua EF_19 trong ROLL hoặc các trigger khác):
+
+| EF | IT_CA | Tên | Hiệu ứng |
+|----|-------|-----|----------|
+| EF_2 | IT_CA_2 | Thẻ Giảm Giá | Giảm giá thuê 50% cho chủ đất |
+| EF_3 | IT_CA_3 | Thẻ Đôi Phúc | Double toll cho visitor |
+| EF_19 | IT_CA_19 | Thẻ Vượt Ngục | Thoát tù ngay (dùng đầu ROLL) |
+| EF_20 | IT_CA_20 | Thẻ Che Chắn | Chặn 1 lần trả thuê |
+| EF_22 | IT_CA_22 | Thẻ Chong Chóng | Bỏ qua ô nâng (GOD/elevated) tiếp theo |
+
+### 13.3 Instant cards (áp dụng ngay)
+
+16+ thẻ áp dụng hiệu ứng ngay khi rút:
+
+| EF | IT_CA | Tên | Hiệu ứng |
+|----|-------|-----|----------|
+| EF_4 | IT_CA_4 | Thẻ Vàng | +tiền (bonus_money) |
+| EF_5 | IT_CA_5 | Thẻ Đen | -tiền (penalty_money) |
+| EF_6 | IT_CA_6 | Thẻ Đặc Biệt | Nhận tiền từ tất cả đối thủ |
+| EF_7 | IT_CA_7 | Thẻ Dịch Bệnh | `opponent.virus_turns = 3` — owner bị debuff 3 lượt, visitor miễn toll |
+| EF_8 | IT_CA_8 | Thẻ Cát Vàng | `opponent.virus_turns = 3` (cùng hiệu ứng virus ở player-level) |
+| EF_9 | IT_CA_9 | — | Xem IT_CA_10 |
+| EF_10 | IT_CA_10 | Thẻ Mất Điện | `opponent.virus_turns = 3` |
+| EF_11–EF_18 | IT_CA_11–18 | Các hiệu ứng khác | Teleport, buff/debuff tiền, thu thuế v.v. |
+| EF_21 | IT_CA_21 | — | Instant effect |
+| EF_26 | IT_CA_26 | — | Instant effect |
+| EF_30 | IT_CA_30 | — | Instant effect |
+
+### 13.4 Toll modifiers (priority order — D-44)
+
+Khi visitor đến ô có chủ, áp dụng theo thứ tự ưu tiên:
+
+1. **Virus** (`owner.virus_turns > 0`): toll = 0, `owner.virus_turns = 0` (xóa sớm)
+2. **Double toll** (`player.double_toll_turns > 0`): toll × 2
+3. **Angel** (held EF_20): toll = 0, tiêu thẻ
+4. **Discount** (held EF_2 của chủ): toll × 0.5
+
+### 13.5 Virus debuff (D-11/D-22/D-44/D-46)
+
+- `opponent.virus_turns = 3` khi player rút EF_7/EF_8/EF_10 — **player-level**, áp dụng cho tất cả ô của chủ.
+- Visitor đến bất kỳ ô nào của chủ bị virus: trả 0 toll + `owner.virus_turns` reset về 0 (xóa sớm).
+- `_do_end_turn()` giảm `p.virus_turns -= 1` cho mọi player có debuff sau mỗi lượt.
 
 ---
 
@@ -550,6 +600,11 @@ Player:
   owned_properties: list[int]    # Danh sách vị trí đang sở hữu
   prison_turns_remaining: int    # 0 = tự do, >0 = đang ở tù
   turns_taken: int               # Số lượt đã hoàn thành (dùng cho God tile)
+  # Phase 2.1 — Card & Căn Lực fields
+  held_card: str | None          # card_id đang giữ (held card), per D-09
+  accuracy_rate: int             # Căn lực base accuracy (%), mặc định 15, per D-10
+  double_toll_turns: int         # EF_16 self-debuff rounds còn lại, per D-12
+  virus_turns: int               # EF_7/8/10 owner debuff rounds còn lại, per D-11
 ```
 
 **Chưa implement (Phase 2.5):**
@@ -616,7 +671,9 @@ tổng tài sản = cash + Σ(build_cost đầu tư cho từng cấp đã xây) 
 
 | Tính năng | Trạng thái | Phase xử lý |
 |-----------|------------|-------------|
-| Card effects (CHANCE) | Stub — event publish nhưng không apply | Phase 3 |
+| Card effects (CHANCE) | **Implemented** — 23 cards, weighted random, held/instant, toll modifiers | ✅ Phase 2.1 |
+| Đổ Chính Xác (Căn Lực) | **Implemented** — 15% base accuracy, 4 khoảng, AI target-aware | ✅ Phase 2.1 |
+| Virus debuff (EF_7/8/10) | **Implemented** — player-level `virus_turns`, early clear, END_TURN decrement | ✅ Phase 2.1 |
 | TRAVEL đích thật | Teleport về Start thay vì đích config | Phase 2.5? |
 | GOD tile effect | **Implemented** — mua đất (turn 1), xây nhà/nâng ô (turn 2+) | ✅ |
 | WATER_SLIDE | **Implemented** — tạo sóng, trượt đến dest, đẩy player vào vùng sóng | ✅ |
@@ -648,7 +705,8 @@ ctp/
 │   ├── travel.py   — TravelStrategy
 │   ├── tax.py      — TaxStrategy
 │   ├── festival.py — FestivalStrategy
-│   ├── fortune.py  — FortuneStrategy (CHANCE)
+│   ├── fortune.py  — FortuneStrategy (CHANCE) — 23 card effects, held/instant dispatch
+│   ├── _toll_modifiers.py — apply_toll_modifiers() — virus/double_toll/angel/discount priority chain
 │   ├── game.py     — GameStrategy (MINI-GAME)
 │   ├── god.py      — GodStrategy (Map 2: mua đất / xây nhà / nâng ô)
 │   └── water_slide.py — WaterSlideStrategy (Map 3: tạo sóng / AI pick_dest)
@@ -663,4 +721,4 @@ ctp/
 
 ---
 
-*GDD này mô tả đúng code đang chạy tính đến Phase 2. Khi Phase 2.5+ hoàn thành, cần cập nhật mục 14 và 16.*
+*GDD này mô tả đúng code đang chạy tính đến Phase 2.1. Khi Phase 2.5+ hoàn thành, cần cập nhật mục 14 và 16.*
