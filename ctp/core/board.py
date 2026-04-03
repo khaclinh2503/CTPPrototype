@@ -42,7 +42,9 @@ class Tile:
     opt: int
     owner_id: Optional[str] = None
     building_level: int = 0
-    is_golden: bool = False  # x2 toll khi check in
+    is_golden: bool = False   # x2 toll khi check in
+    visit_count: int = 0      # số lần người khác đã vào trả tiền (dùng cho resort đơn)
+    festival_level: int = 0   # số lần ô này được chọn làm festival (1→2x, 2→3x, 3+→4x)
 
 
 class Board:
