@@ -111,8 +111,8 @@ class TestHeadlessRunToCompletion:
     def test_terminates_at_max_turns(self, simple_board):
         """Game should terminate at max_turns."""
         players = [
-            Player(player_id="Player1", cash=200),
-            Player(player_id="Player2", cash=200),
+            Player(player_id="Player1", cash=1_000_000),
+            Player(player_id="Player2", cash=1_000_000),
         ]
         event_bus = EventBus()
 

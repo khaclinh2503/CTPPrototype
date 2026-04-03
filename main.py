@@ -91,7 +91,14 @@ def create_board(config_loader: ConfigLoader) -> Board:
     if board_config.PrisonSpace:
         prison_config = {
             "escapeCostRate": board_config.PrisonSpace.escapeCostRate,
-            "limitTurns": board_config.PrisonSpace.limitTurnByMapId.get("1", 2),
+            "limitTurns": board_config.PrisonSpace.limitTurnByMapId.get("1", 3),
+        }
+
+    # Travel config
+    travel_config = None
+    if board_config.TravelSpace:
+        travel_config = {
+            "travelCostRate": board_config.TravelSpace.travelCostRate,
         }
 
     return Board(
@@ -100,6 +107,7 @@ def create_board(config_loader: ConfigLoader) -> Board:
         resort_config=resort_config,
         festival_config=festival_config,
         prison_config=prison_config,
+        travel_config=travel_config,
     )
 
 
@@ -239,8 +247,8 @@ def log_event(event: GameEvent, players: list[Player] | None = None):
     elif event.event_type == EventType.MINIGAME_RESULT:
         result = event.data.get('result', '?')
         bet = event.data.get('bet', 0)
-        gain = event.data.get('gain', 0)
-        logger.info(f"  [MiniGame] {pid}: {result}, cuoc ${int(bet):,}, nhan lai ${int(gain):,}")
+        gain = event.data.get('result', 0)
+        logger.info(f"  [MiniGame] {pid}: {'THANG' if event.data.get('won') else 'THUA'}, cuoc ${int(bet):,}, nhan lai ${int(gain):,}")
 
     elif event.event_type == EventType.PLAYER_BANKRUPT:
         logger.info(f"  [Pha san] *** {pid} DA PHA SAN ***")
