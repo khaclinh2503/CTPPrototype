@@ -31,25 +31,68 @@
 
 ## 3. Bàn cờ
 
-**32 ô**, đọc từ `Board.json → SpacePosition1`. Bố cục 1 vòng, theo chiều kim đồng hồ, vị trí 1-32.
+**32 ô**, bố cục 1 vòng, theo chiều kim đồng hồ, vị trí 1-32. Config đọc từ `Board.json → SpacePositionN`.
+
+| Map | SpacePosition | Ô đặc trưng |
+|-----|--------------|-------------|
+| Map 1 | SpacePosition0 | TAX (pos 31) |
+| Map 2 | SpacePosition1 | GOD ×4 (pos 5, 13, 21, 29) |
+| Map 3 | SpacePosition6 | WATER_SLIDE ×4 (pos 2, 10, 18, 26) |
 
 ### Loại ô (SpaceId Enum)
 
-| ID | Tên | Số ô | Mô tả |
-|----|-----|------|-------|
-| 1 | FESTIVAL | 1 | Góc lễ hội (vị trí 17) |
-| 2 | CHANCE | 3 | Ô cơ hội — rút thẻ ngẫu nhiên (vị trí 10, 19, 27) |
-| 3 | CITY | 18 | Ô đất thành phố — mua bán chính |
-| 4 | GAME | 1 | Ô mini-game đỏ đen (vị trí 3) |
-| 5 | PRISON | 1 | Ô tù / góc phạt (vị trí 9) |
-| 6 | RESORT | 3 | Ô nghỉ dưỡng (vị trí 8, 15, 24; opt=101 hoặc 102) |
-| 7 | START | 1 | Ô xuất phát (vị trí 1) |
-| 8 | TAX | — | Ô thuế (không có trong map 1 — reserved) |
-| 9 | TRAVEL | 1 | Ô du lịch / teleport (vị trí 25) |
-| 10 | GOD | 4 | Ô thần (Map 2 — vị trí 5, 13, 21, 29) |
-| 40 | WATER_SLIDE | — | Ô cầu trượt nước (stub — reserved map 3) |
+| ID | Tên | Map 1 | Map 2 | Map 3 | Mô tả |
+|----|-----|-------|-------|-------|-------|
+| 1 | FESTIVAL | pos 17 | pos 17 | pos 9 | Góc lễ hội |
+| 2 | CHANCE | 3 ô | 3 ô | 3 ô | Ô cơ hội — rút thẻ |
+| 3 | CITY | 18 ô | 16 ô | 16 ô | Ô đất thành phố |
+| 4 | GAME | pos 3 | pos 3 | pos 4 | Ô mini-game đỏ đen |
+| 5 | PRISON | pos 9 | pos 9 | pos 17 | Ô tù / góc phạt |
+| 6 | RESORT | 5 ô | 4 ô | 4 ô | Ô nghỉ dưỡng (opt 101/102) |
+| 7 | START | pos 1 | pos 1 | pos 1 | Ô xuất phát |
+| 8 | TAX | pos 31 | — | — | Ô thuế |
+| 9 | TRAVEL | pos 25 | pos 25 | pos 25 | Ô du lịch / teleport |
+| 10 | GOD | — | 4 ô | — | Ô thần (xem mục 12) |
+| 40 | WATER_SLIDE | — | — | 4 ô | Ô cầu trượt nước (stub) |
 
-### Sơ đồ bàn cờ (Map 1)
+### Sơ đồ bàn cờ — Map 1 (SpacePosition0)
+
+```
+Pos  1: START
+Pos  2: CITY (opt 1)
+Pos  3: GAME
+Pos  4: CITY (opt 2)
+Pos  5: RESORT (opt 101)
+Pos  6: CITY (opt 3)
+Pos  7: CITY (opt 4)
+Pos  8: CITY (opt 5)
+Pos  9: PRISON
+Pos 10: RESORT (opt 102)
+Pos 11: CITY (opt 6)
+Pos 12: CITY (opt 7)
+Pos 13: CHANCE
+Pos 14: CITY (opt 8)
+Pos 15: RESORT (opt 101)
+Pos 16: CITY (opt 9)
+Pos 17: FESTIVAL
+Pos 18: CITY (opt 10)
+Pos 19: RESORT (opt 101)
+Pos 20: CITY (opt 11)
+Pos 21: CHANCE
+Pos 22: CITY (opt 12)
+Pos 23: CITY (opt 13)
+Pos 24: CITY (opt 14)
+Pos 25: TRAVEL
+Pos 26: RESORT (opt 102)
+Pos 27: CITY (opt 15)
+Pos 28: CITY (opt 16)
+Pos 29: CHANCE
+Pos 30: CITY (opt 17)
+Pos 31: TAX
+Pos 32: CITY (opt 18)
+```
+
+### Sơ đồ bàn cờ — Map 2 (SpacePosition1)
 
 ```
 Pos  1: START
@@ -82,10 +125,46 @@ Pos 27: CHANCE
 Pos 28: CITY (opt 14)
 Pos 29: GOD (opt 4)
 Pos 30: CITY (opt 15)
-Pos 31: RESORT (opt 102)  ← khác opt
+Pos 31: RESORT (opt 102)
 Pos 32: CITY (opt 16)
 ```
 
+### Sơ đồ bàn cờ — Map 3 (SpacePosition6)
+
+```
+Pos  1: START
+Pos  2: WATER_SLIDE (opt 1)
+Pos  3: CITY (opt 1)
+Pos  4: GAME
+Pos  5: CITY (opt 2)
+Pos  6: CITY (opt 3)
+Pos  7: CITY (opt 4)
+Pos  8: RESORT (opt 101)
+Pos  9: FESTIVAL
+Pos 10: WATER_SLIDE (opt 2)
+Pos 11: CHANCE
+Pos 12: CITY (opt 5)
+Pos 13: CITY (opt 6)
+Pos 14: CITY (opt 7)
+Pos 15: RESORT (opt 101)
+Pos 16: CITY (opt 8)
+Pos 17: PRISON
+Pos 18: WATER_SLIDE (opt 3)
+Pos 19: CITY (opt 9)
+Pos 20: CHANCE
+Pos 21: CITY (opt 10)
+Pos 22: CITY (opt 11)
+Pos 23: CITY (opt 12)
+Pos 24: RESORT (opt 101)
+Pos 25: TRAVEL
+Pos 26: WATER_SLIDE (opt 4)
+Pos 27: CITY (opt 13)
+Pos 28: CHANCE
+Pos 29: CITY (opt 14)
+Pos 30: CITY (opt 15)
+Pos 31: RESORT (opt 102)
+Pos 32: CITY (opt 16)
+```
 ---
 
 ## 4. Vòng lặp game (FSM)
