@@ -65,6 +65,8 @@ class GameController:
         self.max_turns = max_turns
         self.event_bus = event_bus
         self.buy_decision_fn = buy_decision_fn  # None = always buy if affordable
+        self.travel_decision_fn = None  # set bên ngoài nếu cần UI/interactive
+        self.water_slide_decision_fn = None  # (controller, player, candidates) -> Tile | None
         self._starting_cash = starting_cash
         self.phase = TurnPhase.ROLL
         self.current_player_index = 0
@@ -78,6 +80,7 @@ class GameController:
         self._rolled_doubles: bool = False  # đổ đôi → được đổ lại
         self._doubles_streak: int = 0       # đổ đôi liên tiếp; 3 lần → vào tù
         self._elevated_tile_to_resolve: int | None = None  # vị trí ô nâng cần resolve
+        self._pending_debt: int = 0  # nợ thuê chưa trả (khi không đủ tiền trả ngay)
 
     @property
     def current_player(self) -> Player:
@@ -135,10 +138,6 @@ class GameController:
             result = self._resolve_prison_attempt()
             if result == 'skip':
                 return []   # bỏ lượt, phase đã set END_TURN trong helper
-            if result == 'endturn':
-                # Đổ ra đôi trong tù → thoát nhưng không di chuyển lượt này
-                self.phase = TurnPhase.END_TURN
-                return []
             # result == 'play': ra tù, _current_dice đã set, chơi bình thường
             if self._doubles_streak >= 3:
                 self._doubles_streak = 0
@@ -204,16 +203,15 @@ class GameController:
         2 lựa chọn (headless: trả tiền nếu đủ, không đủ thì đổ xúc xắc):
           A. Trả phí → ra tù, roll mới để đi bình thường  → return 'play'
           B. Đổ xúc xắc:
-             - Ra đôi → ra tù, kết thúc lượt (không di chuyển) → return 'endturn'
+             - Ra đôi → ra tù, di chuyển bình thường, cuối lượt được đổ thêm → return 'play'
              - Không ra đôi → ngồi tiếp (decrement), hoặc hết hạn thì ra + play → return 'skip' / 'play'
 
         Return values:
           'play'    – đã ra tù, _current_dice đã set, tiếp tục chơi bình thường
-          'endturn' – đổ ra đôi, thoát tù nhưng kết thúc lượt ngay (không di chuyển)
           'skip'    – không ra đôi, vẫn trong tù, bỏ lượt
         """
         prison_cfg = self.board.get_prison_config() or {}
-        escape_fee = int(prison_cfg.get("escapeCostRate", 0.1) * self._starting_cash)
+        escape_fee = int(prison_cfg.get("escapeCostRate", 0.05) * self._starting_cash)
         pid = self.current_player.player_id
 
         if self.current_player.can_afford(escape_fee):
@@ -252,16 +250,16 @@ class GameController:
         ))
 
         if is_doubles:
-            # Ra đôi → thoát tù, nhưng kết thúc lượt ngay (không đi)
+            # Ra đôi → thoát tù, di chuyển bình thường, được đổ thêm cuối lượt
             self.current_player.exit_prison()
             self.event_bus.publish(GameEvent(
                 event_type=EventType.PRISON_EXITED,
                 player_id=pid,
                 data={"reason": "doubles"}
             ))
-            self._rolled_doubles = False
-            self._doubles_streak = 0
-            return 'endturn'
+            self._rolled_doubles = True
+            self._doubles_streak = 1
+            return 'play'
 
         # Không ra đôi → ngồi tiếp
         self.current_player.decrement_prison_turn()
@@ -296,10 +294,16 @@ class GameController:
     def _resolve_travel_attempt(self) -> None:
         """Xử lý travel đã pending từ lượt trước.
 
-        Stub AI: chấp nhận đi nếu đủ tiền trả phí.
-        - Chấp nhận + đủ tiền: trả phí, teleport tới đích ngẫu nhiên (CITY/RESORT).
-        - Từ chối hoặc không đủ tiền: không di chuyển.
+        Luật:
+        - Không đủ tiền trả phí → hết lượt, không đi.
+        - Đủ tiền → player chọn 1 ô bất kỳ trên map (không phải ô du lịch).
+        - Player có quyền từ chối đi → hết lượt, không tốn tiền.
+        - Chấp nhận → trả phí, teleport đến ô đã chọn.
         - Cả 2 trường hợp: xóa pending_travel, kết thúc lượt.
+
+        travel_decision_fn(controller, player, candidates) -> Tile | None
+            Trả về ô muốn đến, hoặc None để từ chối.
+            Nếu không set (headless): chọn ngẫu nhiên 1 ô.
         """
         import random
         from ctp.core.constants import STARTING_CASH
@@ -308,45 +312,70 @@ class GameController:
         player = self.current_player
         player.pending_travel = False
 
-        travel_cfg = {}
-        board_cfg = getattr(self.board, '_raw_travel_config', None)
-        travel_cost_rate = travel_cfg.get("travelCostRate", 0.02) if travel_cfg else 0.02
+        travel_cfg = self.board.get_travel_config() or {}
+        travel_cost_rate = travel_cfg.get("travelCostRate", 0.02)
         travel_fee = int(travel_cost_rate * STARTING_CASH)
 
-        # Chọn đích ngẫu nhiên trong CITY và RESORT
+        # Không đủ tiền → hết lượt ngay
+        if not player.can_afford(travel_fee):
+            self.event_bus.publish(GameEvent(
+                event_type=EventType.PLAYER_MOVE,
+                player_id=player.player_id,
+                data={"reason": "travel_no_funds", "travel_fee": travel_fee}
+            ))
+            return
+
+        # Đủ tiền → cho chọn bất kỳ ô nào không phải ô du lịch
         candidates = [
             t for t in self.board.board
-            if t.space_id in (SpaceId.CITY, SpaceId.RESORT)
+            if t.space_id != SpaceId.TRAVEL
             and t.position != player.position
         ]
         if not candidates:
             return
 
-        destination = random.choice(candidates)
-
-        # Stub AI: đi nếu đủ tiền
-        should_go = player.can_afford(travel_fee)
-
-        if should_go:
-            player.cash -= travel_fee
-            old_pos = player.position
-            player.position = destination.position
-            self.event_bus.publish(GameEvent(
-                event_type=EventType.PLAYER_MOVE,
-                player_id=player.player_id,
-                data={
-                    "old_pos": old_pos,
-                    "new_pos": destination.position,
-                    "travel_fee": travel_fee,
-                    "reason": "travel_accepted",
-                }
-            ))
+        # Gọi callback để player chọn đích (hoặc từ chối)
+        if self.travel_decision_fn is not None:
+            destination = self.travel_decision_fn(self, player, candidates)
         else:
+            # Headless default: chọn ngẫu nhiên
+            destination = random.choice(candidates)
+
+        # Player từ chối → hết lượt, không tốn tiền
+        if destination is None:
             self.event_bus.publish(GameEvent(
                 event_type=EventType.PLAYER_MOVE,
                 player_id=player.player_id,
                 data={"reason": "travel_declined", "travel_fee": travel_fee}
             ))
+            return
+
+        # Chấp nhận → trả phí, di chuyển đặc biệt
+        player.cash -= travel_fee
+        old_pos = player.position
+
+        # Kiểm tra có đi qua Start không (di chuyển vòng quanh board)
+        passed_start = destination.position < old_pos
+
+        player.position = destination.position
+
+        self.event_bus.publish(GameEvent(
+            event_type=EventType.PLAYER_MOVE,
+            player_id=player.player_id,
+            data={
+                "old_pos": old_pos,
+                "new_pos": destination.position,
+                "travel_fee": travel_fee,
+                "reason": "travel_accepted",
+                "passed_start": passed_start,
+            }
+        ))
+
+        # Nếu đi qua Start → nhận thưởng bình thường
+        if passed_start:
+            start_tile = self.board.get_tile(1)
+            start_strategy = TileRegistry.resolve(SpaceId.START)
+            start_strategy.on_pass(player, start_tile, self.board, self.event_bus)
 
     def _do_move(self) -> list[GameEvent]:
         """Move player and check for passing Start. Transition to RESOLVE_TILE.
@@ -405,6 +434,50 @@ class GameController:
             self.phase = TurnPhase.RESOLVE_TILE
             return events
 
+        # --- Kiểm tra vùng sóng Water Slide ---
+        if self.board.water_wave is not None:
+            zone = self.board.get_wave_zone()
+            intercept_step = None
+            for i in range(1, dice_total + 1):
+                if ((old_pos - 1 + i) % 32) + 1 in zone:
+                    intercept_step = i
+                    break
+
+            if intercept_step is not None:
+                _, wave_dest = self.board.water_wave
+                self._passed_start = (old_pos + intercept_step) > 32
+
+                start_tile = self.board.get_tile(1)
+                start_strategy = TileRegistry.resolve(SpaceId.START)
+                if self._passed_start:
+                    events = start_strategy.on_pass(
+                        self.current_player, start_tile, self.board, self.event_bus
+                    )
+
+                self.current_player.position = wave_dest
+
+                self.event_bus.publish(GameEvent(
+                    event_type=EventType.WATER_SLIDE_PUSHED,
+                    player_id=self.current_player.player_id,
+                    data={
+                        "old_pos": old_pos,
+                        "new_pos": wave_dest,
+                        "passed_start": self._passed_start,
+                    }
+                ))
+                self.event_bus.publish(GameEvent(
+                    event_type=EventType.PLAYER_MOVE,
+                    player_id=self.current_player.player_id,
+                    data={
+                        "old_pos": old_pos,
+                        "new_pos": wave_dest,
+                        "passed_start": self._passed_start,
+                        "reason": "wave_push",
+                    }
+                ))
+                self.phase = TurnPhase.RESOLVE_TILE
+                return events
+
         # --- Di chuyển bình thường ---
         new_pos = old_pos + dice_total
         self._passed_start = new_pos > 32
@@ -452,12 +525,29 @@ class GameController:
         ))
 
         self._elevated_tile_to_resolve = None  # clear flag setelah resolve
+        cash_before_resolve = self.current_player.cash
 
         strategy = TileRegistry.resolve(tile.space_id)
         events = strategy.on_land(
             self.current_player, tile, self.board, self.event_bus,
             players=self.players
         )
+
+        # Water Slide: di chuyển player đến dest, sau đó resolve ô đích
+        if tile.space_id == SpaceId.WATER_SLIDE:
+            slide_events = self._handle_water_slide_land(tile)
+            events.extend(slide_events)
+            # Player đã được move đến dest bên trong _handle_water_slide_land
+            tile = self.board.get_tile(self.current_player.position)
+            was_unowned = (tile.space_id == SpaceId.CITY and tile.owner_id is None)
+            is_own = (tile.space_id == SpaceId.CITY
+                      and tile.owner_id == self.current_player.player_id)
+            dest_strategy = TileRegistry.resolve(tile.space_id)
+            dest_events = dest_strategy.on_land(
+                self.current_player, tile, self.board, self.event_bus,
+                players=self.players
+            )
+            events.extend(dest_events)
 
         if was_unowned:
             # Lan dau: mua + xay ngay (khong tao upgrade eligible -> khong co [Nang cap])
@@ -468,7 +558,12 @@ class GameController:
             max_lv = 5 if tile.building_level >= 4 else 4
             self._upgrade_eligible.setdefault(tile.position, max_lv)
 
-        self.phase = TurnPhase.ACQUIRE
+        # Rẽ nhánh sớm: nếu player phá sản sau khi trả tiền thuê → bỏ qua ACQUIRE/UPGRADE
+        if self.current_player.cash < 0:
+            self._pending_debt = cash_before_resolve - self.current_player.cash
+            self.phase = TurnPhase.CHECK_BANKRUPTCY
+        else:
+            self.phase = TurnPhase.ACQUIRE
         return events
 
     def _do_acquire(self) -> list[GameEvent]:
@@ -522,11 +617,21 @@ class GameController:
 
         events = []
         if self.current_player.cash < 0:
+            # Xác định creditor: chủ đất ô player đang đứng (nếu là đất người khác)
+            tile = self.board.get_tile(self.current_player.position)
+            creditor = None
+            if tile.owner_id and tile.owner_id != self.current_player.player_id:
+                creditor = next(
+                    (p for p in self.players if p.player_id == tile.owner_id), None
+                )
             events = resolve_bankruptcy(
                 self.current_player,
                 self.board,
-                self.event_bus
+                self.event_bus,
+                creditor=creditor,
+                debt=self._pending_debt,
             )
+            self._pending_debt = 0
 
         # Đổ đôi → được đổ thêm 1 lần (trừ khi phá sản hoặc đang bị tù)
         if (self._rolled_doubles
@@ -548,8 +653,9 @@ class GameController:
         """Advance to next non-bankrupt player. Check terminal conditions.
 
         Terminal conditions (checked in order):
-        1. Only 1 player còn tiền (non-bankrupt) → reason="last_player_standing"
-        2. Reached max_turns (25) → reason="max_turns"
+        1. Instant win: 4 resort / 3 color groups / own 1 row → reason varies
+        2. Only 1 player còn tiền (non-bankrupt) → reason="last_player_standing"
+        3. Reached max_turns (25) → reason="max_turns"
 
         Returns:
             Empty list (game ended events are published separately).
@@ -561,6 +667,21 @@ class GameController:
             player_id=self.current_player.player_id,
             data={"turn": self.current_turn}
         ))
+
+        # Condition 0: instant win conditions
+        win_reason = self._check_instant_win(self.current_player)
+        if win_reason:
+            self._game_over = True
+            self._winner = self.current_player.player_id
+            self.event_bus.publish(GameEvent(
+                event_type=EventType.GAME_ENDED,
+                data={
+                    "winner": self._winner,
+                    "turns": self.current_turn,
+                    "reason": win_reason,
+                }
+            ))
+            return []
 
         # Condition 1: chỉ còn 1 người còn tiền
         active_players = [p for p in self.players if not p.is_bankrupt]
@@ -636,6 +757,64 @@ class GameController:
             return True
         return False
 
+    def _handle_water_slide_land(self, water_tile: Tile) -> list[GameEvent]:
+        """Xử lý khi player đáp vào ô Water Slide.
+
+        Luật:
+        - Sóng cũ bị xóa vô điều kiện.
+        - Player chọn 1 ô đích trong cùng hàng (không phải ô góc, không phải ô WS).
+        - Sóng mới được đặt (source=water_tile.position, dest=dest.position).
+        - Player di chuyển đến dest ngay lập tức.
+        - Nếu không có ô hợp lệ: không tạo sóng, player ở lại ô WS.
+
+        Args:
+            water_tile: Ô Water Slide mà player vừa đáp.
+
+        Returns:
+            Danh sách GameEvent (WATER_SLIDE_WAVE_SET).
+        """
+        from ctp.tiles.water_slide import WaterSlideStrategy
+
+        events: list[GameEvent] = []
+        player = self.current_player
+
+        # Xóa sóng cũ
+        self.board.water_wave = None
+
+        # Lấy các ô hợp lệ trong cùng hàng
+        candidate_positions = self.board.get_row_non_corner_positions(water_tile.position)
+        candidates = [self.board.get_tile(p) for p in candidate_positions]
+
+        if not candidates:
+            return events
+
+        # Chọn dest
+        if self.water_slide_decision_fn is not None:
+            dest_tile = self.water_slide_decision_fn(self, player, candidates)
+        else:
+            dest_tile = WaterSlideStrategy.pick_dest_ai(player, candidates, self.board)
+
+        if dest_tile is None:
+            return events
+
+        # Đặt sóng mới và di chuyển player
+        self.board.water_wave = (water_tile.position, dest_tile.position)
+        old_pos = player.position
+        player.position = dest_tile.position
+
+        event = GameEvent(
+            event_type=EventType.WATER_SLIDE_WAVE_SET,
+            player_id=player.player_id,
+            data={
+                "source": water_tile.position,
+                "dest": dest_tile.position,
+                "player_moved_from": old_pos,
+            }
+        )
+        self.event_bus.publish(event)
+        events.append(event)
+        return events
+
     def _try_buy_property(self, player: Player, tile: Tile) -> list[GameEvent]:
         """Xử lý quyết định mua đất trống.
 
@@ -700,8 +879,83 @@ class GameController:
         self.event_bus.publish(event)
         return [event]
 
+    def _check_instant_win(self, player: Player) -> str | None:
+        """Kiểm tra điều kiện win tức thì sau lượt của player.
+
+        Các điều kiện (theo thứ tự):
+        1. Sở hữu 4+ ô Resort → reason="4_resorts"
+        2. Hoàn thành 3+ nhóm màu (sở hữu toàn bộ CITY trong 3+ màu) → reason="3_color_groups"
+        3. Sở hữu toàn bộ CITY trong 1 hàng (pos 1-8 / 9-16 / 17-24 / 25-32) → reason="own_row"
+
+        Returns:
+            Chuỗi reason nếu thắng, None nếu chưa.
+        """
+        owned = set(player.owned_properties)
+
+        # Condition 1: Sở hữu tất cả Resort trên bàn
+        total_resorts = sum(1 for t in self.board.board if t.space_id == SpaceId.RESORT)
+        resort_count = sum(
+            1 for pos in owned
+            if self.board.get_tile(pos).space_id == SpaceId.RESORT
+        )
+        if total_resorts > 0 and resort_count >= total_resorts:
+            return "all_resorts"
+
+        # Condition 2: 3+ complete color groups
+        map_cfg = self.board.land_config.get("1", {})
+        color_to_opts: dict[int, set] = {}
+        for opt_str, cfg in map_cfg.items():
+            color = cfg.get("color")
+            if color is not None:
+                color_to_opts.setdefault(color, set()).add(int(opt_str))
+
+        owned_city_opts = {
+            self.board.get_tile(pos).opt
+            for pos in owned
+            if self.board.get_tile(pos).space_id == SpaceId.CITY
+        }
+        complete_colors = sum(
+            1 for opts in color_to_opts.values()
+            if opts.issubset(owned_city_opts)
+        )
+        if complete_colors >= 3:
+            return "3_color_groups"
+
+        # Condition 3: own all CITY + RESORT in any 1 row (rows: 1-8, 9-16, 17-24, 25-32)
+        for row_start in (1, 9, 17, 25):
+            row_props = [
+                pos for pos in range(row_start, row_start + 8)
+                if self.board.get_tile(pos).space_id in (SpaceId.CITY, SpaceId.RESORT)
+            ]
+            if row_props and all(pos in owned for pos in row_props):
+                return "own_row"
+
+        return None
+
+    def _get_total_wealth(self, player: Player) -> float:
+        """Tính tổng tài sản: cash + giá trị công trình đã xây.
+
+        Dùng để xác định người thắng khi hết 25 turn.
+        """
+        total = player.cash
+        map_cfg = self.board.land_config.get("1", {})
+        resort_cfg = self.board.get_resort_config() or {}
+
+        for pos in player.owned_properties:
+            tile = self.board.get_tile(pos)
+            if tile.space_id == SpaceId.CITY:
+                building = map_cfg.get(str(tile.opt), {}).get("building", {})
+                for lv in range(1, tile.building_level + 1):
+                    total += building.get(str(lv), {}).get("build", 0) * BASE_UNIT
+            elif tile.space_id == SpaceId.RESORT:
+                total += resort_cfg.get("initCost", 0) * BASE_UNIT
+
+        return total
+
     def _get_winner(self) -> str | None:
-        """Get player_id of winner (highest cash among non-bankrupt).
+        """Get player_id of winner (highest total wealth among non-bankrupt).
+
+        Tổng tài sản = cash + giá trị công trình đã xây.
 
         Returns:
             Player ID of winner, or None if no active players.
@@ -709,7 +963,7 @@ class GameController:
         active = [p for p in self.players if not p.is_bankrupt]
         if not active:
             return None
-        return max(active, key=lambda p: p.cash).player_id
+        return max(active, key=lambda p: self._get_total_wealth(p)).player_id
 
     @property
     def winner(self) -> str | None:

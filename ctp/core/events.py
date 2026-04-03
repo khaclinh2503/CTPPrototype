@@ -36,9 +36,13 @@ class EventType(Enum):
     PROPERTY_BUILT = auto()      # House built as part of initial purchase
     MINIGAME_RESULT = auto()     # Mini-game outcome
     FESTIVAL_FEE_PAID = auto()  # Player pays festival fee to system
+    RENT_OWED = auto()          # Player owes rent but can't afford (deferred to bankruptcy)
+    DEBT_SETTLED = auto()       # Creditor receives actual amount after debtor liquidation
     GOD_BUILD = auto()           # Player built/bought via God tile
     TILE_ELEVATED = auto()       # A tile was elevated by God action
     TILE_LOWERED = auto()        # An elevated tile was triggered and lowered
+    WATER_SLIDE_WAVE_SET = auto()   # Wave created/replaced on Water Slide tile
+    WATER_SLIDE_PUSHED = auto()     # Player pushed to wave dest by wave zone
 
 
 @dataclass

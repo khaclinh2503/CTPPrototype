@@ -7,7 +7,8 @@ from ctp.core.constants import calc_invested_build_cost
 
 
 def resolve_bankruptcy(player: Player, board: Board, event_bus: EventBus,
-                       creditor: Player | None = None) -> list[GameEvent]:
+                       creditor: Player | None = None,
+                       debt: int = 0) -> list[GameEvent]:
     """Attempt to resolve bankruptcy by selling properties.
 
     Hai chế độ:
@@ -51,6 +52,22 @@ def resolve_bankruptcy(player: Player, board: Board, event_bus: EventBus,
                     "position": prop_pos,
                     "value": sell_value,
                     "tile_type": tile.space_id.name
+                }
+            ))
+            event_bus.publish(events[-1])
+
+        # Tính số tiền thực tế thanh toán được cho creditor
+        if debt > 0:
+            actual_payment = max(0, debt + player.cash)  # debt + (negative cash) = what C had
+            if actual_payment > 0:
+                creditor.receive(actual_payment)
+            events.append(GameEvent(
+                event_type=EventType.DEBT_SETTLED,
+                player_id=player.player_id,
+                data={
+                    "creditor": creditor.player_id,
+                    "owed": debt,
+                    "paid": actual_payment,
                 }
             ))
             event_bus.publish(events[-1])

@@ -185,6 +185,18 @@ def log_event(event: GameEvent, players: list[Player] | None = None):
         level_name = _LEVEL_NAMES.get(str(new_level), f"cap {new_level}")
         logger.info(f"  [Nang cap] {pid} nang cap o {pos} -> {level_name.strip()}, chi ${int(cost):,}")
 
+    elif event.event_type == EventType.RENT_OWED:
+        amount = event.data.get('amount', 0)
+        recipient = event.data.get('recipient', '?')
+        pos = event.data.get('position', '?')
+        logger.info(f"  [No thue] {pid} phai tra cho {recipient} ${int(amount):,} (o {pos}) — khong du tien")
+
+    elif event.event_type == EventType.DEBT_SETTLED:
+        creditor = event.data.get('creditor', '?')
+        owed = event.data.get('owed', 0)
+        paid = event.data.get('paid', 0)
+        logger.info(f"  [Thanh toan no] {creditor} nhan duoc tu {pid}: ${int(paid):,} / ${int(owed):,} (con thieu ${int(owed-paid):,})")
+
     elif event.event_type == EventType.RENT_PAID:
         amount = event.data.get('amount', 0)
         recipient = event.data.get('recipient', '?')

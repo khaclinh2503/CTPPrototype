@@ -64,38 +64,58 @@ class LandStrategy(TileStrategy):
                 multiplier += 1
             rent *= multiplier
 
-            player.cash -= rent
+            if player.cash >= rent:
+                # Đủ tiền: trả ngay
+                player.cash -= rent
+                if players:
+                    owner = next((p for p in players if p.player_id == tile.owner_id), None)
+                    if owner:
+                        owner.receive(rent)
+                events.append(GameEvent(
+                    event_type=EventType.RENT_PAID,
+                    player_id=player.player_id,
+                    data={
+                        "position": tile.position,
+                        "amount": rent,
+                        "recipient": tile.owner_id,
+                        "level": tile.building_level,
+                        "is_golden": tile.is_golden,
+                    }
+                ))
+                event_bus.publish(events[-1])
+            else:
+                # Không đủ tiền: ghi nợ, để bankruptcy handler thanh toán thực tế
+                player.cash -= rent
+                events.append(GameEvent(
+                    event_type=EventType.RENT_OWED,
+                    player_id=player.player_id,
+                    data={
+                        "position": tile.position,
+                        "amount": rent,
+                        "recipient": tile.owner_id,
+                        "level": tile.building_level,
+                        "is_golden": tile.is_golden,
+                    }
+                ))
+                event_bus.publish(events[-1])
 
-            if players:
-                owner = next((p for p in players if p.player_id == tile.owner_id), None)
-                if owner:
-                    owner.receive(rent)
-
-            events.append(GameEvent(
-                event_type=EventType.RENT_PAID,
-                player_id=player.player_id,
-                data={
-                    "position": tile.position,
-                    "amount": rent,
-                    "recipient": tile.owner_id,
-                    "level": tile.building_level,
-                    "is_golden": tile.is_golden,
-                }
-            ))
-            event_bus.publish(events[-1])
-
-        # Phí lễ hội: nếu ô này đang tổ chức lễ hội → trả phí cho hệ thống
-        if board.festival_tile_position == tile.position and not player.is_bankrupt:
-            festival_config = board.get_festival_config() or {}
-            hold_cost_rate = festival_config.get("holdCostRate", 0.02)
-            festival_fee = int(hold_cost_rate * STARTING_CASH)
-            player.cash -= festival_fee
-            events.append(GameEvent(
-                event_type=EventType.FESTIVAL_FEE_PAID,
-                player_id=player.player_id,
-                data={"position": tile.position, "fee": festival_fee}
-            ))
-            event_bus.publish(events[-1])
+            # Festival bonus: ô đang có lễ hội → trả thêm theo festival_level (X2/X3/X4)
+            if board.festival_tile_position == tile.position:
+                extra_multiplier = min(tile.festival_level, 3)  # level1→+1x, level2→+2x, level3+→+3x
+                extra_rent = rent * extra_multiplier
+                if extra_rent > 0:
+                    player.cash -= extra_rent
+                    if players:
+                        owner = next((p for p in players if p.player_id == tile.owner_id), None)
+                        if owner:
+                            owner.receive(extra_rent)
+                    events.append(GameEvent(
+                        event_type=EventType.FESTIVAL_FEE_PAID,
+                        player_id=player.player_id,
+                        data={"position": tile.position, "fee": extra_rent, "recipient": tile.owner_id,
+                              "festival_level": tile.festival_level}
+                    ))
+                    event_bus.publish(events[-1])
 
         return events
 
