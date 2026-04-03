@@ -13,6 +13,17 @@ class TestPlayerPhase021Fields:
         assert player.held_card is None
         assert player.accuracy_rate == 15
         assert player.double_toll_turns == 0
+        assert player.virus_turns == 0
+
+    def test_player_virus_turns_default_zero(self):
+        """virus_turns defaults to 0."""
+        player = Player(player_id="p1", cash=0)
+        assert player.virus_turns == 0
+
+    def test_player_virus_turns_can_be_set(self):
+        """virus_turns can be set via constructor."""
+        player = Player(player_id="p1", cash=0, virus_turns=3)
+        assert player.virus_turns == 3
 
     def test_player_backward_compatible(self):
         """Test 2: Player(player_id="p1", cash=1_000_000) vẫn OK — backward compatible."""

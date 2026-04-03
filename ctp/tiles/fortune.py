@@ -302,7 +302,7 @@ def _ef_yellow_sand(card_id, player, board, players, event_bus):
 
 
 def _apply_color_pair_debuff(card_id, player, board, players, event_bus, debuff_rate: float):
-    """Áp toll debuff lên tất cả CITY tiles (cặp màu) đang sở hữu bởi opponent."""
+    """Set player-level virus debuff on opponent per D-11/D-22."""
     events = []
     opponent = _richest_opponent(player, players)
     if not opponent:
@@ -310,26 +310,15 @@ def _apply_color_pair_debuff(card_id, player, board, players, event_bus, debuff_
     if _try_block_attack(opponent, card_id, event_bus):
         return events
 
-    affected_tiles = [
-        board.get_tile(pos)
-        for pos in opponent.owned_properties
-        if board.get_tile(pos).space_id == SpaceId.CITY
-    ]
-    if not affected_tiles:
-        return events
-
-    for tile in affected_tiles:
-        tile.toll_debuff_turns = 5
-        tile.toll_debuff_rate = debuff_rate
+    # Player-level virus: affects ALL owned tiles, not individual tiles
+    opponent.virus_turns = 3
 
     events.append(GameEvent(
         event_type=EventType.CARD_EFFECT_VIRUS,
         player_id=player.player_id,
         data={
             "target_player": opponent.player_id,
-            "duration": 5,
-            "debuff_rate": debuff_rate,
-            "tiles": [t.position for t in affected_tiles],
+            "duration": 3,
         }
     ))
     event_bus.publish(events[-1])

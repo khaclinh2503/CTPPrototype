@@ -488,6 +488,26 @@ class TestFSMIntegration:
         assert tile.toll_debuff_turns == 0
         assert tile.toll_debuff_rate == 1.0
 
+    def test_virus_turns_decrements_in_end_turn(self, controller):
+        """player.virus_turns=3 → sau _do_end_turn(), virus_turns == 2."""
+        controller.players[0].virus_turns = 3
+        controller.players[1].virus_turns = 0
+
+        controller.phase = TurnPhase.END_TURN
+        controller.step()
+
+        assert controller.players[0].virus_turns == 2
+        assert controller.players[1].virus_turns == 0  # không thay đổi
+
+    def test_virus_turns_decrements_to_zero(self, controller):
+        """player.virus_turns=1 → sau END_TURN, virus_turns=0."""
+        controller.players[0].virus_turns = 1
+
+        controller.phase = TurnPhase.END_TURN
+        controller.step()
+
+        assert controller.players[0].virus_turns == 0
+
     def test_player_move_event_has_string_keys(self, board, players, event_bus):
         """PLAYER_MOVE event data có 'old_pos' và 'new_pos' là string keys."""
         ctrl = GameController(board=board, players=players, max_turns=25, event_bus=event_bus)

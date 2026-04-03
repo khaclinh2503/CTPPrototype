@@ -331,7 +331,7 @@ class TestInstantCardEffects:
         assert card_events[0].data["card_id"] == "IT_CA_3"
 
     def test_ef7_virus_on_land(self, board_map1, event_bus, player, opponent):
-        """IT_CA_8 (EF_7 virus) → CITY tiles của opponent có toll_debuff_turns=5, rate=0.0."""
+        """IT_CA_8 (EF_7 virus) → opponent.virus_turns = 3 (player-level, per D-11)."""
         strategy = FortuneStrategy()
         tile = board_map1.get_tile(13)
 
@@ -345,11 +345,10 @@ class TestInstantCardEffects:
         with patch("ctp.tiles.fortune._draw_card", return_value="IT_CA_8"):
             events = strategy.on_land(player, tile, board_map1, event_bus, players=players)
 
-        assert city_tile.toll_debuff_turns == 5, "CITY tile của opponent phải có toll_debuff_turns=5"
-        assert city_tile.toll_debuff_rate == 0.0, "EF_7: toll_debuff_rate phải = 0.0 (miễn phí)"
+        assert opponent.virus_turns == 3, "EF_7: opponent.virus_turns phải = 3 (player-level)"
 
     def test_ef8_yellow_sand_on_land(self, board_map1, event_bus, player, opponent):
-        """IT_CA_9 (EF_8 yellow_sand) → CITY tiles của opponent có toll_debuff_turns=5, rate=0.5."""
+        """IT_CA_9 (EF_8 yellow_sand) → opponent.virus_turns = 3 (player-level, per D-11)."""
         strategy = FortuneStrategy()
         tile = board_map1.get_tile(13)
 
@@ -362,8 +361,7 @@ class TestInstantCardEffects:
         with patch("ctp.tiles.fortune._draw_card", return_value="IT_CA_9"):
             strategy.on_land(player, tile, board_map1, event_bus, players=players)
 
-        assert city_tile.toll_debuff_turns == 5, "CITY tile của opponent phải có toll_debuff_turns=5"
-        assert city_tile.toll_debuff_rate == 0.5, "EF_8: toll_debuff_rate phải = 0.5 (giảm 50%)"
+        assert opponent.virus_turns == 3, "EF_8: opponent.virus_turns phải = 3 (player-level)"
 
     def test_ef21_go_to_god(self, board_map2, event_bus, player):
         """IT_CA_22 (EF_21) → player teleport đến GOD tile gần nhất.
@@ -412,16 +410,15 @@ class TestLandTollModifiers:
         return Board(space_positions, land_config, map_id=1)
 
     def test_virus_skip_toll(self, board_land, event_bus):
-        """tile.toll_debuff_turns>0, rate=0.0 → visitor không trả toll."""
+        """owner.virus_turns>0 → visitor không trả toll, owner.virus_turns cleared to 0."""
         from ctp.tiles.land import LandStrategy
 
         owner = Player(player_id="owner", cash=500_000)
         owner.add_property(2)
+        owner.virus_turns = 3
         tile = board_land.get_tile(2)
         tile.owner_id = "owner"
         tile.building_level = 1
-        tile.toll_debuff_turns = 3
-        tile.toll_debuff_rate = 0.0
 
         visitor = Player(player_id="visitor", cash=1_000_000)
         initial_visitor_cash = visitor.cash
@@ -429,20 +426,20 @@ class TestLandTollModifiers:
         strategy = LandStrategy()
         strategy.on_land(visitor, tile, board_land, event_bus, players=[owner, visitor])
 
-        assert visitor.cash == initial_visitor_cash, "Visitor không trả tiền khi tile bị EF_7 debuff"
+        assert visitor.cash == initial_visitor_cash, "Visitor không trả tiền khi owner bị virus debuff"
+        assert owner.virus_turns == 0, "owner.virus_turns phải được clear khi visitor land"
 
-    def test_yellow_sand_half_toll(self, board_land, event_bus):
-        """tile.toll_debuff_turns>0, rate=0.5 → visitor trả 50% toll (EF_8 yellow_sand)."""
+    def test_no_virus_normal_toll(self, board_land, event_bus):
+        """owner.virus_turns==0 → visitor trả toll bình thường."""
         from ctp.tiles.land import LandStrategy
         from ctp.core.constants import BASE_UNIT
 
         owner = Player(player_id="owner", cash=500_000)
         owner.add_property(2)
+        owner.virus_turns = 0
         tile = board_land.get_tile(2)
         tile.owner_id = "owner"
         tile.building_level = 1
-        tile.toll_debuff_turns = 5
-        tile.toll_debuff_rate = 0.5
 
         visitor = Player(player_id="visitor", cash=1_000_000)
         initial_visitor_cash = visitor.cash
@@ -450,9 +447,8 @@ class TestLandTollModifiers:
         strategy = LandStrategy()
         strategy.on_land(visitor, tile, board_land, event_bus, players=[owner, visitor])
 
-        full_toll = 2 * BASE_UNIT  # building level 1, toll=2 per land_config fixture
-        expected_paid = int(full_toll * 0.5)
-        assert visitor.cash == initial_visitor_cash - expected_paid, "Visitor phải trả 50% toll khi tile bị EF_8 debuff"
+        full_toll = 2 * BASE_UNIT
+        assert visitor.cash == initial_visitor_cash - full_toll, "Visitor phải trả toll bình thường khi owner không bị virus"
 
     def test_double_toll_doubles_rent(self, board_land, event_bus):
         """player.double_toll_turns=1 → trả toll × 2."""
@@ -520,16 +516,15 @@ class TestLandTollModifiers:
         assert visitor.held_card is None, "Discount card phải được consume"
 
     def test_priority_order_virus_beats_double_toll(self, board_land, event_bus):
-        """tile debuff (rate=0.0) > double_toll: không trả gì dù có double_toll."""
+        """owner.virus_turns > 0 beats double_toll: không trả gì dù visitor có double_toll."""
         from ctp.tiles.land import LandStrategy
 
         owner = Player(player_id="owner", cash=0)
         owner.add_property(2)
+        owner.virus_turns = 3
         tile = board_land.get_tile(2)
         tile.owner_id = "owner"
         tile.building_level = 1
-        tile.toll_debuff_turns = 3
-        tile.toll_debuff_rate = 0.0
 
         visitor = Player(player_id="visitor", cash=1_000_000)
         visitor.double_toll_turns = 1
@@ -538,7 +533,8 @@ class TestLandTollModifiers:
         strategy = LandStrategy()
         strategy.on_land(visitor, tile, board_land, event_bus, players=[owner, visitor])
 
-        assert visitor.cash == initial_cash, "Tile debuff phải có priority cao hơn double_toll"
+        assert visitor.cash == initial_cash, "Owner virus debuff phải có priority cao hơn double_toll"
+        assert owner.virus_turns == 0, "virus_turns phải được clear early"
 
 
 # ---------------------------------------------------------------------------
@@ -554,16 +550,15 @@ class TestResortTollModifiers:
         return Board(space_positions, land_config, resort_config=resort_config, map_id=1)
 
     def test_resort_virus_skip_toll(self, board_resort, event_bus):
-        """Resort: tile.toll_debuff_turns>0, rate=0.0 → visitor không trả toll."""
+        """Resort: owner.virus_turns>0 → visitor không trả toll, virus cleared."""
         from ctp.tiles.resort import ResortStrategy
 
         owner = Player(player_id="owner", cash=0)
         owner.add_property(5)
+        owner.virus_turns = 2
         tile = board_resort.get_tile(5)  # RESORT position 5
         tile.owner_id = "owner"
         tile.building_level = 1
-        tile.toll_debuff_turns = 2
-        tile.toll_debuff_rate = 0.0
 
         visitor = Player(player_id="visitor", cash=1_000_000)
         initial_cash = visitor.cash
@@ -571,7 +566,8 @@ class TestResortTollModifiers:
         strategy = ResortStrategy()
         strategy.on_land(visitor, tile, board_resort, event_bus, players=[owner, visitor])
 
-        assert visitor.cash == initial_cash, "Resort: visitor không trả toll khi tile bị EF_7 debuff"
+        assert visitor.cash == initial_cash, "Resort: visitor không trả toll khi owner bị virus debuff"
+        assert owner.virus_turns == 0, "virus_turns phải được clear khi visitor land"
 
     def test_resort_angel_waive_toll(self, board_resort, event_bus):
         """Resort: player giữ Angel card → toll = 0."""

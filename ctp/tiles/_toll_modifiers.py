@@ -41,11 +41,15 @@ def apply_toll_modifiers(
     Returns:
         (modified_rent, skip_toll) — nếu skip_toll=True thì không trừ tiền.
     """
-    # Step 1: tile-level toll debuff (EF_7/8) — giảm toll trên ô cụ thể
-    if tile is not None and tile.toll_debuff_turns > 0:
-        if tile.toll_debuff_rate == 0.0:
-            return 0.0, True  # EF_7: miễn phí hoàn toàn
-        rent = int(rent * tile.toll_debuff_rate)  # EF_8: giảm theo rate
+    # Step 1: player-level virus debuff (EF_7/8) — owner has virus → toll = 0, clear early (D-11/D-22/D-44)
+    if owner is not None and owner.virus_turns > 0:
+        owner.virus_turns = 0  # clear early when visitor lands
+        event_bus.publish(GameEvent(
+            event_type=EventType.CARD_EFFECT_VIRUS,
+            player_id=owner.player_id,
+            data={"owner": owner.player_id, "cleared_early": True}
+        ))
+        return 0.0, True
 
     # Step 2: double_toll self-debuff (D-12)
     if player.double_toll_turns > 0:

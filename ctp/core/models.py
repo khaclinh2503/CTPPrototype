@@ -32,6 +32,7 @@ class Player:
     held_card: str | None = None          # card_id đang giữ (ví dụ "IT_CA_3"), per D-09
     accuracy_rate: int = 15               # căn lực base rate (%), per D-10
     double_toll_turns: int = 0            # EF_16 self-debuff rounds remaining, per D-12
+    virus_turns: int = 0                  # EF_7/8 owner debuff rounds remaining, per D-11
 
     def can_afford(self, amount: float) -> bool:
         """Check if player has enough cash (excluding property value).
