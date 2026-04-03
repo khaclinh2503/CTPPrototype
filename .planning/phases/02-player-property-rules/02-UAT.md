@@ -1,5 +1,5 @@
 ---
-status: complete
+status: resolved
 phase: 02-player-property-rules
 source: [02-01-SUMMARY.md, 02-02-SUMMARY.md]
 started: 2026-04-03T00:00:00Z
@@ -77,7 +77,7 @@ blocked: 1
 ## Gaps
 
 - truth: "MiniGame thắng → nhận net 50,000 (bet × 2); thua → mất 50,000. nhan lai phản ánh đúng kết quả."
-  status: failed
+  status: resolved
   reason: "User reported: [MiniGame] B: 100000, cuoc $50,000, nhan lai $0 — nhan lai luôn là $0, có thể payout không được tính đúng khi thắng"
   severity: major
   test: 9
@@ -90,7 +90,7 @@ blocked: 1
   debug_session: ""
 
 - truth: "Bankruptcy: bán property rẻ nhất trước, dừng ngay khi cash đủ cover debt, không bán thêm."
-  status: failed
+  status: resolved
   reason: "User reported: A nợ $160,000, bán đủ sau o 16 ($305,500 collected) nhưng vẫn tiếp tục bán o 28, 23, 32 — không dừng khi đã đủ tiền trả nợ"
   severity: major
   test: 10
