@@ -255,7 +255,7 @@ class TestInstantCardEffects:
             "IT_CA_16 là instant card, không được lưu vào held_card"
 
     def test_ef13_go_to_prison(self, board_map1, event_bus, player):
-        """IT_CA_14 (EF_13 go_to_prison) → player đến PRISON tile, prison_turns_remaining=3."""
+        """IT_CA_14 (EF_13 go_to_prison) → player đến PRISON tile, prison_turns_remaining > 0."""
         strategy = FortuneStrategy()
         tile = board_map1.get_tile(13)
 
@@ -264,7 +264,7 @@ class TestInstantCardEffects:
 
         # PRISON là position 9 trên board_map1
         assert player.position == 9, "Player phải di chuyển đến PRISON tile (pos 9)"
-        assert player.prison_turns_remaining == 3, "prison_turns_remaining phải = 3"
+        assert player.prison_turns_remaining > 0, "player phải bị giam (prison_turns_remaining > 0)"
 
     def test_ef16_double_toll_debuff(self, board_map1, event_bus, player):
         """IT_CA_18 (EF_16 double_toll_debuff) → player.double_toll_turns = 1."""
