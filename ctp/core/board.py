@@ -87,6 +87,7 @@ class Board:
         self.festival_level: int = 0
         self.festival_tile_position: int | None = None  # Ô đang tổ chức lễ hội
         self.elevated_tile: int | None = None  # chỉ 1 ô được nâng trên toàn map
+        self.water_wave: tuple[int, int] | None = None  # (source_pos, dest_pos), Map 3
 
         # Build 32 tiles from SpacePosition0
         self.board: list[Tile] = []
@@ -140,6 +141,10 @@ class Board:
         """Get prison space configuration (escapeCostRate, limitTurns)."""
         return self.prison_config
 
+    def get_travel_config(self) -> Optional[dict]:
+        """Get travel space configuration (travelCostRate)."""
+        return self.travel_config
+
     def get_festival_config(self) -> Optional[dict]:
         """Get festival space configuration.
 
@@ -169,6 +174,21 @@ class Board:
             if tile.space_id == space_id:
                 return candidate
         return None
+
+    def get_resort_group_positions(self, opt: int) -> list[int]:
+        """Get all board positions of RESORT tiles with the same opt (color group).
+
+        Args:
+            opt: Resort tile opt index (e.g. 101, 102).
+
+        Returns:
+            List of tile positions (1-32) with the same resort opt.
+        """
+        return [
+            tile.position
+            for tile in self.board
+            if tile.space_id == SpaceId.RESORT and tile.opt == opt
+        ]
 
     def get_color_group_positions(self, opt: int) -> list[int]:
         """Get all board positions of CITY tiles that share the same color as opt.

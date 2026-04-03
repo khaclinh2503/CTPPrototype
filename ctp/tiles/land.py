@@ -1,6 +1,7 @@
 """LandStrategy - property purchase and rent logic for City (CITY) tiles."""
 
 from ctp.tiles.base import TileStrategy
+from ctp.tiles._toll_modifiers import apply_toll_modifiers
 from ctp.core.models import Player
 from ctp.core.board import Tile, Board, SpaceId
 from ctp.core.events import GameEvent, EventType
@@ -14,6 +15,7 @@ class LandStrategy(TileStrategy):
     - Rent payment when landing on opponent-owned land
     - Rent transfer to owner
     - BASE_UNIT scaled prices
+    - Toll modifier checks: virus/double_toll/angel/discount (Phase 02.1)
 
     Mua đất: quyết định mua/không mua được xử lý bởi GameController
     (buy_decision_fn), không auto-mua tại đây.
@@ -39,7 +41,13 @@ class LandStrategy(TileStrategy):
             # Đất trống: quyết định mua do GameController xử lý, không làm gì ở đây
             pass
 
-        elif tile.owner_id != player.player_id and not player.is_bankrupt:
+        elif tile.owner_id == player.player_id:
+            # Chủ đất tự ghé: clear virus nếu có (RISK-03)
+            if owner := next((p for p in (players or []) if p.player_id == tile.owner_id), None):
+                if owner.virus_turns > 0:
+                    owner.virus_turns = 0
+
+        elif not player.is_bankrupt:
             # Đất người khác: thu tiền thuê
             land_config = board.get_land_config(tile.opt)
             if land_config is None:
@@ -63,6 +71,12 @@ class LandStrategy(TileStrategy):
             ):
                 multiplier += 1
             rent *= multiplier
+
+            # Toll modifier checks (Phase 02.1, per D-44)
+            owner = next((p for p in (players or []) if p.player_id == tile.owner_id), None)
+            rent, skip = apply_toll_modifiers(player, owner, rent, event_bus)
+            if skip:
+                return events
 
             if player.cash >= rent:
                 # Đủ tiền: trả ngay

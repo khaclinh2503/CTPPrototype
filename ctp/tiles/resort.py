@@ -1,6 +1,7 @@
 """ResortStrategy - resort property logic."""
 
 from ctp.tiles.base import TileStrategy
+from ctp.tiles._toll_modifiers import apply_toll_modifiers
 from ctp.core.models import Player
 from ctp.core.board import Tile, Board, SpaceId
 from ctp.core.events import GameEvent, EventType
@@ -15,6 +16,7 @@ class ResortStrategy(TileStrategy):
     - toll = tollCost * (increaseRate ^ level) * BASE_UNIT
     - Prices scaled by BASE_UNIT
     - Rent transfers to owner
+    - Toll modifier checks: virus/double_toll/angel/discount (Phase 02.1)
     """
 
     def on_land(self, player: Player, tile: Tile, board: Board, event_bus,
@@ -93,6 +95,12 @@ class ResortStrategy(TileStrategy):
 
                 if tile.is_golden:
                     rent *= 2
+
+                # Toll modifier checks (Phase 02.1, per D-44)
+                owner = next((p for p in (players or []) if p.player_id == tile.owner_id), None)
+                rent, skip = apply_toll_modifiers(player, owner, rent, event_bus)
+                if skip:
+                    return events
 
                 if player.cash >= rent:
                     # Đủ tiền: trả ngay

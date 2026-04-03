@@ -398,10 +398,10 @@ class TestFestivalStrategy:
 
 
 class TestFortuneStrategy:
-    """Test FortuneStrategy.on_land and on_pass (stub)."""
+    """Test FortuneStrategy.on_land and on_pass."""
 
     def test_chance_creates_card_event(self, board, event_bus):
-        """Landing on chance creates CARD_DRAWN event (stub)."""
+        """Landing on chance creates CARD_DRAWN event with card_id."""
         player = Player(player_id="p1", cash=1_000_000)
         tile = board.get_tile(13)  # Position 13 is CHANCE (spaceId=2)
 
@@ -410,8 +410,9 @@ class TestFortuneStrategy:
 
         card_events = event_bus.get_events(EventType.CARD_DRAWN)
         assert len(card_events) == 1
-        # Effect should NOT be applied (stub)
-        assert card_events[0].data.get("effect_applied") == False
+        # Phase 02.1: FortuneStrategy now draws real cards
+        assert "card_id" in card_events[0].data
+        assert card_events[0].data["card_id"].startswith("IT_CA_")
 
     def test_chance_pass_no_effect(self, board, event_bus):
         """Passing chance has no effect."""
