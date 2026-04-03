@@ -1,10 +1,11 @@
-"""StartStrategy - start tile with fixed passing bonus."""
+"""StartStrategy - start tile with fixed passing bonus and upgrade action."""
 
+import random
 from ctp.tiles.base import TileStrategy
 from ctp.core.models import Player
 from ctp.core.board import Tile, Board, SpaceId
 from ctp.core.events import GameEvent, EventType
-from ctp.core.constants import STARTING_CASH
+from ctp.core.constants import STARTING_CASH, BASE_UNIT
 
 
 class StartStrategy(TileStrategy):
@@ -21,12 +22,48 @@ class StartStrategy(TileStrategy):
                 players: list | None = None) -> list[GameEvent]:
         """Handle player landing on the start tile.
 
-        Landing on Start has no effect.
+        Player được chọn 1 ô CITY đang sở hữu chưa max (< L5) để nâng cấp lên 1 level.
+        Stub AI: chọn ngẫu nhiên, nâng cấp nếu đủ tiền.
 
         Returns:
-            Empty list (no events).
+            List of events (PROPERTY_UPGRADED nếu nâng cấp thành công).
         """
-        return []
+        # Tìm các ô CITY của player chưa đạt max level
+        eligible = [
+            board.get_tile(pos)
+            for pos in player.owned_properties
+            if board.get_tile(pos).space_id == SpaceId.CITY
+            and board.get_tile(pos).building_level < 5
+        ]
+        if not eligible:
+            return []
+
+        # Stub AI: chọn ngẫu nhiên
+        chosen = random.choice(eligible)
+        next_level = chosen.building_level + 1
+        land_cfg = board.get_land_config(chosen.opt)
+        if not land_cfg:
+            return []
+
+        upgrade_cost = land_cfg.get("building", {}).get(str(next_level), {}).get("build", 0) * BASE_UNIT
+        if not player.can_afford(upgrade_cost):
+            return []
+
+        player.cash -= upgrade_cost
+        chosen.building_level = next_level
+
+        event = GameEvent(
+            event_type=EventType.PROPERTY_UPGRADED,
+            player_id=player.player_id,
+            data={
+                "position": chosen.position,
+                "new_level": next_level,
+                "cost": upgrade_cost,
+                "reason": "start_tile",
+            }
+        )
+        event_bus.publish(event)
+        return [event]
 
     def on_pass(self, player: Player, tile: Tile, board: Board, event_bus,
                 players: list | None = None) -> list[GameEvent]:

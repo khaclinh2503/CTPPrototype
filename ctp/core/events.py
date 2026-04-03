@@ -43,15 +43,12 @@ class EventType(Enum):
     TILE_LOWERED = auto()        # An elevated tile was triggered and lowered
     WATER_SLIDE_WAVE_SET = auto()   # Wave created/replaced on Water Slide tile
     WATER_SLIDE_PUSHED = auto()     # Player pushed to wave dest by wave zone
-    CARD_EFFECT_ESCAPE_USED = auto()    # EF_19: player dùng escape card thoát tù
-    CARD_EFFECT_PINWHEEL_BYPASS = auto()  # EF_22: player bypass elevated tile bằng Pinwheel
-
     # Phase 02.1: Card effect events
     CARD_EFFECT_ANGEL = auto()               # EF_20: toll waived 100%
     CARD_EFFECT_DISCOUNT_TOLL = auto()       # EF_2: toll 50%
     CARD_EFFECT_SHIELD_BLOCKED = auto()      # EF_3: attack blocked by shield
-    CARD_EFFECT_ESCAPE_USED = auto()         # EF_19: prison escape card used
-    CARD_EFFECT_PINWHEEL_BYPASS = auto()     # EF_22: bypass elevated tile
+    CARD_EFFECT_ESCAPE_USED = auto()         # EF_19: prison escape card used / player dùng escape card thoát tù
+    CARD_EFFECT_PINWHEEL_BYPASS = auto()     # EF_22: bypass elevated tile / player bypass elevated tile bằng Pinwheel
     CARD_EFFECT_FORCE_SELL = auto()          # EF_4: force sell opponent tile
     CARD_EFFECT_SWAP_CITY = auto()           # EF_5: swap city ownership
     CARD_EFFECT_DOWNGRADE = auto()           # EF_6/7: downgrade tile level

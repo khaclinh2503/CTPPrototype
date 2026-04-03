@@ -100,8 +100,8 @@ class TestBoardConfigSchemas:
 
         config = BoardConfig.model_validate(data)
 
-        assert config.PrisonSpace.escapeCostRate == 0.1
-        assert config.PrisonSpace.limitTurnByMapId["1"] == 2
+        assert config.PrisonSpace.escapeCostRate == 0.05
+        assert config.PrisonSpace.limitTurnByMapId["1"] == 3
 
     def test_resort_space_config(self):
         """BoardConfig validates ResortSpace has maxUpgrade=3 and other fields."""

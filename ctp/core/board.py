@@ -247,25 +247,43 @@ class Board:
                 return pos
         return None
 
-    def get_wave_zone(self) -> list[int]:
-        """Trả về danh sách vị trí nằm trong vùng sóng water_wave.
+    def get_wave_zone(self) -> set[int]:
+        """Trả về tập hợp vị trí nằm trong vùng sóng (source+1 đến dest theo chiều tiến).
 
-        Vùng sóng gồm các ô từ source đến dest (theo chiều board).
-        Nếu không có sóng, trả về list rỗng.
+        Không bao gồm source, bao gồm dest.
+        Nếu không có sóng hoặc source==dest, trả về set rỗng.
 
         Returns:
-            List of tile positions in the wave zone.
+            Set các position trong vùng sóng, hoặc set rỗng nếu không có sóng.
         """
         if self.water_wave is None:
-            return []
+            return set()
         source, dest = self.water_wave
-        zone = []
+        if source == dest:
+            return set()
+        zone: set[int] = set()
         pos = source
-        while pos != dest:
-            zone.append(pos)
+        while True:
             pos = (pos % 32) + 1
-        zone.append(dest)
+            zone.add(pos)
+            if pos == dest:
+                break
         return zone
+
+    def reset_for_new_game(self) -> None:
+        """Reset tất cả trạng thái trong ván (gọi khi bắt đầu ván mới).
+
+        festival_level chỉ tích lũy trong 1 ván, không mang sang ván tiếp theo.
+        """
+        self.festival_tile_position = None
+        self.elevated_tile = None
+        self.water_wave = None
+        for tile in self.board:
+            tile.owner_id = None
+            tile.building_level = 0
+            tile.is_golden = False
+            tile.visit_count = 0
+            tile.festival_level = 0
 
     def get_row_non_corner_positions(self, water_tile_pos: int) -> list[int]:
         """Lấy các ô không phải góc trong cùng hàng với water_tile_pos.

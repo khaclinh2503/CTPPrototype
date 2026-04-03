@@ -2,7 +2,7 @@
 
 from ctp.core.models import Player
 from ctp.core.board import Board, Tile, SpaceId
-from ctp.core.constants import BASE_UNIT
+from ctp.core.constants import calc_invested_build_cost
 from ctp.core.events import EventBus, GameEvent, EventType
 
 
@@ -16,14 +16,14 @@ def resolve_acquisition(
 ) -> list[GameEvent]:
     """Xử lý acquisition khi player đứng ô đất người khác.
 
-    Flow (per D-14):
+    Flow:
     1. Chỉ apply cho CITY tiles có owner khác player
-    2. Chỉ khi chưa max level (building_level < 5)
-    3. Tính acquire_price = build cost level 1 * BASE_UNIT * acquire_rate
+    2. Chỉ khi chưa Landmark (building_level < 5)
+    3. Tính acquire_price = tổng build cost các cấp đã xây * acquire_rate
     4. Nếu player đủ tiền -> forced buy (B không có quyền từ chối)
-    5. Transfer: A pay -> B receive, tile.owner_id = A, update owned_properties
+    5. Transfer: A pay -> B receive, tile.owner_id = A, building_level giữ nguyên
 
-    Stub (per D-14): luôn mua nếu đủ tiền.
+    Stub AI: luôn mua nếu đủ tiền.
 
     Args:
         player: Player muốn mua đất (A).
@@ -50,14 +50,9 @@ def resolve_acquisition(
     if tile.building_level >= 5:
         return events
 
-    land_config = board.get_land_config(tile.opt)
-    if not land_config:
-        return events
-
-    # Giá mua = build cost level 1 * BASE_UNIT * acquireRate (per D-16)
-    building = land_config.get("building", {})
-    level_1_build = building.get("1", {}).get("build", 0)
-    acquire_price = int(level_1_build * BASE_UNIT * acquire_rate)
+    # Giá cướp = tổng build cost các cấp đã xây * acquireRate
+    total_build_cost = calc_invested_build_cost(board, tile.position)
+    acquire_price = int(total_build_cost * acquire_rate)
 
     if not player.can_afford(acquire_price):
         return events

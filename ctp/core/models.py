@@ -111,8 +111,8 @@ class Player:
             self.owned_properties.remove(position)
 
     def enter_prison(self) -> None:
-        """Put player in prison for 2 turns."""
-        self.prison_turns_remaining = 2
+        """Put player in prison for 3 turns."""
+        self.prison_turns_remaining = 3
 
     def exit_prison(self) -> None:
         """Release player from prison."""

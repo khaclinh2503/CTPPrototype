@@ -252,6 +252,151 @@ class TestResortStrategy:
 
         assert events == []
 
+    def test_resort_rent_1_owned_base_price(self, board, event_bus):
+        """1 resort cùng opt → giá cơ bản (x1)."""
+        from ctp.core.constants import BASE_UNIT
+        owner = Player(player_id="owner", cash=1_000_000)
+        payer = Player(player_id="payer", cash=1_000_000)
+
+        # Owner chỉ sở hữu pos 5 (opt=101)
+        tile5 = board.get_tile(5)
+        tile5.owner_id = "owner"
+        tile5.building_level = 1
+
+        strategy = TileRegistry.resolve(SpaceId.RESORT)
+        strategy.on_land(payer, tile5, board, event_bus, players=[owner, payer])
+
+        # rent = int(25 * 2^1) * 1000 = 50_000, multiplier x1
+        assert payer.cash == 1_000_000 - 50_000
+
+    def test_resort_rent_2_owned_double(self, board, event_bus):
+        """2 resort cùng opt → giá x2."""
+        from ctp.core.constants import BASE_UNIT
+        owner = Player(player_id="owner", cash=1_000_000)
+        payer = Player(player_id="payer", cash=1_000_000)
+
+        # Owner sở hữu 2 resort opt=101: pos 5 và 15
+        for pos in [5, 15]:
+            t = board.get_tile(pos)
+            t.owner_id = "owner"
+            t.building_level = 1
+
+        strategy = TileRegistry.resolve(SpaceId.RESORT)
+        # Payer đứng vào pos 15
+        strategy.on_land(payer, board.get_tile(15), board, event_bus, players=[owner, payer])
+
+        # rent = 50_000 * 2 = 100_000
+        assert payer.cash == 1_000_000 - 100_000
+
+    def test_resort_rent_3_owned_quadruple(self, board, event_bus):
+        """3 resort cùng opt → giá x4."""
+        from ctp.core.constants import BASE_UNIT
+        owner = Player(player_id="owner", cash=1_000_000)
+        payer = Player(player_id="payer", cash=1_000_000)
+
+        # Owner sở hữu cả 3 resort opt=101: pos 5, 15, 19
+        for pos in [5, 15, 19]:
+            t = board.get_tile(pos)
+            t.owner_id = "owner"
+            t.building_level = 1
+
+        strategy = TileRegistry.resolve(SpaceId.RESORT)
+        # Payer đứng vào pos 19
+        strategy.on_land(payer, board.get_tile(19), board, event_bus, players=[owner, payer])
+
+        # rent = 50_000 * 4 = 200_000
+        assert payer.cash == 1_000_000 - 200_000
+
+    def test_resort_single_opt_visit_count_multiplier(self, resort_config, event_bus):
+        """Resort đơn (chỉ 1 ô có opt đó) → multiplier theo visit_count."""
+        from ctp.core.constants import BASE_UNIT
+        # Tạo board chỉ có 1 resort với opt=201 (không trùng nhóm nào)
+        space_positions = {str(i): {"spaceId": 3, "opt": i} for i in range(1, 33)}
+        space_positions["1"] = {"spaceId": 7, "opt": 0}   # START
+        space_positions["10"] = {"spaceId": 6, "opt": 201}  # resort đơn
+        solo_board = Board(
+            space_positions=space_positions,
+            land_config={"1": {}},
+            resort_config=resort_config,
+        )
+
+        tile = solo_board.get_tile(10)
+        tile.owner_id = "owner"
+        tile.building_level = 1
+
+        owner = Player(player_id="owner", cash=1_000_000)
+        strategy = TileRegistry.resolve(SpaceId.RESORT)
+        base_rent = int(resort_config["tollCost"] * (resort_config["increaseRate"] ** 1)) * BASE_UNIT
+
+        # Lần 1: visit_count → 1, x1
+        p1 = Player(player_id="p1", cash=1_000_000)
+        strategy.on_land(p1, tile, solo_board, event_bus, players=[owner, p1])
+        assert p1.cash == 1_000_000 - base_rent
+
+        # Lần 2: visit_count → 2, x2
+        p2 = Player(player_id="p2", cash=1_000_000)
+        strategy.on_land(p2, tile, solo_board, event_bus, players=[owner, p2])
+        assert p2.cash == 1_000_000 - base_rent * 2
+
+        # Lần 3: visit_count → 3, x4
+        p3 = Player(player_id="p3", cash=1_000_000)
+        strategy.on_land(p3, tile, solo_board, event_bus, players=[owner, p3])
+        assert p3.cash == 1_000_000 - base_rent * 4
+
+    def test_resort_owner_landing_counts_visit(self, resort_config, event_bus):
+        """Chủ nhảy vào resort của mình cũng tăng visit_count."""
+        from ctp.core.constants import BASE_UNIT
+        space_positions = {str(i): {"spaceId": 3, "opt": i} for i in range(1, 33)}
+        space_positions["1"] = {"spaceId": 7, "opt": 0}
+        space_positions["10"] = {"spaceId": 6, "opt": 201}
+        solo_board = Board(
+            space_positions=space_positions,
+            land_config={"1": {}},
+            resort_config=resort_config,
+        )
+        tile = solo_board.get_tile(10)
+        tile.owner_id = "owner"
+        tile.building_level = 1
+
+        owner = Player(player_id="owner", cash=1_000_000)
+        strategy = TileRegistry.resolve(SpaceId.RESORT)
+        base_rent = int(resort_config["tollCost"] * (resort_config["increaseRate"] ** 1)) * BASE_UNIT
+
+        # Chủ nhảy vào: visit_count → 1, không trả tiền
+        strategy.on_land(owner, tile, solo_board, event_bus, players=[owner])
+        assert tile.visit_count == 1
+        assert owner.cash == 1_000_000  # không bị trừ tiền
+
+        # Đối thủ nhảy vào sau: visit_count → 2, trả tiền x2
+        payer = Player(player_id="payer", cash=1_000_000)
+        strategy.on_land(payer, tile, solo_board, event_bus, players=[owner, payer])
+        assert tile.visit_count == 2
+        assert payer.cash == 1_000_000 - base_rent * 2
+
+    def test_resort_visit_count_reset_on_bankruptcy_sale(self, resort_config, event_bus):
+        """visit_count reset về 0 khi resort bị bán do phá sản."""
+        from ctp.core.constants import BASE_UNIT
+        from ctp.controller.bankruptcy import resolve_bankruptcy
+        space_positions = {str(i): {"spaceId": 3, "opt": i} for i in range(1, 33)}
+        space_positions["1"] = {"spaceId": 7, "opt": 0}
+        space_positions["10"] = {"spaceId": 6, "opt": 201}
+        solo_board = Board(
+            space_positions=space_positions,
+            land_config={"1": {}},
+            resort_config=resort_config,
+        )
+        tile = solo_board.get_tile(10)
+        tile.owner_id = "owner"
+        tile.building_level = 1
+        tile.visit_count = 3  # đã có 3 lượt visit
+
+        bankrupt_player = Player(player_id="owner", cash=-1)
+        bankrupt_player.add_property(10)
+        resolve_bankruptcy(bankrupt_player, solo_board, event_bus)
+
+        assert tile.owner_id is None
+        assert tile.visit_count == 0
+
 
 class TestPrisonStrategy:
     """Test PrisonStrategy.on_land and on_pass."""
@@ -373,18 +518,31 @@ class TestFestivalStrategy:
     """Test FestivalStrategy.on_land and on_pass."""
 
     def test_festival_increments_and_pays(self, board, event_bus):
-        """Landing on festival updates level and pays reward."""
+        """Landing on festival với ô CITY sở hữu → chọn ô đó, publish event."""
         player = Player(player_id="p1", cash=1_000_000)
         tile = board.get_tile(17)  # Position 17 is FESTIVAL (spaceId=1)
         board.festival_level = 0
+        # Player phải sở hữu ít nhất 1 ô CITY mới tổ chức được
+        city_tile = board.get_tile(2)  # CITY opt=1
+        city_tile.owner_id = player.player_id
+        player.add_property(2)
 
         strategy = TileRegistry.resolve(SpaceId.FESTIVAL)
         events = strategy.on_land(player, tile, board, event_bus)
 
-        assert board.festival_level >= 0
-
         festival_events = event_bus.get_events(EventType.FESTIVAL_UPDATED)
         assert len(festival_events) == 1
+
+    def test_festival_no_owned_no_effect(self, board, event_bus):
+        """Landing on festival không có ô sở hữu → không tổ chức, không mất tiền."""
+        player = Player(player_id="p1", cash=1_000_000)
+        tile = board.get_tile(17)
+
+        strategy = TileRegistry.resolve(SpaceId.FESTIVAL)
+        events = strategy.on_land(player, tile, board, event_bus)
+
+        assert events == []
+        assert player.cash == 1_000_000  # không bị trừ phí
 
     def test_festival_pass_no_effect(self, board, event_bus):
         """Passing festival has no effect."""

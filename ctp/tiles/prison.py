@@ -29,8 +29,8 @@ class PrisonStrategy(TileStrategy):
         events = []
 
         # Get prison config from board (not directly stored on board yet)
-        # Default to 2 turns for map 1
-        prison_turns = 2
+        # Default to 3 turns for map 1 (base game rule)
+        prison_turns = 3
 
         # Set player's prison turns
         player.prison_turns_remaining = prison_turns

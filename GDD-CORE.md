@@ -1,6 +1,6 @@
 # Game Design Document — CTPPrototype Core Game
 > Trạng thái: **Phase 1 + Phase 2 đã implement** (Phase 2.5 trở đi chưa có)
-> Cập nhật: 2026-04-02
+> Cập nhật: 2026-04-03
 
 ---
 
@@ -53,7 +53,7 @@
 | 8 | TAX | pos 31 | — | — | Ô thuế |
 | 9 | TRAVEL | pos 25 | pos 25 | pos 25 | Ô du lịch / teleport |
 | 10 | GOD | — | 4 ô | — | Ô thần (xem mục 12) |
-| 40 | WATER_SLIDE | — | — | 4 ô | Ô cầu trượt nước (stub) |
+| 40 | WATER_SLIDE | — | — | 4 ô | Ô cầu trượt nước (xem mục 12.1) |
 
 ### Sơ đồ bàn cờ — Map 1 (SpacePosition0)
 
@@ -169,11 +169,14 @@ Pos 32: CITY (opt 16)
 
 ## 4. Vòng lặp game (FSM)
 
-Mỗi lượt của một player chạy qua **7 phase** theo thứ tự:
+Mỗi lượt của một player chạy qua **7 phase** theo thứ tự, với rẽ nhánh sớm tại RESOLVE_TILE:
 
 ```
-ROLL → MOVE → RESOLVE_TILE → ACQUIRE → UPGRADE → CHECK_BANKRUPTCY → END_TURN
+ROLL → MOVE → RESOLVE_TILE ─┬─ (cash < 0) → CHECK_BANKRUPTCY → END_TURN
+                             └─ (cash ≥ 0) → ACQUIRE → UPGRADE → END_TURN
 ```
+
+> CHECK_BANKRUPTCY chỉ trigger khi mất tiền thụ động (thuê, thuế). Mua nhà/nâng cấp có `can_afford` check nên không bao giờ gây âm tiền.
 
 ### 4.1 ROLL — Tung xúc xắc
 
@@ -186,22 +189,50 @@ ROLL → MOVE → RESOLVE_TILE → ACQUIRE → UPGRADE → CHECK_BANKRUPTCY → 
 
 - Di chuyển theo tổng 2 xúc xắc.
 - **Đi qua ô START (vị trí 1):** nhận thưởng `passingBonusRate × STARTING_CASH = 15% × 1,000,000 = 150,000`.
+- **Dừng tại ô START:** chọn 1 ô CITY đang sở hữu chưa max (< L5) để nâng cấp lên 1 level, trả phí bình thường. Nếu không sở hữu ô nào hoặc không đủ tiền, không có hiệu ứng.
+- **Gặp ô nâng (GOD):** dừng tại ô nâng, ô hạ xuống, resolve bình thường, huỷ đổ đôi.
+- **Đi vào vùng sóng (WATER_SLIDE):** bị đẩy đến ô đích, resolve bình thường, đổ đôi không bị huỷ.
 - Nếu đổ đôi và không ở tù → sau khi giải quyết lượt, bắt đầu lượt mới ngay.
 
 ### 4.3 RESOLVE_TILE — Xử lý ô
 
-Gọi `TileStrategy.on_land` tương ứng với loại ô player đang đứng.
+Gọi `TileStrategy.on_land` tương ứng với loại ô player đang đứng. Với CITY/RESORT, rẽ theo 3 nhánh:
 
-Bổ sung sau khi resolve:
-- Nếu ô là CITY **chưa có chủ**: `_try_buy_property` → mua và xây lên tối đa (xem 5.1).
-- Nếu ô là CITY **của chính mình**: đánh dấu eligible để upgrade (xem 5.2).
+#### Nhánh A — Ô chưa có chủ
+1. Check player có đủ tiền mua L1 không.
+2. Nếu đủ tiền: đưa ra **2 lựa chọn**:
+   - **Mua** → chọn **chính xác cấp muốn dừng lại** (L1, L2, L3, hoặc L4) theo chiến thuật:
+     - Chỉ mua L1 (cắm cờ, giữ tiền mặt).
+     - Mua đến L2, L3, hoặc L4 (tối đa lần đầu).
+     - Mỗi cấp chỉ mua được nếu đủ tiền cấp đó.
+   - **Không mua** → bỏ qua, kết thúc resolve.
+3. Nếu không đủ tiền mua L1: bỏ qua.
+4. → Tiếp tục sang ACQUIRE.
+
+> *Headless AI hiện tại: luôn mua nếu đủ tiền, tự xây đến L3 hoặc đến khi hết tiền.*
+
+#### Nhánh B — Ô của chính mình
+1. Check cấp nhà hiện tại:
+   - Chưa L4 (`building_level < 4`): player **chọn nâng lên cấp nào** (theo chiến thuật) trong phạm vi hiện tại→L4, mỗi cấp phải đủ tiền.
+   - Đã L4 → player **chọn có xây Landmark (L5) không** nếu đủ tiền; có thể từ chối để giữ cash.
+   - Đã L5 (Landmark): không làm gì.
+2. → Tiếp tục sang ACQUIRE.
+
+#### Nhánh C — Ô của đối thủ
+1. Tính tiền thuê và trừ vào cash player (xem 5.3).
+2. **Rẽ nhánh sớm (early bankruptcy):**
+   - Nếu `player.cash < 0` → chuyển thẳng sang `CHECK_BANKRUPTCY`, bỏ qua ACQUIRE và UPGRADE.
+   - Nếu `player.cash ≥ 0` → tiếp tục flow bình thường sang ACQUIRE.
 
 ### 4.4 ACQUIRE — Mua cưỡng bức
 
-Nếu ô là CITY **của đối thủ** và chưa max level (< L5):
-- Tính `acquire_price = level_1_build × BASE_UNIT × acquireRate`.
-- Nếu player đủ tiền: **bắt buộc** mua, chủ cũ không có quyền từ chối.
-- Transfer: player trả tiền → chủ cũ nhận, ownership chuyển.
+Nếu ô là CITY **của đối thủ** và chưa Landmark (< L5):
+- Tính `acquire_price = tổng build cost các cấp đã xây × acquireRate`.
+- Player **chọn có cướp hay không** theo chiến thuật (không bắt buộc).
+- Điều kiện: phải đủ tiền `acquire_price` mới được chọn.
+- Chủ cũ **không có quyền từ chối**.
+- Transfer: player trả tiền → chủ cũ nhận, ownership chuyển, **building_level giữ nguyên**.
+- **Resort không bị Acquire** (chỉ có thể cướp Resort qua skill đặc biệt trong tương lai).
 
 ### 4.5 UPGRADE — Nâng cấp đất
 
@@ -212,29 +243,35 @@ Với mỗi ô trong danh sách eligible:
 
 ### 4.6 CHECK_BANKRUPTCY — Kiểm tra phá sản
 
-- Nếu `player.cash < 0`: kích hoạt `resolve_bankruptcy`.
-  - Bán đất **rẻ nhất trước** (theo `calc_invested_build_cost`).
-  - Giá bán = `sellRate (50%) × tổng build cost đã đầu tư`.
-  - Lặp đến khi `cash ≥ 0` hoặc hết đất.
-  - Nếu vẫn `cash < 0` sau khi bán hết: `is_bankrupt = True` → loại khỏi game.
+Chỉ có ý nghĩa khi player **bị mất tiền thụ động** (thuê đất, thuế) — mua nhà/nâng cấp luôn kiểm tra `can_afford` trước nên không thể gây âm tiền.
+
+Trigger thực tế: sau RESOLVE_TILE khi `cash < 0` (Nhánh C — trả tiền thuê hoặc thuế).
+
+**Flow xử lý:**
+1. Bán nhà **rẻ nhất trước** (theo `calc_invested_build_cost`), giá bán = `sellRate (50%) × build cost đã đầu tư`.
+2. Lặp đến khi `cash ≥ 0` hoặc hết đất.
+3. Nếu vẫn `cash < 0` sau khi bán hết:
+   - **Bankruptcy do trả thuê:** toàn bộ tài sản còn lại (cash + tiền bán nhà) chuyển cho chủ đất nhận.
+   - **Bankruptcy do nguyên nhân khác:** tài sản trả về pool (không ai nhận).
+   - `is_bankrupt = True` → loại khỏi game.
 
 ### 4.7 Luật Tù (PRISON)
 
-Khi vào tù: `prison_turns_remaining = 2`.
+Khi vào tù: `prison_turns_remaining = 3`.
 
 Đầu lượt (ở trong ROLL phase), nếu `prison_turns_remaining > 0`:
 
 | Tình huống | Hành động |
 |-----------|-----------|
-| Đủ tiền trả phí | Trả `escapeCostRate × STARTING_CASH = 10% × 1M = 100,000` → thoát, đổ xúc xắc bình thường |
-| Không đủ tiền | Đổ xúc xắc (bắt buộc): ra đôi → thoát tù nhưng **kết thúc lượt ngay** (không di chuyển); không ra đôi → ở tiếp |
-| Hết 2 lượt (hạn chế) | Tự động thoát tù, đổ xúc xắc và di chuyển bình thường |
+| Đủ tiền trả phí | Trả `escapeCostRate × STARTING_CASH = 5% × 1M = 50,000` → thoát, đổ xúc xắc bình thường |
+| Không đủ tiền | Đổ xúc xắc (bắt buộc): ra đôi → thoát tù + **di chuyển bình thường** + cuối lượt được đổ thêm; không ra đôi → ở tiếp |
+| Hết 3 lượt (hạn chế) | Tự động thoát tù, đổ xúc xắc và di chuyển bình thường |
 
 ### 4.8 END_TURN — Kết thúc lượt
 
 - Nếu đổ đôi (và không ở tù): quay lại ROLL, chơi lần nữa.
 - Nếu không đổ đôi: chuyển sang player tiếp theo.
-- Nếu `current_turn ≥ max_turns` hoặc chỉ còn ≤1 player: game over.
+- Kiểm tra điều kiện kết thúc ván theo thứ tự (xem mục 15).
 
 ---
 
@@ -242,11 +279,14 @@ Khi vào tù: `prison_turns_remaining = 2`.
 
 ### 5.1 Mua đất trống
 
-Khi dừng ở CITY chưa có chủ (tự động, không hỏi — headless AI):
+Khi dừng ở CITY/RESORT chưa có chủ:
 - Giá L1 = `building["1"]["build"] × BASE_UNIT`.
-- Mua L1, rồi **tiếp tục xây ngay lên đến L4** nếu đủ tiền cho từng cấp liên tiếp.
-- Kết quả: property có thể đạt L1–L4 ngay lần mua đầu tiên tùy túi tiền.
+- Player chọn có mua không và **dừng ở cấp nào theo chiến thuật**: L1, L2, L3, hoặc L4.
+- Mỗi cấp phải đủ tiền mới mua được; có thể chọn chỉ mua L1 dù đủ tiền L4.
+- Tối đa lần mua đầu là **L4** — Landmark (L5) chỉ xây được lần sau khi đã đạt L4.
 - Thiết lập `tile.owner_id`, `tile.building_level`, cập nhật `player.owned_properties`.
+
+> *Headless AI: luôn mua nếu đủ tiền L1, xây tiếp đến L3 hoặc đến khi hết tiền.*
 
 ### 5.2 Bảng giá đất (opt=1 làm ví dụ)
 
@@ -283,13 +323,22 @@ rent = sum(toll[1..current_level]) × BASE_UNIT × multiplier
 
 Ví dụ: golden + full color set → multiplier = 3 → toll × 3.
 
-- Player trả → chủ nhận.
+**Flow trả tiền thuê:**
+1. Trừ `rent` khỏi cash player, cộng vào cash chủ đất.
+2. Nếu `player.cash < 0` sau khi trả → kích hoạt `resolve_bankruptcy(creditor=chủ_đất)`:
+   - Bán **toàn bộ** tài sản (rẻ nhất trước), nhận 50% giá trị đầu tư mỗi ô.
+   - Chuyển **toàn bộ cash còn lại** (nếu dương) cho chủ đất.
+   - `player.cash = 0`, `is_bankrupt = True` → bị loại khỏi game.
 
 ### 5.4 Mua cưỡng bức (Acquisition)
 
-- Chỉ xảy ra khi: đất thuộc đối thủ **và** `building_level < 5`.
-- `acquire_price = level_1_build × BASE_UNIT × acquireRate (1.0)`.
-- Stub AI: **luôn mua** nếu đủ tiền.
+- Chỉ xảy ra khi: đất **CITY** thuộc đối thủ **và** `building_level < 5` (chưa Landmark).
+- `acquire_price = sum(build[1..current_level]) × BASE_UNIT × acquireRate`.
+- Player **chọn có cướp hay không** theo chiến thuật, phải đủ tiền mới được chọn.
+- Chủ cũ không từ chối được; building_level **không thay đổi** sau khi sang tay.
+- Resort **không thể** bị Acquire thông thường.
+
+> *Headless AI hiện tại: luôn mua nếu đủ tiền (stub — giá đang tính sai theo L1, cần fix theo công thức mới).*
 
 ---
 
@@ -301,11 +350,44 @@ Resort có cơ chế đơn giản hơn CITY:
 |---------|---------|
 | Giá mua | `initCost (50) × BASE_UNIT = 50,000` |
 | Max level | 3 |
-| Toll cơ sở | `tollCost (40) × BASE_UNIT = 40,000` |
+| Toll cơ sở | `tollCost (25) × BASE_UNIT = 25,000` |
 | Công thức toll | `int(tollCost × increaseRate^level) × BASE_UNIT` |
 
 - Không có acquisition (chỉ CITY mới có).
 - Auto-buy khi dừng ở Resort chưa có chủ (giống CITY).
+
+### 6.1 Multiplier theo nhóm màu (opt)
+
+Mỗi Resort có `opt` là mã nhóm màu (ví dụ: 101, 102). Có 2 loại tình huống:
+
+**Trường hợp 1 — Nhóm có nhiều Resort (>1 ô cùng opt):**
+
+Multiplier tính theo số Resort cùng opt mà **chủ sở hữu đang nắm**:
+
+| Số resort cùng opt chủ sở hữu | Multiplier |
+|-------------------------------|------------|
+| 1 | ×1 (base) |
+| 2 | ×2 |
+| 3 | ×4 |
+
+**Trường hợp 2 — Resort đơn (chỉ 1 ô duy nhất có opt đó trên map):**
+
+Multiplier tính theo **tổng số lượt đã nhảy vào** ô đó (`visit_count`), kể cả chủ lẫn đối thủ:
+
+| visit_count | Multiplier |
+|-------------|------------|
+| 1 | ×1 (base) |
+| 2 | ×2 |
+| ≥3 | ×4 |
+
+- `visit_count` tăng mỗi khi bất kỳ người chơi nào dừng ở Resort đó (kể cả chủ, không trả tiền nhưng vẫn tính).
+- Khi Resort bị bán do phá sản → `visit_count` reset về 0.
+
+### 6.2 Ô Vàng (is_golden) với Resort
+
+Nếu Resort được chọn là ô vàng (`is_golden=True`): toll nhân thêm ×2 **độc lập** với multiplier nhóm màu.
+
+Ví dụ: Resort đơn đã có 2 visit + is_golden → toll × 2 (nhóm) × 2 (vàng) = ×4.
 
 ---
 
@@ -339,17 +421,27 @@ Mechanic 2 lượt:
 
 | Tham số config | Giá trị | Ý nghĩa |
 |----------------|---------|---------|
-| `holdCostRate` | 0.02 | Tỷ lệ phí lễ hội |
+| `holdCostRate` | 0.02 | Tỷ lệ phí tổ chức lễ hội |
 | `maxFestival` | 1 | Chỉ 1 ô festival trên map tại 1 thời điểm |
 
 **Khi player dừng ở ô Festival:**
-- Player chọn 1 ô **CITY hoặc RESORT** bất kỳ trên map để tổ chức lễ hội.
-- Ô được chọn trở thành "festival tile" — xóa festival cũ nếu có (maxFestival = 1).
-- Stub AI: chọn ngẫu nhiên.
+1. **Kiểm tra điều kiện:** Player phải **sở hữu ít nhất 1 ô CITY hoặc RESORT** và đủ tiền ≥ `holdCostRate × STARTING_CASH` (= 20,000) mới được tổ chức. Không thỏa → không có hiệu ứng, không mất tiền.
+2. **Trả phí tổ chức (1 lần):** `holdCostRate × STARTING_CASH = **20,000**` vào hệ thống (không ai nhận).
+3. **Chọn ô:** Player chọn 1 ô **CITY hoặc RESORT của mình** — stub AI chọn ngẫu nhiên trong danh sách đang sở hữu.
+4. **Xóa festival cũ** và đặt festival mới tại ô được chọn (maxFestival = 1).
 
-**Khi player dừng vào ô đang tổ chức lễ hội (CITY hoặc RESORT):**
-- Trả phí lễ hội = `holdCostRate × STARTING_CASH = 0.02 × 1,000,000 = **20,000**` cho hệ thống (không ai nhận).
-- Phí này cộng thêm vào các hiệu ứng khác của ô (thuê, acquisition...) — không thay thế.
+**Khi player khác dừng vào ô đang có festival (CITY hoặc RESORT có chủ):**
+- Trả tiền thuê bình thường cho chủ (như thường lệ).
+- Trả thêm phí festival tích lũy theo số lần ô đó được chọn (`festival_level`):
+
+| `festival_level` | Tổng phí |
+|-----------------|----------|
+| 1 (lần đầu) | **×2** toll |
+| 2 | **×3** toll |
+| 3+ | **×4** toll |
+
+- `festival_level` tích lũy trong ván đang chơi, **reset về 0 khi ván kết thúc**.
+- Nếu ô chưa có chủ: không có hiệu ứng festival.
 
 ---
 
@@ -369,9 +461,9 @@ Mechanic 2 lượt:
 
 ## 11. Ô Tù (PRISON — vị trí 9)
 
-- Khi **dừng** ở ô tù: `prison_turns_remaining = 2`.
+- Khi **dừng** ở ô tù: `prison_turns_remaining = 3`.
 - Khi **đổ đôi 3 lần liên tiếp**: vào tù ngay, không di chuyển.
-- Phí thoát tù: `escapeCostRate (10%) × STARTING_CASH = 100,000`.
+- Phí thoát tù: `escapeCostRate (5%) × STARTING_CASH = 50,000`.
 - Xem chi tiết tại 4.7.
 
 ---
@@ -397,6 +489,45 @@ Mechanic 2 lượt:
   3. Lượt kết thúc — **đổ đôi không được đổ lại**.
 
 Events:  (mua/nâng cấp),  (nâng ô),  (hạ ô).
+
+---
+
+## 12.1 Ô Cầu Trượt Nước (WATER_SLIDE — vị trí 2, 10, 18, 26)
+
+> Chỉ xuất hiện trên **Map 3** (SpacePosition6).
+
+### Khi player đáp vào ô Water Slide
+
+1. **Sóng cũ bị xóa** vô điều kiện (dù có hay không).
+2. Player **chọn 1 ô đích** trong cùng hàng — không tính ô góc (pos 1, 9, 17, 25), không tính chính ô Water Slide.
+3. **Sóng nước mới** được tạo từ ô Water Slide → ô đích.
+4. Player **trượt ngay đến ô đích** và resolve effect của ô đích bình thường (trả thuê, mua đất, v.v.).
+
+### Sóng nước
+
+- Toàn bàn chỉ tồn tại **1 sóng** tại 1 thời điểm.
+- **Vùng sóng:** các ô từ `source + 1` đến `dest` theo chiều tiến của bàn cờ (có thể bao gồm wrap-around).
+- Sóng tồn tại **mãi mãi** cho đến khi có người đáp vào ô Water Slide tiếp theo — lúc đó sóng cũ bị xóa, bất kể người đó có tạo sóng mới hay không.
+
+### Khi player khác di chuyển vào vùng sóng
+
+- Nếu bất kỳ ô nào trong đường đi của player nằm trong vùng sóng:
+  1. Player bị **đẩy ngay đến ô đích** (`dest`).
+  2. Resolve effect của ô đích bình thường.
+  3. **Sóng không bị tiêu** — vẫn còn tác dụng với player kế tiếp.
+- Player tạo sóng cũng bị đẩy nếu lượt sau đi vào vùng sóng.
+
+### AI headless — chọn dest
+
+| Ưu tiên | Tiêu chí |
+|---------|----------|
+| 1 | CITY chưa có chủ — ưu tiên ô đắt nhất (giá trị cao nhất) |
+| 2 | RESORT chưa có chủ |
+| 3 | Ô đang sở hữu (không tốn tiền) |
+| 4 | Ô không phải property (GAME, CHANCE, TAX, TRAVEL...) |
+| 5 | Ô đối thủ có tiền thuê thấp nhất |
+
+Events: `WATER_SLIDE_WAVE_SET` (sóng tạo/thay thế), `WATER_SLIDE_PUSHED` (player bị đẩy).
 
 ---
 
@@ -431,10 +562,53 @@ Player:
 
 ## 15. Điều kiện kết thúc ván
 
-| Điều kiện | Kết quả |
-|-----------|---------|
-| Chỉ còn 1 player không phá sản | Player đó thắng |
-| Đạt `max_turns = 25` | Player có cash cao nhất thắng |
+Kiểm tra theo thứ tự tại cuối mỗi lượt (`END_TURN`):
+
+### 15.1 Instant win — kết thúc ngay lập tức
+
+Player thắng ngay khi đạt 1 trong 3 điều kiện sau (cuối lượt của người đó):
+
+| Điều kiện | `reason` | Mô tả |
+|-----------|----------|-------|
+| Sở hữu **tất cả ô Resort** trên bàn | `"all_resorts"` | Toàn bộ RESORT trên map hiện tại (Map 1: 5 ô, Map 2: 4 ô) |
+| Hoàn thành **3+ nhóm màu** | `"3_color_groups"` | Sở hữu **toàn bộ** CITY trong 3+ màu |
+| Sở hữu **toàn bộ CITY + RESORT trong 1 hàng** | `"own_row"` | Một trong 4 hàng: pos 1-8, 9-16, 17-24, 25-32 |
+
+**Nhóm màu — Map 1:**
+
+| Màu | Opts | Vị trí CITY | Số ô |
+|-----|------|-------------|------|
+| 1 | 1, 2 | 2, 4 | 2 |
+| 2 | 3, 4, 5 | 6, 7, 8 | 3 |
+| 3 | 6, 7 | 11, 12 | 2 |
+| 4 | 8, 9 | 14, 16 | 2 |
+| 5 | 10, 11 | 18, 20 | 2 |
+| 6 | 12, 13, 14 | 22, 23, 24 | 3 |
+| 7 | 15, 16 | 27, 28 | 2 |
+| 8 | 17, 18 | 30, 32 | 2 |
+
+**Ô đất + resort trong mỗi hàng — Map 1:**
+
+| Hàng | Pos | CITY | RESORT |
+|------|-----|------|--------|
+| 1 | 1–8 | 2, 4, 6, 7, 8 | 5 |
+| 2 | 9–16 | 11, 12, 14, 16 | 10, 15 |
+| 3 | 17–24 | 18, 20, 22, 23, 24 | 19 |
+| 4 | 25–32 | 27, 28, 30, 32 | 26 |
+
+> Lưu ý: Mỗi hàng khớp đúng 2 nhóm màu CITY. Sở hữu đủ CITY + RESORT của cả hàng thì thắng `own_row`.
+
+### 15.2 Điều kiện thông thường
+
+| Điều kiện | `reason` | Kết quả |
+|-----------|----------|---------|
+| Chỉ còn ≤1 player chưa phá sản | `"last_player_standing"` | Player còn lại thắng |
+| Đạt `max_turns = 25` | `"max_turns"` | Player có **tổng tài sản** cao nhất thắng |
+
+**Tổng tài sản (dùng khi hết 25 turn):**
+```
+tổng tài sản = cash + Σ(build_cost đầu tư cho từng cấp đã xây) + Σ(initCost resort đang sở hữu)
+```
 
 ---
 
@@ -445,12 +619,12 @@ Player:
 | Card effects (CHANCE) | Stub — event publish nhưng không apply | Phase 3 |
 | TRAVEL đích thật | Teleport về Start thay vì đích config | Phase 2.5? |
 | GOD tile effect | **Implemented** — mua đất (turn 1), xây nhà/nâng ô (turn 2+) | ✅ |
-| WATER_SLIDE | Không làm gì | Map 3 |
+| WATER_SLIDE | **Implemented** — tạo sóng, trượt đến dest, đẩy player vào vùng sóng | ✅ |
 | Mini-game round 2, 3 | Stub — dừng sau round 1 | AI Phase 3 |
 | Acquisition decision AI | Luôn mua nếu đủ tiền | AI Phase 3 |
 | Sell decision AI | Bán rẻ nhất trước (không tính chiến lược) | AI Phase 3 |
 | Skills / Pendant / Pet | Schema validate OK, chưa apply vào gameplay | Phase 2.5 |
-| Festival accumulation | Publish event nhưng chưa track pool | Phase 2.5? |
+| Festival accumulation | Implemented: X2/X3/X4 theo `tile.festival_level`, xóa festival cũ | ✅ Done |
 | History / SQLite | Chưa implement | Phase 3 |
 | Pygame visualization | Chưa implement | Phase 4 |
 
@@ -477,7 +651,7 @@ ctp/
 │   ├── fortune.py  — FortuneStrategy (CHANCE)
 │   ├── game.py     — GameStrategy (MINI-GAME)
 │   ├── god.py      — GodStrategy (Map 2: mua đất / xây nhà / nâng ô)
-│   └── water_slide.py — WaterSlideStrategy (stub)
+│   └── water_slide.py — WaterSlideStrategy (Map 3: tạo sóng / AI pick_dest)
 └── controller/
     ├── fsm.py         — GameController, TurnPhase FSM
     ├── acquisition.py — resolve_acquisition()

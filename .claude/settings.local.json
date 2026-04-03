@@ -27,7 +27,9 @@
       "Bash(node __TRACKED_VAR__/.claude/get-shit-done/bin/gsd-tools.cjs config-get workflow.discuss_mode)",
       "Bash(sort echo:*)",
       "Bash(node __TRACKED_VAR__/.claude/get-shit-done/bin/gsd-tools.cjs todo match-phase 2)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(git stash:*)",
+      "Skill(gsd:verify-work)"
     ]
   }
 }

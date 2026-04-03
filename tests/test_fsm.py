@@ -218,8 +218,9 @@ class TestFSMStateTransitions:
         controller.step()
         assert controller.phase == TurnPhase.END_TURN
 
-    def test_full_turn_cycle(self, controller):
+    def test_full_turn_cycle(self, controller, monkeypatch):
         """Complete turn cycles back to ROLL (7 steps with ACQUIRE + UPGRADE phases)."""
+        monkeypatch.setattr(controller, 'roll_dice', lambda: (1, 2))  # non-doubles
         # Complete one full turn for Player1: ROLL+MOVE+RESOLVE+ACQUIRE+UPGRADE+CHECK+END = 7
         for _ in range(7):
             controller.step()
@@ -296,16 +297,27 @@ class TestTerminalConditions:
 class TestPrisonHandling:
     """Test prison handling in FSM."""
 
-    def test_prison_player_skips_roll(self, controller, event_bus):
-        """Player in prison (turns>1) with no money skips roll phase."""
+    def test_prison_player_no_doubles_stays_in_jail(self, controller, event_bus, monkeypatch):
+        """Player in prison with no money rolls non-doubles → stays in jail, END_TURN."""
         controller.current_player.prison_turns_remaining = 2
         controller.current_player.cash = 0  # cannot afford escape fee
+        monkeypatch.setattr(controller, 'roll_dice', lambda: (1, 2))  # non-doubles
 
-        # Step should go from ROLL directly to END_TURN
         controller.step()
 
         assert controller.phase == TurnPhase.END_TURN
         assert controller.current_player.prison_turns_remaining == 1
+
+    def test_prison_player_doubles_exits_and_moves(self, controller, event_bus, monkeypatch):
+        """Player in prison with no money rolls doubles → exits prison, phase = MOVE."""
+        controller.current_player.prison_turns_remaining = 2
+        controller.current_player.cash = 0  # cannot afford escape fee
+        monkeypatch.setattr(controller, 'roll_dice', lambda: (2, 2))  # doubles
+
+        controller.step()
+
+        assert controller.phase == TurnPhase.MOVE
+        assert controller.current_player.prison_turns_remaining == 0
 
 
 class TestCanLuc:
@@ -511,3 +523,184 @@ class TestBankruptcyResolution:
         # Should have bankruptcy event
         bankrupt_events = event_bus.get_events(EventType.PLAYER_BANKRUPT)
         assert len(bankrupt_events) > 0
+
+
+class TestInstantWinConditions:
+    """Test 3 instant win conditions: 4 resort, 3 color groups, own row."""
+
+    @pytest.fixture
+    def rich_land_config(self):
+        """Land config with 3 color groups (6 tiles), đủ để test 3_color_groups."""
+        building = {"1": {"build": 10, "toll": 1}, "2": {"build": 5, "toll": 3},
+                    "3": {"build": 15, "toll": 10}, "4": {"build": 25, "toll": 28},
+                    "5": {"build": 25, "toll": 125}}
+        return {
+            "1": {
+                # color 1: opts 1,2 → positions 2,4
+                "1": {"color": 1, "building": building},
+                "2": {"color": 1, "building": building},
+                # color 2: opts 3,4,5 → positions 6,7,8
+                "3": {"color": 2, "building": building},
+                "4": {"color": 2, "building": building},
+                "5": {"color": 2, "building": building},
+                # color 3: opts 6,7 → positions 11,12
+                "6": {"color": 3, "building": building},
+                "7": {"color": 3, "building": building},
+                # other colors for remaining tiles
+                "8": {"color": 4, "building": building},
+                "9": {"color": 4, "building": building},
+                "10": {"color": 5, "building": building},
+                "11": {"color": 5, "building": building},
+                "12": {"color": 6, "building": building},
+                "13": {"color": 6, "building": building},
+                "14": {"color": 6, "building": building},
+                "15": {"color": 7, "building": building},
+                "16": {"color": 7, "building": building},
+                "17": {"color": 8, "building": building},
+                "18": {"color": 8, "building": building},
+            }
+        }
+
+    @pytest.fixture
+    def full_board(self, space_positions, rich_land_config, resort_config, festival_config):
+        return Board(
+            space_positions=space_positions,
+            land_config=rich_land_config,
+            resort_config=resort_config,
+            festival_config=festival_config,
+        )
+
+    @pytest.fixture
+    def ctrl(self, full_board, event_bus):
+        players = [
+            Player(player_id="P1", cash=10_000_000),
+            Player(player_id="P2", cash=10_000_000),
+        ]
+        return GameController(
+            board=full_board,
+            players=players,
+            max_turns=25,
+            event_bus=event_bus,
+        )
+
+    def test_instant_win_all_resorts(self, ctrl, full_board):
+        """Sở hữu tất cả resort → instant win all_resorts."""
+        p1 = ctrl.players[0]
+        # Tất cả 5 ô Resort trên bàn: pos 5, 10, 15, 19, 26
+        resort_positions = [
+            t.position for t in full_board.board if t.space_id == SpaceId.RESORT
+        ]
+        for pos in resort_positions:
+            tile = full_board.get_tile(pos)
+            tile.owner_id = p1.player_id
+            p1.add_property(pos)
+
+        reason = ctrl._check_instant_win(p1)
+        assert reason == "all_resorts"
+
+    def test_no_win_partial_resorts(self, ctrl, full_board):
+        """Chưa sở hữu tất cả resort → chưa win."""
+        p1 = ctrl.players[0]
+        # Chỉ sở hữu 4/5 resort
+        resort_positions = [
+            t.position for t in full_board.board if t.space_id == SpaceId.RESORT
+        ]
+        for pos in resort_positions[:-1]:  # bỏ 1 resort
+            tile = full_board.get_tile(pos)
+            tile.owner_id = p1.player_id
+            p1.add_property(pos)
+
+        reason = ctrl._check_instant_win(p1)
+        assert reason is None
+
+    def test_instant_win_3_color_groups(self, ctrl, full_board):
+        """Hoàn thành 3 nhóm màu → instant win 3_color_groups."""
+        p1 = ctrl.players[0]
+        # color 1: opts 1,2 → pos 2,4
+        # color 2: opts 3,4,5 → pos 6,7,8
+        # color 3: opts 6,7 → pos 11,12
+        for pos in (2, 4, 6, 7, 8, 11, 12):
+            tile = full_board.get_tile(pos)
+            tile.owner_id = p1.player_id
+            p1.add_property(pos)
+
+        reason = ctrl._check_instant_win(p1)
+        assert reason == "3_color_groups"
+
+    def test_no_win_2_color_groups(self, ctrl, full_board):
+        """Chỉ 2 nhóm màu hoàn chỉnh (từ 2 hàng khác nhau) → chưa win."""
+        p1 = ctrl.players[0]
+        # color 1 (row 1): pos 2,4 | color 3 (row 2): pos 11,12
+        # Không hoàn thành hàng nào, cũng chưa đủ 3 màu
+        for pos in (2, 4, 11, 12):
+            tile = full_board.get_tile(pos)
+            tile.owner_id = p1.player_id
+            p1.add_property(pos)
+
+        reason = ctrl._check_instant_win(p1)
+        assert reason is None
+
+    def test_instant_win_own_row(self, ctrl, full_board):
+        """Sở hữu toàn bộ CITY + RESORT trong row 2 (pos 9-16) → instant win own_row."""
+        p1 = ctrl.players[0]
+        # Row 2 (pos 9-16): CITY tại 11,12,14,16 + RESORT tại 10,15
+        for pos in (10, 11, 12, 14, 15, 16):
+            tile = full_board.get_tile(pos)
+            tile.owner_id = p1.player_id
+            p1.add_property(pos)
+
+        reason = ctrl._check_instant_win(p1)
+        assert reason == "own_row"
+
+    def test_no_win_partial_row(self, ctrl, full_board):
+        """Thiếu 1 ô trong row → chưa win."""
+        p1 = ctrl.players[0]
+        # Row 2: có CITY 11,12,14,16 nhưng thiếu RESORT 10 và 15
+        for pos in (11, 12, 14, 16):
+            tile = full_board.get_tile(pos)
+            tile.owner_id = p1.player_id
+            p1.add_property(pos)
+
+        reason = ctrl._check_instant_win(p1)
+        assert reason is None
+
+    def test_instant_win_triggers_game_over(self, ctrl, full_board, event_bus):
+        """Instant win → GAME_ENDED event published, game_over=True."""
+        p1 = ctrl.players[0]
+        # Trao tất cả resort cho p1
+        resort_positions = [
+            t.position for t in full_board.board if t.space_id == SpaceId.RESORT
+        ]
+        for pos in resort_positions:
+            tile = full_board.get_tile(pos)
+            tile.owner_id = p1.player_id
+            p1.add_property(pos)
+
+        ctrl.phase = ctrl.phase.END_TURN
+        ctrl.step()
+
+        assert ctrl.is_game_over()
+        assert ctrl.winner == "P1"
+        ended_events = event_bus.get_events(EventType.GAME_ENDED)
+        assert len(ended_events) == 1
+        assert ended_events[0].data["reason"] == "all_resorts"
+
+    def test_winner_by_total_wealth_not_cash(self, ctrl, full_board):
+        """Khi hết turn, winner là người có tổng tài sản cao nhất (cash + công trình)."""
+        p1, p2 = ctrl.players
+        p1.cash = 100
+        p2.cash = 50
+
+        # P2 sở hữu 1 ô đất level 2 (build 1: 10*BASE_UNIT + build 2: 5*BASE_UNIT = 15 BASE_UNIT)
+        from ctp.core.constants import BASE_UNIT
+        tile = full_board.get_tile(2)
+        tile.owner_id = p2.player_id
+        tile.building_level = 2
+        p2.add_property(2)
+
+        wealth_p1 = ctrl._get_total_wealth(p1)
+        wealth_p2 = ctrl._get_total_wealth(p2)
+
+        # P2: 50 + (10+5)*BASE_UNIT = 50 + 15_000_000
+        assert wealth_p2 > wealth_p1
+        assert ctrl._get_winner() == "P2"

@@ -25,46 +25,52 @@ class FestivalStrategy(TileStrategy):
 
     def on_land(self, player: Player, tile: Tile, board: Board, event_bus,
                 players: list | None = None) -> list[GameEvent]:
-        """Player chọn 1 ô CITY/RESORT để đặt lễ hội.
+        """Player chọn 1 ô CITY/RESORT để đặt lễ hội (nếu đủ tiền).
+
+        - Phải đủ tiền (>= holdCostRate × STARTING_CASH) mới được chọn.
+        - Trừ phí tổ chức vào hệ thống.
+        - Xóa festival cũ, đặt festival mới tại ô được chọn.
 
         Stub AI: chọn ngẫu nhiên trong các ô CITY/RESORT trên board.
-
-        Args:
-            player: Player vừa dừng ở ô lễ hội.
-            tile: Festival tile.
-            board: Game board.
-            event_bus: Event bus.
-            players: All players (unused).
-
-        Returns:
-            List với 1 FESTIVAL_UPDATED event.
         """
         events = []
 
         festival_config = board.get_festival_config() or {}
         hold_cost_rate = festival_config.get("holdCostRate", self.DEFAULT_HOLD_COST_RATE)
+        organize_cost = int(hold_cost_rate * STARTING_CASH)
 
-        # Tìm tất cả ô CITY và RESORT
+        # Tìm các ô CITY và RESORT của chính player
         candidates = [
             t for t in board.board
             if t.space_id in (SpaceId.CITY, SpaceId.RESORT)
+            and t.owner_id == player.player_id
         ]
         if not candidates:
             return events
 
+        # Chỉ tổ chức nếu đủ tiền
+        if player.cash < organize_cost:
+            return events
+
+        # Trừ phí tổ chức (vào hệ thống)
+        player.cash -= organize_cost
+
         # Stub AI: chọn ngẫu nhiên
         chosen = random.choice(candidates)
 
-        # Xóa festival cũ (maxFestival = 1)
+        # Tăng festival_level cho ô được chọn, đặt festival mới (maxFestival = 1)
+        chosen.festival_level += 1
         board.festival_tile_position = chosen.position
 
+        festival_fee = int(hold_cost_rate * STARTING_CASH)
         events.append(GameEvent(
             event_type=EventType.FESTIVAL_UPDATED,
             player_id=player.player_id,
             data={
                 "festival_position": chosen.position,
+                "organize_cost": organize_cost,
                 "hold_cost_rate": hold_cost_rate,
-                "fee": int(hold_cost_rate * STARTING_CASH),
+                "fee": festival_fee,
             }
         ))
         event_bus.publish(events[-1])
