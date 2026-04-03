@@ -44,6 +44,28 @@ class EventType(Enum):
     WATER_SLIDE_WAVE_SET = auto()   # Wave created/replaced on Water Slide tile
     WATER_SLIDE_PUSHED = auto()     # Player pushed to wave dest by wave zone
 
+    # Phase 02.1: Card effect events
+    CARD_EFFECT_ANGEL = auto()               # EF_20: toll waived 100%
+    CARD_EFFECT_DISCOUNT_TOLL = auto()       # EF_2: toll 50%
+    CARD_EFFECT_SHIELD_BLOCKED = auto()      # EF_3: attack blocked by shield
+    CARD_EFFECT_ESCAPE_USED = auto()         # EF_19: prison escape card used
+    CARD_EFFECT_PINWHEEL_BYPASS = auto()     # EF_22: bypass elevated tile
+    CARD_EFFECT_FORCE_SELL = auto()          # EF_4: force sell opponent tile
+    CARD_EFFECT_SWAP_CITY = auto()           # EF_5: swap city ownership
+    CARD_EFFECT_DOWNGRADE = auto()           # EF_6/7: downgrade tile level
+    CARD_EFFECT_VIRUS = auto()               # EF_7/8/9: virus debuff applied
+    CARD_EFFECT_GO_TO_START = auto()         # EF_14: teleport to START
+    CARD_EFFECT_GO_TO_PRISON = auto()        # EF_13: teleport to PRISON
+    CARD_EFFECT_DOUBLE_TOLL_DEBUFF = auto()  # EF_16: self double toll debuff
+    CARD_EFFECT_GO_TO_FESTIVAL = auto()      # EF_10: teleport to FESTIVAL tile
+    CARD_EFFECT_GO_TO_FESTIVAL_TILE = auto() # EF_11: teleport to tile with festival marker
+    CARD_EFFECT_GO_TO_TRAVEL = auto()        # EF_12: teleport to TRAVEL tile
+    CARD_EFFECT_GO_TO_TAX = auto()           # EF_26: teleport to TAX tile
+    CARD_EFFECT_GO_TO_GOD = auto()           # EF_21: teleport to nearest GOD tile
+    CARD_EFFECT_HOST_FESTIVAL = auto()       # EF_15: set festival marker free
+    CARD_EFFECT_DONATE_CITY = auto()         # EF_17: donate tile to another player
+    CARD_EFFECT_CHARITY = auto()             # EF_18: charity — all pay poorest
+
 
 @dataclass
 class GameEvent:
