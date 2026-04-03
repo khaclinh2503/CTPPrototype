@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
+status: executing
 stopped_at: Completed 02.1-GAP-PLAN.md
-last_updated: "2026-04-03T16:21:20.291Z"
+last_updated: "2026-04-03T16:55:13.116Z"
 last_activity: 2026-04-03
 progress:
   total_phases: 6
@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-04-01)
 ## Current Position
 
 Phase: 02.1 (card-draw-and-ch-nh-x-c) — EXECUTING
-Plan: 1 of 4
-Status: Executing Phase 02.1
-Last activity: 2026-04-03 -- Phase 02.1 execution started
+Plan: 2 of 4
+Status: Ready to execute
+Last activity: 2026-04-03
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -56,6 +56,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02.1-card-draw-and-ch-nh-x-c P02 | 45 | 2 tasks | 7 files |
 | Phase 02.1-card-draw-and-ch-nh-x-c P03 | 25 | 2 tasks | 6 files |
 | Phase 02.1-card-draw-and-ch-nh-x-c PGAP | 5 | 2 tasks | 0 files |
+| Phase 02.1 PGAP | 145 | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -89,6 +90,7 @@ Recent decisions affecting current work:
 - [Phase 02.1-card-draw-and-ch-nh-x-c]: double_toll_turns decrement TRƯỚC prison check trong ROLL phase (D-42 thứ tự)
 - [Phase 02.1-card-draw-and-ch-nh-x-c]: EF_22 bypass: clear board.elevated_tile=None và elevated_pos=None để skip elevated block trong MOVE
 - [Phase 02.1-card-draw-and-ch-nh-x-c]: virus_turns is player-level field (not tile-level): one field on Player covers all owned tiles per D-11/D-22/D-44
+- [Phase 02.1]: virus_turns is player-level field (not tile-level): single field on Player covers all owned tiles per D-11/D-22/D-44, clears early on visitor land
 
 ### Pending Todos
 
@@ -102,6 +104,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-03T16:21:20.285Z
+Last session: 2026-04-03T16:55:13.111Z
 Stopped at: Completed 02.1-GAP-PLAN.md
 Resume file: None
