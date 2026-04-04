@@ -65,8 +65,8 @@
 
 ### Visualization — Hiển thị Pygame
 
-- [ ] **VIZ-01**: Board render đúng layout tùy chỉnh từ config (tile positions, labels)
-- [ ] **VIZ-02**: Quân cờ hiển thị vị trí hiện tại của từng player trên board
+- [x] **VIZ-01**: Board render đúng layout tùy chỉnh từ config (tile positions, labels)
+- [x] **VIZ-02**: Quân cờ hiển thị vị trí hiện tại của từng player trên board
 - [ ] **VIZ-03**: Panel thông tin: tiền, tài sản, skills/pet của mỗi player
 - [x] **VIZ-04**: Log panel hiển thị hành động vừa xảy ra (mỗi lượt)
 - [x] **VIZ-05**: Speed control: pause, step-by-step, 1x, 5x, 10x, max (headless)
