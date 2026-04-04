@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02.1-GAP-PLAN.md
-last_updated: "2026-04-03T16:55:13.116Z"
-last_activity: 2026-04-03
+stopped_at: Completed 02.1.1-01-PLAN.md
+last_updated: "2026-04-04T01:31:01.579Z"
+last_activity: 2026-04-04
 progress:
-  total_phases: 6
-  completed_phases: 3
-  total_plans: 10
+  total_phases: 7
+  completed_phases: 2
+  total_plans: 13
   completed_plans: 10
   percent: 0
 ---
@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-04-01)
 ## Current Position
 
 Phase: 02.1 (card-draw-and-ch-nh-x-c) — EXECUTING
-Plan: 2 of 4
+Plan: 3 of 4
 Status: Ready to execute
-Last activity: 2026-04-03
+Last activity: 2026-04-04
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -57,6 +57,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02.1-card-draw-and-ch-nh-x-c P03 | 25 | 2 tasks | 6 files |
 | Phase 02.1-card-draw-and-ch-nh-x-c PGAP | 5 | 2 tasks | 0 files |
 | Phase 02.1 PGAP | 145 | 2 tasks | 7 files |
+| Phase 02.1.1-minimal-pygameui P01 | 1 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -91,6 +92,8 @@ Recent decisions affecting current work:
 - [Phase 02.1-card-draw-and-ch-nh-x-c]: EF_22 bypass: clear board.elevated_tile=None và elevated_pos=None để skip elevated block trong MOVE
 - [Phase 02.1-card-draw-and-ch-nh-x-c]: virus_turns is player-level field (not tile-level): one field on Player covers all owned tiles per D-11/D-22/D-44
 - [Phase 02.1]: virus_turns is player-level field (not tile-level): single field on Player covers all owned tiles per D-11/D-22/D-44, clears early on visitor land
+- [Phase 02.1.1-minimal-pygameui]: Lazy import of GameView in run_pygame() ensures headless mode never initialises pygame
+- [Phase 02.1.1-minimal-pygameui]: SpeedController daemon thread: threading.Event for pause, _prev_speed for toggle resume, is_game_over() checked before and after wait()
 
 ### Pending Todos
 
@@ -104,6 +107,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-03T16:55:13.111Z
-Stopped at: Completed 02.1-GAP-PLAN.md
+Last session: 2026-04-04T01:31:01.575Z
+Stopped at: Completed 02.1.1-01-PLAN.md
 Resume file: None
