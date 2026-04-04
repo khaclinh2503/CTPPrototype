@@ -231,7 +231,7 @@ class BoardRenderer:
         font: pygame.font.Font,
     ) -> None:
         """Draw two dice at board centre. Shows animated/final values when rolling,
-        idle face-1 otherwise."""
+        last rolled values during movement, idle face-1 before first roll."""
         ds = self._DIE_SIZE
         half = ds // 2
 
@@ -251,6 +251,28 @@ class BoardRenderer:
             for ox, oy in self._DIE_DOTS.get(val, []):
                 pygame.draw.circle(screen, dot, (dx + ox, dy + oy), self._DOT_R)
 
+    @staticmethod
+    def _wrap_text(font: pygame.font.Font, text: str, max_w: int) -> list[str]:
+        """Chia text thành tối đa 2 dòng vừa max_w pixels."""
+        words = text.split()
+        lines: list[str] = []
+        current = ""
+        for word in words:
+            test = (current + " " + word).strip()
+            if font.size(test)[0] <= max_w:
+                current = test
+            else:
+                if current:
+                    lines.append(current)
+                current = word
+                if len(lines) == 1:
+                    # Dồn phần còn lại vào dòng 2, kể cả nếu hơi dài
+                    break
+        if current:
+            lines.append(current)
+        # Nếu vẫn chỉ 1 phần (không có space để tách), trả về nguyên
+        return lines[:2]
+
     def _draw_card_overlay(
         self,
         screen: pygame.Surface,
@@ -259,7 +281,7 @@ class BoardRenderer:
         font_body: pygame.font.Font,
     ) -> None:
         """Draw semi-transparent card reveal box at board centre."""
-        box_w, box_h = 220, 110
+        box_w, box_h = 280, 120
         box_x = _CX - box_w // 2
         box_y = _CY - box_h // 2
 
@@ -269,23 +291,26 @@ class BoardRenderer:
         screen.blit(surf, (box_x, box_y))
         pygame.draw.rect(screen, (100, 150, 255), (box_x, box_y, box_w, box_h), 2)
 
-        player   = overlay.get("player", "?")
-        card_id  = overlay.get("card_id", "?")
-        effect   = overlay.get("effect", "?")
-        content  = overlay.get("content_id", "")
+        card_id   = overlay.get("card_id", "?")
+        card_name = overlay.get("card_name", card_id)
+        card_desc = overlay.get("card_desc", "")
 
+        # Title: "RUT THE"
         title_surf = font_heading.render("RUT THE", True, (255, 215, 0))
-        screen.blit(title_surf, title_surf.get_rect(centerx=_CX, top=box_y + 8))
+        screen.blit(title_surf, title_surf.get_rect(centerx=_CX, top=box_y + 6))
 
-        line1 = font_body.render(f"{player}: {card_id}", True, (220, 220, 220))
-        screen.blit(line1, line1.get_rect(centerx=_CX, top=box_y + 36))
+        # Card name (yellow)
+        name_surf = font_heading.render(card_name, True, (255, 230, 100))
+        name_top = box_y + 6 + title_surf.get_height() + 4
+        screen.blit(name_surf, name_surf.get_rect(centerx=_CX, top=name_top))
 
-        if content:
-            line2 = font_body.render(content, True, (160, 220, 160))
-            screen.blit(line2, line2.get_rect(centerx=_CX, top=box_y + 56))
-
-        line3 = font_body.render(f"[{effect}]", True, (160, 180, 255))
-        screen.blit(line3, line3.get_rect(centerx=_CX, top=box_y + 76))
+        # Description — wrap thành tối đa 2 dòng
+        if card_desc:
+            desc_lines = self._wrap_text(font_body, card_desc, box_w - 16)
+            desc_top = name_top + name_surf.get_height() + 6
+            for i, dline in enumerate(desc_lines):
+                ds = font_body.render(dline, True, (160, 220, 160))
+                screen.blit(ds, ds.get_rect(centerx=_CX, top=desc_top + i * (font_body.get_linesize() + 2)))
 
         # Progress bar (shrinks over 3 seconds — purely visual)
         expires = overlay.get("expires_at", 0)

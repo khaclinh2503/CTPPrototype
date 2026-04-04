@@ -279,23 +279,22 @@ class GameController:
         else:
             self._doubles_streak = 0
 
-        self.event_bus.publish(GameEvent(
-            event_type=EventType.DICE_ROLL,
-            player_id=self.current_player.player_id,
-            data={
-                "dice": dice,
-                "total": sum(dice),
-                "doubles": self._rolled_doubles,
-                "doubles_streak": self._doubles_streak,
-                "chosen_range": chosen_range,     # [NEW]
-                "precision_hit": precision_hit,   # [NEW]
-            }
-        ))
-
-        # Đổ đôi 3 lần liên tiếp → vào tù ngay, bỏ lượt
+        # Đổ đôi 3 lần liên tiếp → vào tù ngay, bỏ lượt (publish dice trước khi vào tù)
         if self._doubles_streak >= 3:
             self._doubles_streak = 0
             self._rolled_doubles = False
+            self.event_bus.publish(GameEvent(
+                event_type=EventType.DICE_ROLL,
+                player_id=self.current_player.player_id,
+                data={
+                    "dice": dice,
+                    "total": sum(dice),
+                    "doubles": self._rolled_doubles,
+                    "doubles_streak": self._doubles_streak,
+                    "chosen_range": chosen_range,
+                    "precision_hit": precision_hit,
+                }
+            ))
             self.current_player.move_to(9)  # ô tù = position 9
             self.current_player.enter_prison()
             self.event_bus.publish(GameEvent(
@@ -306,10 +305,24 @@ class GameController:
             self.phase = TurnPhase.END_TURN
             return []
 
+        # Normal: TURN_STARTED trước, sau đó mới DICE_ROLL
         self.event_bus.publish(GameEvent(
             event_type=EventType.TURN_STARTED,
             player_id=self.current_player.player_id,
             data={"turn": self.current_turn}
+        ))
+
+        self.event_bus.publish(GameEvent(
+            event_type=EventType.DICE_ROLL,
+            player_id=self.current_player.player_id,
+            data={
+                "dice": dice,
+                "total": sum(dice),
+                "doubles": self._rolled_doubles,
+                "doubles_streak": self._doubles_streak,
+                "chosen_range": chosen_range,
+                "precision_hit": precision_hit,
+            }
         ))
 
         self.phase = TurnPhase.MOVE
@@ -359,6 +372,28 @@ class GameController:
             return 'play'
 
         # --- Lựa chọn B: Đổ xúc xắc (bắt buộc nếu không đủ tiền) ---
+
+        # Nếu đây là lượt cuối trong tù → mãn hạn, ra luôn, không cần thử đôi
+        if self.current_player.prison_turns_remaining <= 1:
+            self.current_player.decrement_prison_turn()
+            self.current_player.exit_prison()
+            self.event_bus.publish(GameEvent(
+                event_type=EventType.PRISON_EXITED,
+                player_id=pid,
+                data={"reason": "served"}
+            ))
+            dice = self.roll_dice()
+            self._rolled_doubles = (dice[0] == dice[1])
+            self._doubles_streak = 1 if self._rolled_doubles else 0
+            self.event_bus.publish(GameEvent(
+                event_type=EventType.DICE_ROLL,
+                player_id=pid,
+                data={"dice": dice, "total": sum(dice), "doubles": self._rolled_doubles,
+                      "doubles_streak": self._doubles_streak}
+            ))
+            return 'play'
+
+        # Còn lượt → thử đổ đôi để thoát sớm
         dice = self.roll_dice()
         is_doubles = (dice[0] == dice[1])
         self.event_bus.publish(GameEvent(
@@ -379,10 +414,11 @@ class GameController:
             self._doubles_streak = 1
             return 'play'
 
-        # Không ra đôi → ngồi tiếp
+        # Không ra đôi, còn lượt → ngồi tiếp
         self.current_player.decrement_prison_turn()
+        # prison_turns_remaining still > 0 here (last-turn case handled above)
         if self.current_player.prison_turns_remaining == 0:
-            # Hết hạn tù → tự động ra, roll để di chuyển
+            # fallback (should not happen normally)
             self.current_player.exit_prison()
             self.event_bus.publish(GameEvent(
                 event_type=EventType.PRISON_EXITED,

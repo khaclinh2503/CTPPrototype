@@ -32,9 +32,71 @@ from ctp.ui.info_panel import InfoPanel, PANEL_X, LOG_Y, LOG_H
 from ctp.ui.speed_controller import SpeedController
 
 import ctp.tiles   # register tile strategies (same as main.py)
+from ctp.tiles.fortune import set_debug_card
 
 if TYPE_CHECKING:
     from ctp.config import ConfigLoader
+
+# ── Card name/description lookup (from vi.txt) ───────────────────────────────
+_CARD_NAMES: dict[str, str] = {
+    "IT_CA_1":  "Thiên Thần",
+    "IT_CA_2":  "Giảm Phí",
+    "IT_CA_3":  "Bảo Vệ",
+    "IT_CA_4":  "Bán Nhà",
+    "IT_CA_5":  "Hoán Đổi",
+    "IT_CA_6":  "Thế lực siêu nhiên",
+    "IT_CA_7":  "Động Đất",
+    "IT_CA_8":  "Bệnh dịch",
+    "IT_CA_9":  "Bão Cát",
+    "IT_CA_10": "Mất Điện",
+    "IT_CA_11": "Đóng Thuế",
+    "IT_CA_12": "Lễ hội",
+    "IT_CA_13": "Đến Lễ Hội",
+    "IT_CA_14": "Ra Đảo",
+    "IT_CA_15": "Du Lịch",
+    "IT_CA_16": "Bắt Đầu",
+    "IT_CA_17": "Tổ chức lễ hội",
+    "IT_CA_18": "Tăng Phí",
+    "IT_CA_19": "Tặng Đất",
+    "IT_CA_20": "Tặng Tiền",
+    "IT_CA_21": "Quay lại bàn chơi",
+    "IT_CA_22": "Thần triệu tập",
+    "IT_CA_23": "Chong chóng",
+    "IT_CA_24": "Ngân hàng",
+    "IT_CA_25": "Khinh khí cầu",
+    "IT_CA_29": "Đến Cột Cờ",
+    "IT_CA_30": "Đến ô nước",
+}
+
+_CARD_DESCS: dict[str, str] = {
+    "IT_CA_1":  "Miễn 100% phí khi vào ô đất",
+    "IT_CA_2":  "Giảm 50% phí khi vào ô đất của người khác",
+    "IT_CA_3":  "Vô hiệu hoá tấn công từ người chơi khác",
+    "IT_CA_4":  "Buộc người khác bán một nhà đang sở hữu",
+    "IT_CA_5":  "Phải đổi một nhà bất kỳ với người chơi khác",
+    "IT_CA_6":  "Gây hoả hoạn thiêu huỷ 1 cấp nhà",
+    "IT_CA_7":  "Tạo động đất phá huỷ thành phố",
+    "IT_CA_8":  "Phát tán virut gây dịch bệnh cho thành phố",
+    "IT_CA_9":  "Gây bão cát cho thành phố",
+    "IT_CA_10": "Cắt nguồn điện của thành phố",
+    "IT_CA_11": "Di chuyển tới ô thuế",
+    "IT_CA_12": "Di chuyển tới lễ hội",
+    "IT_CA_13": "Di chuyển tới ô đất đang tổ chức lễ hội",
+    "IT_CA_14": "Người chơi phải ra đảo nghỉ dưỡng",
+    "IT_CA_15": "Tới ô bến xe",
+    "IT_CA_16": "Di chuyển tới ô xuất phát",
+    "IT_CA_17": "Miễn phí tổ chức lễ hội",
+    "IT_CA_18": "Chịu gấp đôi phí tham quan lượt tiếp theo",
+    "IT_CA_19": "Tặng một ô đất cho đối thủ bất kỳ",
+    "IT_CA_20": "Mọi người tặng tiền cho người nghèo nhất",
+    "IT_CA_21": "Đưa người chơi quay lại bàn chơi từ đảo",
+    "IT_CA_22": "Di chuyển tới một trong các Tượng Thần",
+    "IT_CA_23": "Vượt qua ô đất bị nhấc lên hoặc bẫy",
+    "IT_CA_24": "Di chuyển đến ô Ngân hàng",
+    "IT_CA_25": "Di chuyển đến ô Khinh khí cầu",
+    "IT_CA_29": "Di chuyển đến ô Cột Cờ gần nhất",
+    "IT_CA_30": "Di chuyển đến ô Xoáy Nước gần nhất",
+}
 
 # Window settings (per UI-SPEC Window section)
 _WIN_W  = 1280
@@ -130,6 +192,19 @@ class GameView:
         # Player ID order (for panel)
         self._player_ids = [p.player_id for p in self._players]
 
+        # Debug card picker state (main-thread only)
+        self._dbg_picker_open: bool = False
+        self._dbg_picker_idx:  int  = 0
+        self._dbg_picker_cards: list[str] = [
+            "IT_CA_1",  "IT_CA_2",  "IT_CA_3",  "IT_CA_4",  "IT_CA_5",
+            "IT_CA_6",  "IT_CA_7",  "IT_CA_8",  "IT_CA_9",  "IT_CA_10",
+            "IT_CA_11", "IT_CA_12", "IT_CA_13", "IT_CA_14", "IT_CA_15",
+            "IT_CA_16", "IT_CA_17", "IT_CA_18", "IT_CA_19", "IT_CA_20",
+            "IT_CA_21", "IT_CA_22", "IT_CA_23", "IT_CA_24", "IT_CA_25",
+            "IT_CA_29", "IT_CA_30",
+        ]
+        self._dbg_queued_card: str | None = None  # hiển thị trong UI sau khi queue
+
     # ------------------------------------------------------------------
     # Public: run() is called by ctp/ui/__init__.py run_pygame()
     # ------------------------------------------------------------------
@@ -141,14 +216,16 @@ class GameView:
         pygame.display.set_caption(_TITLE)
         clock = pygame.time.Clock()
 
-        # Fonts (pygame.font.SysFont - OS default, no external files)
-        font_tile    = pygame.font.SysFont(None, 14)   # tile labels
-        font_token   = pygame.font.SysFont(None, 16)   # player tokens
-        font_body    = pygame.font.SysFont(None, 18)   # panel body
-        font_heading = pygame.font.SysFont(None, 22)   # panel headings / speed
-        font_overlay = pygame.font.SysFont(None, 20)   # card overlay text
+        # Fonts — dùng font_game.ttf để hỗ trợ tiếng Việt
+        import os as _os
+        _FONT_PATH = _os.path.join(_os.path.dirname(__file__), "..", "font_game.ttf")
+        font_tile    = pygame.font.Font(_FONT_PATH, 11)   # tile labels
+        font_token   = pygame.font.Font(_FONT_PATH, 12)   # player tokens
+        font_body    = pygame.font.Font(_FONT_PATH, 13)   # panel body
+        font_heading = pygame.font.Font(_FONT_PATH, 16)   # panel headings / speed
+        font_overlay = pygame.font.Font(_FONT_PATH, 15)   # card overlay text
 
-        _LOG_LINE_H = 16  # must match info_panel._LOG_LINE_H
+        _LOG_LINE_H = 14  # must match info_panel._LOG_LINE_H
         _max_log_lines = (LOG_H - 24) // _LOG_LINE_H
 
         # Publish game start event (same as run_headless)
@@ -168,10 +245,15 @@ class GameView:
                 if event.type == pygame.QUIT:
                     running = False
                 elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_SPACE:
+                    if self._dbg_picker_open:
+                        self._handle_dbg_picker_key(event.key)
+                    elif event.key == pygame.K_SPACE:
                         self._speed_ctrl.toggle_pause()
                     elif event.key == pygame.K_1:
                         self._speed_ctrl.set_speed("1x")
+                    elif event.key == pygame.K_F8:
+                        self._dbg_picker_open = True
+                        self._dbg_picker_idx  = 0
                 elif event.type == pygame.MOUSEWHEEL:
                     mx, my = pygame.mouse.get_pos()
                     if mx >= PANEL_X and my >= LOG_Y:
@@ -205,8 +287,8 @@ class GameView:
                     elapsed = now - da["started_at"]
                     if elapsed >= da["duration"] + 0.5:
                         # Animation fully done: release game barrier
+                        # Keep _dice_display showing final values during movement
                         del self._ui_state["dice_anim"]
-                        self._dice_display = None
                         self._speed_ctrl.resume_after_dice()
                     elif elapsed >= da["duration"]:
                         # Final phase: show actual values
@@ -254,6 +336,17 @@ class GameView:
 
             # Game over notice in event log (no separate screen - UI-SPEC Copywriting)
             # GAME_ENDED handler already appended the game over line to event_log.
+
+            # Debug card picker overlay
+            if self._dbg_picker_open:
+                self._draw_dbg_picker(screen, font_tile, font_body)
+            elif self._dbg_queued_card:
+                hint = font_body.render(
+                    f"[DBG] Thẻ tiếp theo: {self._dbg_queued_card}  "
+                    f"{_CARD_NAMES.get(self._dbg_queued_card, '')}",
+                    True, (255, 220, 60)
+                )
+                screen.blit(hint, (10, _WIN_H - 28))
 
             pygame.display.flip()
             clock.tick(_FPS)
@@ -311,38 +404,41 @@ class GameView:
                 move_type = int(event.data.get("move_type", 2))
 
                 if pid and pid in self._ui_state and new_pos is not None:
-                    # Always update the authoritative position immediately
                     self._ui_state[pid]["position"] = new_pos
 
                     if move_type == 1 and old_pos is not None:
-                        # Walk: queue tile-by-tile animation path
                         path = _build_walk_path(old_pos, new_pos)
                         existing = self._ui_state[pid].get("anim_path")
                         if existing is not None:
-                            # Extend ongoing animation
                             existing.extend(path)
                         else:
                             self._ui_state[pid]["display_pos"] = old_pos
                             self._ui_state[pid]["anim_path"]   = path
                         self._ui_state["event_log"].append(
-                            f"{pid} di chuyen: o {old_pos} -> o {new_pos}"
+                            f"  Di chuyen tu o{old_pos} den o{new_pos}"
                         )
                     else:
-                        # Teleport: clear any pending animation, jump instantly
                         self._ui_state[pid].pop("display_pos", None)
                         self._ui_state[pid].pop("anim_path", None)
                         if old_pos is not None:
                             self._ui_state["event_log"].append(
-                                f"{pid} teleport: o {old_pos} -> o {new_pos}"
+                                f"  Dich chuyen tu o{old_pos} den o{new_pos}"
                             )
 
-            # -- Update active player ---
+            # -- Turn started ---
             elif et == EventType.TURN_STARTED:
                 if pid:
                     self._ui_state["active_player_id"] = pid
-                    turn = event.data.get("turn", "?")
-                    self._ui_state["event_log"].append(f"Turn {turn}: {pid}")
-                    # Refresh cash from player object (safe: background thread context)
+                    turn  = event.data.get("turn", "?")
+                    reason = event.data.get("reason", "")
+                    if reason == "in_prison":
+                        self._ui_state["event_log"].append(
+                            f"--- Luot {turn}: {pid} (dang o tu) ---"
+                        )
+                    else:
+                        self._ui_state["event_log"].append(
+                            f"--- Luot {turn}: Nguoi choi {pid} ---"
+                        )
                     self._refresh_player_state(pid)
 
             # -- Refresh after any money-changing event ---
@@ -361,7 +457,6 @@ class GameView:
                 affected = set()
                 if pid:
                     affected.add(pid)
-                # Also refresh recipient if any (e.g. RENT_PAID recipient)
                 recipient = event.data.get("recipient") or event.data.get("creditor")
                 if recipient:
                     affected.add(recipient)
@@ -379,25 +474,71 @@ class GameView:
                     if pos is not None:
                         self._ui_state["board_ownership"].pop(pos, None)
 
-                # Event log for key economic events
-                if et == EventType.RENT_PAID:
+                # Event log
+                if et == EventType.TURN_ENDED:
+                    self._ui_state["event_log"].append("")
+                elif et == EventType.RENT_PAID:
                     amount = event.data.get("amount", 0)
-                    recipient = event.data.get("recipient", "?")
-                    pos = event.data.get("position", "?")
+                    recip  = event.data.get("recipient", "?")
+                    pos    = event.data.get("position", "?")
+                    golden = " [x2 Dat Vang]" if event.data.get("is_golden") else ""
                     self._ui_state["event_log"].append(
-                        f"{pid} tra thue ${int(amount):,} cho {recipient} (o{pos})"
+                        f"  Tra thue ${int(amount):,} cho {recip} tai o{pos}{golden}"
                     )
+                elif et == EventType.TAX_PAID:
+                    amount = event.data.get("amount", 0)
+                    reason = event.data.get("reason", "")
+                    if reason == "prison_escape":
+                        self._ui_state["event_log"].append(
+                            f"  Tra phi thoat tu: ${int(amount):,}"
+                        )
+                    else:
+                        self._ui_state["event_log"].append(
+                            f"  Nop thue: ${int(amount):,}"
+                        )
+                elif et == EventType.BONUS_RECEIVED:
+                    amount = event.data.get("amount", 0)
+                    reason = event.data.get("reason", "")
+                    if reason == "doubles_reroll":
+                        self._ui_state["event_log"].append(
+                            "  Tung doi - duoc tung them 1 lan nua!"
+                        )
+                    else:
+                        self._ui_state["event_log"].append(
+                            f"  Nhan thuong: +${int(amount):,}"
+                        )
                 elif et == EventType.PROPERTY_PURCHASED:
-                    pos = event.data.get("position", "?")
+                    pos   = event.data.get("position", "?")
                     price = event.data.get("price", 0)
                     self._ui_state["event_log"].append(
-                        f"{pid} mua dat o{pos} ${int(price):,}"
+                        f"  Mua dat o{pos}: -${int(price):,}"
                     )
                 elif et == EventType.PROPERTY_ACQUIRED:
-                    pos = event.data.get("position", "?")
+                    pos    = event.data.get("position", "?")
                     from_p = event.data.get("from_player", "?")
+                    price  = event.data.get("price", 0)
                     self._ui_state["event_log"].append(
-                        f"{pid} cuop o{pos} tu {from_p}"
+                        f"  Cuop dat o{pos} cua {from_p}: -${int(price):,}"
+                    )
+                elif et == EventType.PROPERTY_UPGRADED:
+                    pos       = event.data.get("position", "?")
+                    new_level = event.data.get("new_level", "?")
+                    cost      = event.data.get("cost", 0)
+                    self._ui_state["event_log"].append(
+                        f"  Nang cap o{pos} len cap {new_level}: -${int(cost):,}"
+                    )
+                elif et == EventType.PROPERTY_SOLD:
+                    pos   = event.data.get("position", "?")
+                    value = event.data.get("value", 0)
+                    self._ui_state["event_log"].append(
+                        f"  Ban dat o{pos}: +${int(value):,}"
+                    )
+                elif et == EventType.DEBT_SETTLED:
+                    creditor = event.data.get("creditor", "?")
+                    paid     = event.data.get("paid", 0)
+                    owed     = event.data.get("owed", 0)
+                    self._ui_state["event_log"].append(
+                        f"  Thanh toan no cho {creditor}: ${int(paid):,} / ${int(owed):,}"
                     )
 
             # -- Bankrupt ---
@@ -406,47 +547,105 @@ class GameView:
                     self._ui_state[pid]["is_bankrupt"] = True
                     self._ui_state[pid].pop("display_pos", None)
                     self._ui_state[pid].pop("anim_path",   None)
-                    self._ui_state["event_log"].append(f"*** {pid} PHA SAN ***")
+                    self._ui_state["event_log"].append(
+                        f"*** NGUOI CHOI {pid} DA PHA SAN ***"
+                    )
 
             # -- Game ended ---
             elif et == EventType.GAME_ENDED:
                 turns = event.data.get("turns", "?")
                 self._ui_state["event_log"].append(
-                    f"GAME OVER \u2014 Con {turns} luot"
+                    f"=== KET THUC SAU {turns} LUOT ==="
                 )
                 self._game_over_flag = True
 
             # -- Card drawn ---
             elif et == EventType.CARD_DRAWN:
-                card_id   = event.data.get("card_id", "?")
-                effect    = event.data.get("effect", "?")
+                card_id = event.data.get("card_id", "?")
+                effect  = event.data.get("effect", "?")
                 now = time.time()
                 self._ui_state["card_overlay"] = {
                     "player":     pid or "?",
                     "card_id":    card_id,
                     "effect":     effect,
-                    "content_id": "",   # raw card data not cached here
+                    "card_name":  _CARD_NAMES.get(card_id, card_id),
+                    "card_desc":  _CARD_DESCS.get(card_id, ""),
                     "created_at": now,
                     "expires_at": now + 3.0,
                 }
-                self._ui_state["event_log"].append(f"{pid} rut the {card_id} [{effect}]")
+                card_name = _CARD_NAMES.get(card_id, card_id)
+                self._ui_state["event_log"].append(
+                    f"  Rut the [{card_id}] {card_name}: {effect}"
+                )
+
+            # -- Prison entered ---
+            elif et == EventType.PRISON_ENTERED:
+                reason = event.data.get("reason", "")
+                turns  = event.data.get("turns", 0)
+                if reason == "triple_doubles":
+                    self._ui_state["event_log"].append(
+                        f"  Tung doi 3 lan lien tiep - {pid} vao TU! ({turns} luot)"
+                    )
+                else:
+                    self._ui_state["event_log"].append(
+                        f"  {pid} bi giam vao tu {turns} luot"
+                    )
+
+            # -- Prison exited ---
+            elif et == EventType.PRISON_EXITED:
+                reason = event.data.get("reason", "")
+                if reason == "paid":
+                    self._ui_state["event_log"].append(f"  {pid} da tra phi - ra tu!")
+                elif reason == "doubles":
+                    self._ui_state["event_log"].append(f"  {pid} tung doi - ra tu!")
+                elif reason == "served":
+                    self._ui_state["event_log"].append(f"  {pid} man han - ra tu!")
 
             # -- Dice roll ---
             elif et == EventType.DICE_ROLL:
                 d     = event.data.get("dice", ())
                 total = event.data.get("total", 0)
-                self._ui_state["event_log"].append(
-                    f"{pid} tung xuc xac: {d[0] if d else '?'}+{d[1] if len(d)>1 else '?'}={total}"
-                )
+                d0    = d[0] if d else "?"
+                d1    = d[1] if len(d) > 1 else "?"
+                is_prison_roll = event.data.get("prison_roll", False)
+                doubles_tag = " (tung doi!)" if event.data.get("doubles") else ""
+                if is_prison_roll:
+                    self._ui_state["event_log"].append(
+                        f"  [Tu] Thu tung doi: {d0} + {d1} = {total}{doubles_tag}"
+                    )
+                else:
+                    self._ui_state["event_log"].append(
+                        f"  Tung xuc xac: {d0} + {d1} = {total}{doubles_tag}"
+                    )
                 # Start dice animation — pause game loop until animation completes
                 self._ui_state["dice_anim"] = {
                     "pid":        pid or "",
                     "final":      list(d) if len(d) >= 2 else [1, 1],
                     "total":      total,
                     "started_at": time.time(),
-                    "duration":   2.0,   # 2s rolling, then 0.5s final display
+                    "duration":   2.0,
                 }
                 self._speed_ctrl.wait_for_dice_anim()
+
+            # -- Rent owed (not enough cash) ---
+            elif et == EventType.RENT_OWED:
+                amount    = event.data.get("amount", 0)
+                recipient = event.data.get("recipient", "?")
+                pos       = event.data.get("position", "?")
+                self._ui_state["event_log"].append(
+                    f"  No thue o{pos}: {pid} no {recipient} ${int(amount):,}"
+                )
+
+            # -- Minigame result ---
+            elif et == EventType.MINIGAME_RESULT:
+                won = event.data.get("won", False)
+                bet = event.data.get("bet", 0)
+                self._ui_state["event_log"].append(
+                    f"  Minigame: {'THANG' if won else 'THUA'} (cuoc ${int(bet):,})"
+                )
+
+            # Auto-scroll log to latest on every new event
+            self._ui_state["log_scroll"] = 0
 
     def _refresh_player_state(self, pid: str) -> None:
         """Recompute cash and total_assets for player pid from live Player object.
@@ -482,3 +681,68 @@ class GameView:
             self._ui_state[pid]["total_assets"] = total_assets
             self._ui_state[pid]["position"]     = player.position
             self._ui_state[pid]["is_bankrupt"]  = player.is_bankrupt
+
+    # ------------------------------------------------------------------
+    # Debug card picker (main-thread only — no lock needed)
+    # ------------------------------------------------------------------
+
+    def _handle_dbg_picker_key(self, key: int) -> None:
+        """Xử lý phím khi debug picker đang mở."""
+        total = len(self._dbg_picker_cards)
+        if key == pygame.K_UP:
+            self._dbg_picker_idx = (self._dbg_picker_idx - 1) % total
+        elif key == pygame.K_DOWN:
+            self._dbg_picker_idx = (self._dbg_picker_idx + 1) % total
+        elif key == pygame.K_RETURN:
+            card_id = self._dbg_picker_cards[self._dbg_picker_idx]
+            set_debug_card(card_id)
+            self._dbg_queued_card  = card_id
+            self._dbg_picker_open  = False
+        elif key in (pygame.K_ESCAPE, pygame.K_F8):
+            self._dbg_picker_open = False
+
+    def _draw_dbg_picker(
+        self,
+        screen: pygame.Surface,
+        font_list: pygame.font.Font,
+        font_head: pygame.font.Font,
+    ) -> None:
+        """Vẽ debug card picker overlay ở giữa màn hình."""
+        row_h    = font_list.get_linesize()
+        head_h   = font_head.get_linesize()
+        padding  = 10
+        cols     = 2
+        per_col  = (len(self._dbg_picker_cards) + cols - 1) // cols
+        col_w    = 300
+        box_w    = col_w * cols + padding * 3
+        box_h    = per_col * row_h + head_h + padding * 3
+        box_x    = (_WIN_W - box_w) // 2
+        box_y    = (_WIN_H - box_h) // 2
+
+        # Background
+        overlay = pygame.Surface((box_w, box_h), pygame.SRCALPHA)
+        overlay.fill((20, 20, 20, 220))
+        screen.blit(overlay, (box_x, box_y))
+        pygame.draw.rect(screen, (100, 200, 255), (box_x, box_y, box_w, box_h), 2)
+
+        # Heading
+        head = font_head.render(
+            "F8: Chọn thẻ debug  (↑↓  Enter  Esc)",
+            True, (100, 200, 255)
+        )
+        screen.blit(head, (box_x + padding, box_y + padding))
+
+        # Card list (2 columns)
+        list_top = box_y + padding + head_h + padding
+        for i, cid in enumerate(self._dbg_picker_cards):
+            col    = i // per_col
+            row    = i  % per_col
+            tx     = box_x + padding + col * (col_w + padding)
+            ty     = list_top + row * row_h
+            is_sel = (i == self._dbg_picker_idx)
+            if is_sel:
+                pygame.draw.rect(screen, (60, 100, 160), (tx - 4, ty, col_w, row_h))
+            color = (255, 230, 60) if is_sel else (180, 180, 180)
+            name  = _CARD_NAMES.get(cid, cid)
+            label = font_list.render(f"{cid}  {name}", True, color)
+            screen.blit(label, (tx, ty))

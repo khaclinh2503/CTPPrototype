@@ -38,8 +38,8 @@ _C_SPEED_PAUSED   = (200,  80,  80)
 _C_SPEED_RUNNING  = (180, 220, 180)
 _C_LOG_TEXT       = (180, 180, 180)
 
-# Log line height in pixels (fits 10 lines in 180px with 4px top/bottom padding)
-_LOG_LINE_H = 16
+# Log line height in pixels — must match font_body linesize in game_view.py
+_LOG_LINE_H = 14
 
 
 class InfoPanel:
@@ -152,9 +152,9 @@ class InfoPanel:
             pygame.draw.rect(screen, _C_ACTIVE_BG, (cell_x, cell_y, cell_w, cell_h))
 
         # Three lines at fixed y offsets within the cell
-        y1 = cell_y + 20
-        y2 = cell_y + 48
-        y3 = cell_y + 72
+        y1 = cell_y + 18
+        y2 = cell_y + 44
+        y3 = cell_y + 68
 
         # Line 1: player name + bankrupt badge
         name_color = _C_BANKRUPT_TEXT if is_bankrupt else (

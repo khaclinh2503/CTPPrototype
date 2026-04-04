@@ -20,6 +20,19 @@ _CARD_DATA_CACHE: Optional[dict] = None
 # Effect IDs cho held cards (D-06)
 _HELD_EFFECTS = {"EF_2", "EF_3", "EF_19", "EF_20", "EF_22"}
 
+# Debug inject: nếu != None, lần rút thẻ tiếp theo sẽ dùng card này thay vì random
+_debug_forced_card: Optional[str] = None
+
+
+def set_debug_card(card_id: Optional[str]) -> None:
+    """Set card sẽ được rút trong lần FortuneStrategy.on_land() tiếp theo.
+
+    Dùng để test flow từng thẻ khi game đang chạy.
+    Truyền None để xoá override.
+    """
+    global _debug_forced_card
+    _debug_forced_card = card_id
+
 
 def _load_raw_card_data() -> dict:
     """Load Card.json một lần, cache kết quả."""
@@ -104,8 +117,15 @@ class FortuneStrategy(TileStrategy):
         if not pool:
             return events
 
-        card_id = _draw_card(pool)
-        card_data = pool[card_id]
+        global _debug_forced_card
+        if _debug_forced_card is not None:
+            card_id = _debug_forced_card
+            _debug_forced_card = None  # consume — chỉ dùng 1 lần
+            raw = _load_raw_card_data()
+            card_data = pool.get(card_id) or raw.get(card_id, {})
+        else:
+            card_id = _draw_card(pool)
+            card_data = pool[card_id]
         effect_id = card_data.get("effect", "")
 
         # Publish CARD_DRAWN event (per D-45)
