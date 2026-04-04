@@ -551,8 +551,20 @@ def main():
     args = parser.parse_args()
 
     if not args.headless:
-        print("Visualization not implemented yet. Use --headless flag.")
-        return 1
+        # Validate player count (same check as headless branch)
+        if args.players < 2 or args.players > 4:
+            print("Number of players must be between 2 and 4")
+            return 1
+        # Load config and launch Pygame window
+        try:
+            config_loader = ConfigLoader()
+            config_loader.load_all()
+        except ConfigError as e:
+            logger.error(f"Config error: {e}")
+            return 1
+        from ctp.ui import run_pygame
+        run_pygame(config_loader, args.players, args.turns)
+        return 0
 
     # Validate player count
     if args.players < 2 or args.players > 4:
