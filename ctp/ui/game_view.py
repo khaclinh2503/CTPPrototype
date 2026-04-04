@@ -113,6 +113,10 @@ class GameView:
         # Walk animation state (main-thread only — no lock needed)
         self._anim_step_time: dict[str, float] = {}   # pid → time of last tile advance
 
+        # Dice roll animation state (main-thread only — no lock needed)
+        self._dice_display: list[int] | None = None    # current displayed values, or None
+        self._dice_update_t: float = 0.0               # last time display was randomized
+
         # -- Subscribe EventBus BEFORE thread starts ---
         self._setup_subscriptions()
 
@@ -179,20 +183,42 @@ class GameView:
                                                 max(0, log_len - _max_log_lines)))
                             self._ui_state["log_scroll"] = scroll
 
-            # Advance walk animations (main thread — _anim_step_time needs no lock)
+            # Advance walk + dice animations (main thread)
             now = time.time()
             with self._lock:
-                for pid in self._player_ids:
-                    pdata = self._ui_state.get(pid)
+                # Walk animation advance
+                for _pid in self._player_ids:
+                    pdata = self._ui_state.get(_pid)
                     if not isinstance(pdata, dict):
                         continue
                     anim = pdata.get("anim_path")
-                    if anim and now - self._anim_step_time.get(pid, 0) >= _ANIM_STEP_S:
+                    if anim and now - self._anim_step_time.get(_pid, 0) >= _ANIM_STEP_S:
                         pdata["display_pos"] = anim.pop(0)
-                        self._anim_step_time[pid] = now
+                        self._anim_step_time[_pid] = now
                         if not anim:
                             pdata.pop("anim_path",   None)
                             pdata.pop("display_pos", None)
+
+                # Dice animation management
+                da = self._ui_state.get("dice_anim")
+                if da:
+                    elapsed = now - da["started_at"]
+                    if elapsed >= da["duration"] + 0.4:
+                        # Animation fully done: release game barrier
+                        del self._ui_state["dice_anim"]
+                        self._dice_display = None
+                        self._speed_ctrl.resume_after_dice()
+                    elif elapsed >= da["duration"]:
+                        # Final phase: show actual values
+                        self._dice_display = list(da["final"])
+                    else:
+                        # Rolling phase: randomise display every 80ms
+                        if now - self._dice_update_t >= 0.08:
+                            self._dice_display = [
+                                random.randint(1, 6),
+                                random.randint(1, 6),
+                            ]
+                            self._dice_update_t = now
 
             # Update speed + expire card overlay under one lock acquire
             with self._lock:
@@ -208,6 +234,14 @@ class GameView:
                     for k, v in self._ui_state.items()
                 }
                 state_snapshot["event_log"] = list(self._ui_state["event_log"])
+            # Inject main-thread-only dice display into snapshot
+            state_snapshot["dice_display"] = (
+                list(self._dice_display) if self._dice_display else None
+            )
+            state_snapshot["dice_anim_pid"] = (
+                self._ui_state.get("dice_anim", {}).get("pid", "")
+                if "dice_anim" in self._ui_state else ""
+            )
 
             # Draw
             screen.fill(_BG)
@@ -225,6 +259,8 @@ class GameView:
             clock.tick(_FPS)
 
         pygame.quit()
+        # Safety: unblock game thread if closed during dice animation
+        self._speed_ctrl.resume_after_dice()
 
     # ------------------------------------------------------------------
     # EventBus subscriptions
@@ -397,11 +433,20 @@ class GameView:
 
             # -- Dice roll ---
             elif et == EventType.DICE_ROLL:
-                d = event.data.get("dice", ())
+                d     = event.data.get("dice", ())
                 total = event.data.get("total", 0)
                 self._ui_state["event_log"].append(
                     f"{pid} tung xuc xac: {d[0] if d else '?'}+{d[1] if len(d)>1 else '?'}={total}"
                 )
+                # Start dice animation — pause game loop until animation completes
+                self._ui_state["dice_anim"] = {
+                    "pid":        pid or "",
+                    "final":      list(d) if len(d) >= 2 else [1, 1],
+                    "total":      total,
+                    "started_at": time.time(),
+                    "duration":   0.9,   # 0.9s rolling, then 0.4s final display
+                }
+                self._speed_ctrl.wait_for_dice_anim()
 
     def _refresh_player_state(self, pid: str) -> None:
         """Recompute cash and total_assets for player pid from live Player object.

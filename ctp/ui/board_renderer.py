@@ -202,11 +202,77 @@ class BoardRenderer:
                 dx, dy = offsets[min(idx, len(offsets) - 1)]
                 self._draw_token(screen, font_token, pid, cx + dx, cy + dy)
 
+        # ── Dice roll animation (on top of board, under card overlay) ─
+        if ui_state.get("dice_display") and font_overlay:
+            self._draw_dice_anim(
+                screen,
+                ui_state["dice_display"],
+                ui_state.get("dice_anim_pid", ""),
+                font_overlay,
+                font_tile,
+            )
+
         # ── Card overlay (on top of everything) ──────────────────────
         if ui_state.get("card_overlay") and font_overlay:
             self._draw_card_overlay(screen, ui_state["card_overlay"], font_overlay, font_tile)
 
     # ── Private helpers ───────────────────────────────────────────────
+
+    # ── Dice dot layout per value ─────────────────────────────────────
+    # Coordinates are relative to die top-left corner (die size = 40px)
+    _DIE_DOTS: dict[int, list[tuple[int, int]]] = {
+        1: [(20, 20)],
+        2: [(11, 11), (29, 29)],
+        3: [(11, 11), (20, 20), (29, 29)],
+        4: [(11, 11), (29, 11), (11, 29), (29, 29)],
+        5: [(11, 11), (29, 11), (20, 20), (11, 29), (29, 29)],
+        6: [(11, 11), (11, 20), (11, 29), (29, 11), (29, 20), (29, 29)],
+    }
+    _DIE_SIZE = 40
+    _DOT_R    = 4
+
+    def _draw_dice_anim(
+        self,
+        screen: pygame.Surface,
+        dice_display: list[int],
+        pid: str,
+        font_heading: pygame.font.Font,
+        font_body: pygame.font.Font,
+    ) -> None:
+        """Draw dice roll animation overlay centred in the board area."""
+        d1 = max(1, min(6, dice_display[0]))
+        d2 = max(1, min(6, dice_display[1]))
+        ds = self._DIE_SIZE
+
+        # Background box: semi-transparent
+        box_w, box_h = 180, 120
+        bx = _CX - box_w // 2
+        by = _CY - box_h // 2
+        surf = pygame.Surface((box_w, box_h), pygame.SRCALPHA)
+        surf.fill((10, 10, 40, 210))
+        screen.blit(surf, (bx, by))
+        pygame.draw.rect(screen, (180, 180, 255), (bx, by, box_w, box_h), 2)
+
+        # Player name header
+        header = font_heading.render(f"Nguoi choi {pid} tung xuc xac", True, (255, 220, 100))
+        screen.blit(header, header.get_rect(centerx=_CX, top=by + 8))
+
+        # Draw each die
+        die_y = by + 36
+        for col, val in enumerate([d1, d2]):
+            dx = bx + 28 + col * (ds + 24)
+            dy = die_y
+            # Die face (white square)
+            pygame.draw.rect(screen, (240, 240, 240), (dx, dy, ds, ds), border_radius=6)
+            pygame.draw.rect(screen, (100, 100, 100), (dx, dy, ds, ds), 1, border_radius=6)
+            # Dots
+            for (ox, oy) in self._DIE_DOTS.get(val, []):
+                pygame.draw.circle(screen, (30, 30, 30), (dx + ox, dy + oy), self._DOT_R)
+
+        # Total below dice
+        total = d1 + d2
+        total_surf = font_heading.render(f"Tong: {total}", True, (200, 255, 200))
+        screen.blit(total_surf, total_surf.get_rect(centerx=_CX, top=die_y + ds + 8))
 
     def _draw_center_decorations(
         self,

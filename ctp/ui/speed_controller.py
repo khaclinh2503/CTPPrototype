@@ -48,6 +48,8 @@ class SpeedController:
         self._prev_speed: str = "1x"     # for Space toggle: resume to this speed
         self._pause_event = threading.Event()
         self._pause_event.set()          # start unpaused
+        self._dice_barrier = threading.Event()
+        self._dice_barrier.set()         # not blocking by default
         self._thread = threading.Thread(target=self._run, daemon=True, name="GameThread")
         self._game_over = False
 
@@ -99,6 +101,18 @@ class SpeedController:
         """Display string for speed indicator (e.g. '[PAUSED]', '[1x]')."""
         return SPEED_LABELS.get(self._speed, self._speed)
 
+    def wait_for_dice_anim(self) -> None:
+        """Block the game loop until resume_after_dice() is called.
+
+        Called from the event handler (background thread) when a DICE_ROLL fires.
+        Blocks AFTER the current step() completes, before the next step().
+        """
+        self._dice_barrier.clear()
+
+    def resume_after_dice(self) -> None:
+        """Release the dice animation barrier. Called from the render loop (main thread)."""
+        self._dice_barrier.set()
+
     def is_running(self) -> bool:
         """True if background thread is alive and game not over."""
         return self._thread.is_alive() and not self._game_over
@@ -111,6 +125,7 @@ class SpeedController:
         """Background thread: loop until game over."""
         while not self._controller.is_game_over():
             self._pause_event.wait()          # blocks indefinitely when paused
+            self._dice_barrier.wait()         # blocks during dice animation
             if self._controller.is_game_over():
                 break
             self._controller.step()
