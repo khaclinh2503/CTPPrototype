@@ -66,6 +66,18 @@ Plans:
 - [x] 02.1-02-PLAN.md — Card Effects: FortuneStrategy full implementation (23 cards), toll modifiers in LandStrategy/ResortStrategy
 - [x] 02.1-03-PLAN.md — Căn Lực + FSM Integration: _resolve_can_luc(), FSM ROLL/MOVE/END_TURN updates, dict key bug fix
 
+### Phase 02.1.1: Minimal PygameUI (INSERTED)
+
+**Goal:** Minimal Pygame window to observe the running game — diamond board with 32 rhombus tiles, player tokens, info panel (cash/total_assets), event log, speed control (Pause/1x/5x/Max), wired to existing EventBus and GameController.
+**Requirements**: VIZ-01, VIZ-02, VIZ-04, VIZ-05
+**Depends on:** Phase 2.1
+**Plans:** 3 plans
+
+Plans:
+- [ ] 02.1.1-01-PLAN.md — SpeedController background thread + ctp/ui package + requirements.txt (pygame>=2.6.1)
+- [ ] 02.1.1-02-PLAN.md — BoardRenderer (diamond geometry, tile rhombuses, player tokens) + InfoPanel (player info, event log, speed indicator)
+- [ ] 02.1.1-03-PLAN.md — GameView (EventBus subscriptions, shared state dict, render loop) + main.py Pygame branch integration
+
 ### Phase 2.5: Skill / Pendant / Pet System
 **Goal**: Hệ thống passive buff hoạt động hoàn chỉnh — mỗi player có bộ skill/pendant/pet ngẫu nhiên, `effective_stat()` stack đúng tất cả buffs, game loop tích hợp buff vào mọi tính toán kinh tế.
 **Depends on**: Phase 2
@@ -119,12 +131,13 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 2.1 → 2.5 → 3 → 4
+Phases execute in numeric order: 1 → 2 → 2.1 → 2.1.1 → 2.5 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Headless Core | 3/3 | Complete   | 2026-04-02 |
 | 2. Player + Property Rules | 0/2 | Not started | - |
 | 2.1. Card Draw + Căn Lực | 0/3 | Complete    | 2026-04-03 |
+| 2.1.1. Minimal PygameUI | 0/3 | Not started | - |
 | 3. AI Engine + History | 0/3 | Not started | - |
 | 4. Pygame Visualization | 0/3 | Not started | - |
