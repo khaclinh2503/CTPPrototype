@@ -176,14 +176,15 @@ class BoardRenderer:
             self._draw_centered_text(screen, font_tile, str(pos),  cx, cy - 5, text_color)
             self._draw_centered_text(screen, font_tile, abbr,      cx, cy + 7, text_color)
 
-        # ── Draw center card pile decorations ────────────────────────
-        self._draw_center_decorations(screen, font_tile)
+        # ── Draw center dice (idle or animated) ──────────────────────
+        self._draw_center_dice(screen, ui_state.get("dice_display"), font_tile)
 
         # ── Draw player tokens ────────────────────────────────────────
         # Group players by current position
         pos_to_players: dict[int, list[str]] = {}
         _NON_PLAYER_KEYS = {"board_ownership", "event_log", "active_player_id",
-                             "speed", "log_scroll", "card_overlay"}
+                             "speed", "log_scroll", "card_overlay",
+                             "dice_display", "dice_anim_pid", "dice_anim"}
         player_ids = [k for k in ui_state if isinstance(k, str)
                       and k not in _NON_PLAYER_KEYS
                       and isinstance(ui_state[k], dict)]
@@ -202,100 +203,53 @@ class BoardRenderer:
                 dx, dy = offsets[min(idx, len(offsets) - 1)]
                 self._draw_token(screen, font_token, pid, cx + dx, cy + dy)
 
-        # ── Dice roll animation (on top of board, under card overlay) ─
-        if ui_state.get("dice_display") and font_overlay:
-            self._draw_dice_anim(
-                screen,
-                ui_state["dice_display"],
-                ui_state.get("dice_anim_pid", ""),
-                font_overlay,
-                font_tile,
-            )
-
         # ── Card overlay (on top of everything) ──────────────────────
         if ui_state.get("card_overlay") and font_overlay:
             self._draw_card_overlay(screen, ui_state["card_overlay"], font_overlay, font_tile)
 
     # ── Private helpers ───────────────────────────────────────────────
 
-    # ── Dice dot layout per value ─────────────────────────────────────
-    # Coordinates are relative to die top-left corner (die size = 40px)
+    # ── Dice dot positions (relative to die top-left, die size = 34px) ─
     _DIE_DOTS: dict[int, list[tuple[int, int]]] = {
-        1: [(20, 20)],
-        2: [(11, 11), (29, 29)],
-        3: [(11, 11), (20, 20), (29, 29)],
-        4: [(11, 11), (29, 11), (11, 29), (29, 29)],
-        5: [(11, 11), (29, 11), (20, 20), (11, 29), (29, 29)],
-        6: [(11, 11), (11, 20), (11, 29), (29, 11), (29, 20), (29, 29)],
+        1: [(17, 17)],
+        2: [(9,  9),  (25, 25)],
+        3: [(9,  9),  (17, 17), (25, 25)],
+        4: [(9,  9),  (25,  9), (9,  25), (25, 25)],
+        5: [(9,  9),  (25,  9), (17, 17), (9,  25), (25, 25)],
+        6: [(9,  9),  (9,  17), (9,  25), (25,  9), (25, 17), (25, 25)],
     }
-    _DIE_SIZE = 40
-    _DOT_R    = 4
+    _DIE_SIZE = 34
+    _DOT_R    = 3
 
-    def _draw_dice_anim(
+    # Centre positions of the two dice on the board
+    _DICE_CENTERS = [(_CX - 24, _CY - 10), (_CX + 24, _CY + 10)]
+
+    def _draw_center_dice(
         self,
         screen: pygame.Surface,
-        dice_display: list[int],
-        pid: str,
-        font_heading: pygame.font.Font,
-        font_body: pygame.font.Font,
-    ) -> None:
-        """Draw dice roll animation overlay centred in the board area."""
-        d1 = max(1, min(6, dice_display[0]))
-        d2 = max(1, min(6, dice_display[1]))
-        ds = self._DIE_SIZE
-
-        # Background box: semi-transparent
-        box_w, box_h = 180, 120
-        bx = _CX - box_w // 2
-        by = _CY - box_h // 2
-        surf = pygame.Surface((box_w, box_h), pygame.SRCALPHA)
-        surf.fill((10, 10, 40, 210))
-        screen.blit(surf, (bx, by))
-        pygame.draw.rect(screen, (180, 180, 255), (bx, by, box_w, box_h), 2)
-
-        # Player name header
-        header = font_heading.render(f"Nguoi choi {pid} tung xuc xac", True, (255, 220, 100))
-        screen.blit(header, header.get_rect(centerx=_CX, top=by + 8))
-
-        # Draw each die
-        die_y = by + 36
-        for col, val in enumerate([d1, d2]):
-            dx = bx + 28 + col * (ds + 24)
-            dy = die_y
-            # Die face (white square)
-            pygame.draw.rect(screen, (240, 240, 240), (dx, dy, ds, ds), border_radius=6)
-            pygame.draw.rect(screen, (100, 100, 100), (dx, dy, ds, ds), 1, border_radius=6)
-            # Dots
-            for (ox, oy) in self._DIE_DOTS.get(val, []):
-                pygame.draw.circle(screen, (30, 30, 30), (dx + ox, dy + oy), self._DOT_R)
-
-        # Total below dice
-        total = d1 + d2
-        total_surf = font_heading.render(f"Tong: {total}", True, (200, 255, 200))
-        screen.blit(total_surf, total_surf.get_rect(centerx=_CX, top=die_y + ds + 8))
-
-    def _draw_center_decorations(
-        self,
-        screen: pygame.Surface,
+        dice_display: list[int] | None,
         font: pygame.font.Font,
     ) -> None:
-        """Draw two card-pile icons at the board centre."""
-        piles = [
-            (_CX - 32, _CY - 12, (70, 130, 210), "?"),   # left pile (blue)
-            (_CX + 32, _CY + 12, (210, 150, 50), "?"),   # right pile (gold)
-        ]
-        for cx, cy, color, label in piles:
-            # Shadow layers (stacked cards effect)
-            for k in range(3, 0, -1):
-                shadow_poly = _tile_polygon(cx + k, cy - k * 2, 18)
-                shade = (max(0, color[0] - 40), max(0, color[1] - 40), max(0, color[2] - 40))
-                pygame.draw.polygon(screen, shade, shadow_poly)
-                pygame.draw.polygon(screen, (60, 60, 60), shadow_poly, 1)
-            # Top card
-            poly = _tile_polygon(cx, cy, 18)
-            pygame.draw.polygon(screen, color, poly)
-            pygame.draw.polygon(screen, (200, 200, 200), poly, 1)
-            self._draw_centered_text(screen, font, label, cx, cy, (255, 255, 255))
+        """Draw two dice at board centre. Shows animated/final values when rolling,
+        idle face-1 otherwise."""
+        ds = self._DIE_SIZE
+        half = ds // 2
+
+        for i, (cx, cy) in enumerate(self._DICE_CENTERS):
+            if dice_display and len(dice_display) >= 2:
+                val = max(1, min(6, dice_display[i]))
+                bg  = (240, 240, 240)
+                dot = (20,  20,  20)
+            else:
+                val = 1           # idle: show face-1
+                bg  = (160, 170, 200)
+                dot = (60,  60,  80)
+
+            dx, dy = cx - half, cy - half
+            pygame.draw.rect(screen, bg,  (dx, dy, ds, ds), border_radius=5)
+            pygame.draw.rect(screen, (80, 80, 80), (dx, dy, ds, ds), 1, border_radius=5)
+            for ox, oy in self._DIE_DOTS.get(val, []):
+                pygame.draw.circle(screen, dot, (dx + ox, dy + oy), self._DOT_R)
 
     def _draw_card_overlay(
         self,

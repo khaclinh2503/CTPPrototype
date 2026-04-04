@@ -203,7 +203,7 @@ class GameView:
                 da = self._ui_state.get("dice_anim")
                 if da:
                     elapsed = now - da["started_at"]
-                    if elapsed >= da["duration"] + 0.4:
+                    if elapsed >= da["duration"] + 0.5:
                         # Animation fully done: release game barrier
                         del self._ui_state["dice_anim"]
                         self._dice_display = None
@@ -444,7 +444,7 @@ class GameView:
                     "final":      list(d) if len(d) >= 2 else [1, 1],
                     "total":      total,
                     "started_at": time.time(),
-                    "duration":   0.9,   # 0.9s rolling, then 0.4s final display
+                    "duration":   2.0,   # 2s rolling, then 0.5s final display
                 }
                 self._speed_ctrl.wait_for_dice_anim()
 
