@@ -68,8 +68,8 @@
 - [ ] **VIZ-01**: Board render đúng layout tùy chỉnh từ config (tile positions, labels)
 - [ ] **VIZ-02**: Quân cờ hiển thị vị trí hiện tại của từng player trên board
 - [ ] **VIZ-03**: Panel thông tin: tiền, tài sản, skills/pet của mỗi player
-- [ ] **VIZ-04**: Log panel hiển thị hành động vừa xảy ra (mỗi lượt)
-- [ ] **VIZ-05**: Speed control: pause, step-by-step, 1x, 5x, 10x, max (headless)
+- [x] **VIZ-04**: Log panel hiển thị hành động vừa xảy ra (mỗi lượt)
+- [x] **VIZ-05**: Speed control: pause, step-by-step, 1x, 5x, 10x, max (headless)
 - [ ] **VIZ-06**: Khi game kết thúc: màn hình kết quả với thống kê ván đấu
 
 ## v2 Requirements

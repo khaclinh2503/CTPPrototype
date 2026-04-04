@@ -71,10 +71,10 @@ Plans:
 **Goal:** Minimal Pygame window to observe the running game — diamond board with 32 rhombus tiles, player tokens, info panel (cash/total_assets), event log, speed control (Pause/1x/5x/Max), wired to existing EventBus and GameController.
 **Requirements**: VIZ-01, VIZ-02, VIZ-04, VIZ-05
 **Depends on:** Phase 2.1
-**Plans:** 3 plans
+**Plans:** 1/3 plans executed
 
 Plans:
-- [ ] 02.1.1-01-PLAN.md — SpeedController background thread + ctp/ui package + requirements.txt (pygame>=2.6.1)
+- [x] 02.1.1-01-PLAN.md — SpeedController background thread + ctp/ui package + requirements.txt (pygame>=2.6.1)
 - [ ] 02.1.1-02-PLAN.md — BoardRenderer (diamond geometry, tile rhombuses, player tokens) + InfoPanel (player info, event log, speed indicator)
 - [ ] 02.1.1-03-PLAN.md — GameView (EventBus subscriptions, shared state dict, render loop) + main.py Pygame branch integration
 
