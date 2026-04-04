@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 02.1.1-02-PLAN.md
-last_updated: "2026-04-04T01:36:09.105Z"
+status: verifying
+stopped_at: "Completed 02.1.1-03-PLAN.md (checkpoint:human-verify pending)"
+last_updated: "2026-04-04T01:40:27.680Z"
 last_activity: 2026-04-04
 progress:
   total_phases: 7
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 13
-  completed_plans: 11
+  completed_plans: 12
   percent: 0
 ---
 
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-04-01)
 
 Phase: 02.1 (card-draw-and-ch-nh-x-c) — EXECUTING
 Plan: 4 of 4
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-04-04
 
 Progress: [░░░░░░░░░░] 0%
@@ -59,6 +59,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02.1 PGAP | 145 | 2 tasks | 7 files |
 | Phase 02.1.1-minimal-pygameui P01 | 1 | 2 tasks | 3 files |
 | Phase 02.1.1-minimal-pygameui P02 | 153 | 2 tasks | 2 files |
+| Phase 02.1.1-minimal-pygameui P03 | 10 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -97,6 +98,8 @@ Recent decisions affecting current work:
 - [Phase 02.1.1-minimal-pygameui]: SpeedController daemon thread: threading.Event for pause, _prev_speed for toggle resume, is_game_over() checked before and after wait()
 - [Phase 02.1.1-minimal-pygameui]: BoardRenderer uses int keys for _SPECIAL_COLORS (SpaceId int values) for direct sid lookup without enum import
 - [Phase 02.1.1-minimal-pygameui]: Ownership tint: 0.7x RGB multiplier on fill colour — simple approach, no extra assets needed
+- [Phase 02.1.1-minimal-pygameui]: GameView imports create_board/create_players from main to reuse exact factory pattern as run_headless()
+- [Phase 02.1.1-minimal-pygameui]: Single _on_event dispatcher handles all 21 EventType values under one lock scope
 
 ### Pending Todos
 
@@ -110,6 +113,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-04T01:36:09.098Z
-Stopped at: Completed 02.1.1-02-PLAN.md
+Last session: 2026-04-04T01:40:27.675Z
+Stopped at: Completed 02.1.1-03-PLAN.md (checkpoint:human-verify pending)
 Resume file: None
