@@ -43,6 +43,19 @@ _FPS    = 60
 _TITLE  = "CTP \u2014 Co Ty Phu AI Simulator"
 _BG     = (30, 30, 30)
 
+# Walk animation: seconds between each tile step (70ms → max 12 tiles = 840ms < 800ms turn delay)
+_ANIM_STEP_S = 0.07
+
+
+def _build_walk_path(old_pos: int, new_pos: int) -> list[int]:
+    """Return clockwise tile positions from old_pos (exclusive) to new_pos (inclusive)."""
+    path: list[int] = []
+    cur = old_pos
+    while cur != new_pos:
+        cur = (cur % 32) + 1
+        path.append(cur)
+    return path
+
 
 class GameView:
     """Pygame window + EventBus subscriber + render loop coordinator."""
@@ -96,6 +109,9 @@ class GameView:
         self._ui_state["speed"]            = "1x"
         self._ui_state["log_scroll"]       = 0
         self._game_over_flag               = False
+
+        # Walk animation state (main-thread only — no lock needed)
+        self._anim_step_time: dict[str, float] = {}   # pid → time of last tile advance
 
         # -- Subscribe EventBus BEFORE thread starts ---
         self._setup_subscriptions()
@@ -162,6 +178,21 @@ class GameView:
                             scroll = max(0, min(scroll - event.y,
                                                 max(0, log_len - _max_log_lines)))
                             self._ui_state["log_scroll"] = scroll
+
+            # Advance walk animations (main thread — _anim_step_time needs no lock)
+            now = time.time()
+            with self._lock:
+                for pid in self._player_ids:
+                    pdata = self._ui_state.get(pid)
+                    if not isinstance(pdata, dict):
+                        continue
+                    anim = pdata.get("anim_path")
+                    if anim and now - self._anim_step_time.get(pid, 0) >= _ANIM_STEP_S:
+                        pdata["display_pos"] = anim.pop(0)
+                        self._anim_step_time[pid] = now
+                        if not anim:
+                            pdata.pop("anim_path",   None)
+                            pdata.pop("display_pos", None)
 
             # Update speed + expire card overlay under one lock acquire
             with self._lock:
@@ -239,12 +270,35 @@ class GameView:
 
             # -- Update player position ---
             if et == EventType.PLAYER_MOVE:
-                new_pos = event.data.get("new_pos")
+                old_pos  = event.data.get("old_pos")
+                new_pos  = event.data.get("new_pos")
+                move_type = int(event.data.get("move_type", 2))
+
                 if pid and pid in self._ui_state and new_pos is not None:
+                    # Always update the authoritative position immediately
                     self._ui_state[pid]["position"] = new_pos
-                    self._ui_state["event_log"].append(
-                        f"{pid} di chuyen: o {event.data.get('old_pos')} -> o {new_pos}"
-                    )
+
+                    if move_type == 1 and old_pos is not None:
+                        # Walk: queue tile-by-tile animation path
+                        path = _build_walk_path(old_pos, new_pos)
+                        existing = self._ui_state[pid].get("anim_path")
+                        if existing is not None:
+                            # Extend ongoing animation
+                            existing.extend(path)
+                        else:
+                            self._ui_state[pid]["display_pos"] = old_pos
+                            self._ui_state[pid]["anim_path"]   = path
+                        self._ui_state["event_log"].append(
+                            f"{pid} di chuyen: o {old_pos} -> o {new_pos}"
+                        )
+                    else:
+                        # Teleport: clear any pending animation, jump instantly
+                        self._ui_state[pid].pop("display_pos", None)
+                        self._ui_state[pid].pop("anim_path", None)
+                        if old_pos is not None:
+                            self._ui_state["event_log"].append(
+                                f"{pid} teleport: o {old_pos} -> o {new_pos}"
+                            )
 
             # -- Update active player ---
             elif et == EventType.TURN_STARTED:
@@ -314,6 +368,8 @@ class GameView:
             elif et == EventType.PLAYER_BANKRUPT:
                 if pid and pid in self._ui_state:
                     self._ui_state[pid]["is_bankrupt"] = True
+                    self._ui_state[pid].pop("display_pos", None)
+                    self._ui_state[pid].pop("anim_path",   None)
                     self._ui_state["event_log"].append(f"*** {pid} PHA SAN ***")
 
             # -- Game ended ---

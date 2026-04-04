@@ -486,6 +486,7 @@ class GameController:
                 "travel_fee": travel_fee,
                 "reason": "travel_accepted",
                 "passed_start": passed_start,
+                "move_type": 2,   # teleport
             }
         ))
 
@@ -563,6 +564,7 @@ class GameController:
                     "new_pos": elevated_pos,
                     "passed_start": self._passed_start,
                     "blocked_by_elevated": True,
+                    "move_type": 1,   # walk (player moves tile-by-tile to elevated pos)
                 }
             ))
             self.phase = TurnPhase.RESOLVE_TILE
@@ -607,6 +609,7 @@ class GameController:
                         "new_pos": wave_dest,
                         "passed_start": self._passed_start,
                         "reason": "wave_push",
+                        "move_type": 2,   # teleport (water slide)
                     }
                 ))
                 self.phase = TurnPhase.RESOLVE_TILE
@@ -630,7 +633,8 @@ class GameController:
             data={
                 "old_pos": old_pos,
                 "new_pos": self.current_player.position,
-                "passed_start": self._passed_start
+                "passed_start": self._passed_start,
+                "move_type": 1,   # walk tile-by-tile
             }
         ))
 

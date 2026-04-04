@@ -191,7 +191,8 @@ class BoardRenderer:
             pdata = ui_state[pid]
             if pdata.get("is_bankrupt"):
                 continue   # bankrupt tokens not rendered (per UI-SPEC)
-            ppos = pdata.get("position", 1)
+            # display_pos is set during walk animation; fall back to authoritative position
+            ppos = pdata.get("display_pos") or pdata.get("position", 1)
             pos_to_players.setdefault(ppos, []).append(pid)
 
         for tile_pos, pids in pos_to_players.items():
