@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Inserted Phase 02.1.1 Minimal PygameUI, ready to plan
-last_updated: "2026-04-04T01:27:48.733Z"
-last_activity: 2026-04-04 -- Phase 02.1.1 execution started
+status: ready_to_plan
+stopped_at: Phase 02.1.1 complete (popup UI done), next is Phase 2.5 Skill/Pendant/Pet System
+last_updated: "2026-04-04T12:00:00.000Z"
+last_activity: 2026-04-04 -- card effect bugs fixed + popup UI (IT_CA_1/IT_CA_2) implemented
 progress:
   total_phases: 7
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 13
-  completed_plans: 10
-  percent: 0
+  completed_plans: 13
+  percent: 57
 ---
 
 # Project State
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-01)
 
 **Core value:** AI tự động hoàn chỉnh một ván đấu, lưu kết quả, và dùng lịch sử đó để chơi tốt hơn ở ván tiếp theo.
-**Current focus:** Phase 02.1.1 — minimal-pygameui
+**Current focus:** Phase 2.5 — Skill/Pendant/Pet System (next to plan)
 
 ## Current Position
 
-Phase: 02.1.1 (minimal-pygameui) — EXECUTING
-Plan: 1 of 3
-Status: Executing Phase 02.1.1
-Last activity: 2026-04-04 -- Phase 02.1.1 execution started
+Phase: 2.5 (skill-pendant-pet) — READY TO PLAN
+Plan: 0 of 2
+Status: Phase 02.1.1 complete, ready to start Phase 2.5
+Last activity: 2026-04-04 -- Phase 02.1.1 all 3 plans complete
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -109,5 +109,12 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-04-04
-Stopped at: Inserted Phase 02.1.1 Minimal PygameUI, ready to plan
+Stopped at: Phase 02.1.1 COMPLETE. Tất cả items đã xong:
+  - Card effect bugs fixed (EF_16 timing, vacuous truth EF_7/8, EF_24/EF_25 stubs, duplicate fn)
+  - Tests updated: tile-level virus debuff (test_cards.py, test_fsm.py), 240 pass / 1 pre-existing fail
+  - Callback injection: accept_card_fn + use_card_fn slots trên GameController
+  - Popup UI: game_view.py — accept_card popup (Lấy/Bỏ thẻ) + use_card popup (Dùng/Giữ thẻ)
+  - Popup chỉ hiện cho P1 (human); AI auto-accept/use
+  - GDD-CORE.md updated: held card mapping đã sửa đúng (EF_20=IT_CA_1, EF_19=IT_CA_21, EF_22=IT_CA_23)
+Next: Phase 2.5 — Skill/Pendant/Pet System
 Resume file: None

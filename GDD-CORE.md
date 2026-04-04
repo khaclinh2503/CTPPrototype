@@ -1,6 +1,6 @@
 # Game Design Document — CTPPrototype Core Game
-> Trạng thái: **Phase 1 + Phase 2 + Phase 2.1 đã implement** (Phase 2.5 trở đi chưa có)
-> Cập nhật: 2026-04-03
+> Trạng thái: **Phase 1 + Phase 2 + Phase 2.1 + Phase 02.1.1 (Pygame UI) đã implement** (Phase 2.5 trở đi chưa có)
+> Cập nhật: 2026-04-04
 
 ---
 
@@ -548,29 +548,56 @@ Events: `WATER_SLIDE_WAVE_SET` (sóng tạo/thay thế), `WATER_SLIDE_PUSHED` (p
 
 | EF | IT_CA | Tên | Hiệu ứng |
 |----|-------|-----|----------|
-| EF_2 | IT_CA_2 | Thẻ Giảm Giá | Giảm giá thuê 50% cho chủ đất |
-| EF_3 | IT_CA_3 | Thẻ Đôi Phúc | Double toll cho visitor |
-| EF_19 | IT_CA_19 | Thẻ Vượt Ngục | Thoát tù ngay (dùng đầu ROLL) |
-| EF_20 | IT_CA_20 | Thẻ Che Chắn | Chặn 1 lần trả thuê |
-| EF_22 | IT_CA_22 | Thẻ Chong Chóng | Bỏ qua ô nâng (GOD/elevated) tiếp theo |
+| EF_2  | IT_CA_2  | Giảm Phí     | Giảm 50% tiền thuê khi đạp vào đất đối thủ (tiêu thẻ khi dùng) |
+| EF_3  | IT_CA_3  | Bảo Vệ       | Chặn 1 đòn tấn công từ thẻ đối thủ — khi bị tấn công, popup hỏi người chơi có dùng không; chọn "Dùng" → huỷ đòn + tiêu thẻ, chọn "Bỏ qua" → đòn thực hiện bình thường + giữ thẻ |
+| EF_19 | IT_CA_21 | Quay lại     | Thoát tù ngay khi bắt đầu lượt ở tù — hiện popup 3 lựa chọn: "Đổ xúc xắc" / "Trả tiền thoát" / "Dùng thẻ" (chỉ khi có thẻ); dùng thẻ → thoát tù + đổ bình thường |
+| EF_20 | IT_CA_1  | Thiên Thần   | Miễn 100% tiền thuê khi đạp vào đất đối thủ (tiêu thẻ khi dùng) |
+| EF_22 | IT_CA_23 | Chong Chóng  | Khi có ô nâng trong đường đi → popup hỏi "Dùng thẻ / Giữ thẻ"; dùng → bỏ qua ô nâng đi thẳng đến đích + tiêu thẻ; giữ → bị chặn tại ô nâng bình thường + giữ thẻ; AI auto-dùng |
+
+**Popup interaction (Phase 02.1.1):** Khi người chơi người thật (P1) rút được held card:
+- **Popup "Lấy thẻ / Bỏ thẻ"** hiện ra ngay sau khi rút — nếu bỏ thì thẻ bị discard, nếu lấy thì lưu vào `held_card` (đè thẻ cũ nếu có).
+- **Popup "Dùng thẻ / Giữ thẻ"** hiện ra khi dừng ở đất đối thủ (CITY/RESORT) và đang giữ EF_20 hoặc EF_2 — nếu dùng thì áp dụng hiệu ứng + tiêu thẻ, nếu giữ thì trả toll bình thường.
+- **Popup "Dùng thẻ / Bỏ qua" (EF_3)** hiện ra khi bị tấn công bởi thẻ đối thủ và đang giữ IT_CA_3 — nếu dùng thì huỷ đòn tấn công + tiêu thẻ, nếu bỏ qua thì đòn thực hiện bình thường + giữ thẻ. AI luôn dùng thẻ khi bị tấn công.
+- **Popup 3 lựa chọn (EF_19)** hiện ra đầu ROLL khi đang ở tù: "Đổ xúc xắc" (luôn có) / "Trả $50,000" (dim nếu không đủ tiền) / "Dùng thẻ Quay Lại" (chỉ hiện nếu đang giữ EF_19). AI: ưu tiên thẻ > tiền > đổ.
+- AI (P2/P3/P4): luôn nhận thẻ, luôn dùng khi có cơ hội, luôn dùng EF_3 khi bị tấn công (không popup).
 
 ### 13.3 Instant cards (áp dụng ngay)
 
 16+ thẻ áp dụng hiệu ứng ngay khi rút:
 
-| EF | IT_CA | Tên | Hiệu ứng |
-|----|-------|-----|----------|
-| EF_4 | IT_CA_4 | Thẻ Vàng | +tiền (bonus_money) |
-| EF_5 | IT_CA_5 | Thẻ Đen | -tiền (penalty_money) |
-| EF_6 | IT_CA_6 | Thẻ Đặc Biệt | Nhận tiền từ tất cả đối thủ |
-| EF_7 | IT_CA_7 | Thẻ Dịch Bệnh | Tile-level virus: debuff 1 tile target (+ cả cặp màu nếu cùng chủ), 5 lượt, visitor đầu miễn toll + xóa debuff tile đó |
-| EF_8 | IT_CA_8 | Thẻ Cát Vàng | Tile-level yellow-sand: giảm 50% toll trên 1 tile target (+ cặp màu nếu cùng chủ), 5 lượt, visitor đầu trả 50% + xóa debuff |
-| EF_9 | IT_CA_9 | — | Xem IT_CA_10 |
-| EF_10 | IT_CA_10 | Thẻ Mất Điện | Cùng cơ chế EF_7 (tile-level virus) |
-| EF_11–EF_18 | IT_CA_11–18 | Các hiệu ứng khác | Teleport, buff/debuff tiền, thu thuế v.v. |
-| EF_21 | IT_CA_21 | — | Instant effect |
-| EF_26 | IT_CA_26 | — | Instant effect |
-| EF_30 | IT_CA_30 | — | Instant effect |
+| EF | IT_CA | contentId | Tên | Hiệu ứng |
+|----|-------|-----------|-----|----------|
+| EF_4  | IT_CA_4    | eff_force_sell                    | Bán Nhà              | Ép bán 1 tile có chủ không phải của mình — xem chi tiết bên dưới |
+| EF_5  | IT_CA_5    | eff_change_city                   | Đổi Đất              | Hoán đổi 1 CITY của mình (rẻ nhất) ↔ 1 CITY của opponent (đắt nhất) |
+| EF_6  | IT_CA_6/7  | eff_alien_invasion / eff_earth_quake | Xâm Lăng / Động Đất | Player chọn 1 CITY của đối thủ (không phải Landmark L5) để hạ 1 bậc; nếu về 0 thì mất quyền sở hữu; nếu không có ô hợp lệ thì bỏ qua hiệu ứng nhưng thẻ vẫn mất; IT_CA_6 mapNotAvail=[1] |
+| EF_7  | IT_CA_8/10 | eff_virus / eff_city_black_out    | Dịch Bệnh / Mất Điện | Human player chọn 1 CITY của đối thủ qua popup (có thể bỏ qua, mất thẻ); AI auto-chọn tile cao nhất của richest opponent; sau khi chọn: check shield → tile-level debuff toll=0 (+ cặp màu nếu cùng chủ), 5 lượt, visitor đầu miễn toll + xóa debuff tile đó |
+| EF_8  | IT_CA_9    | eff_yellow_sand                   | Cát Vàng             | Human player chọn 1 CITY của đối thủ qua popup (có thể bỏ qua, mất thẻ); AI auto-chọn tile cao nhất của richest opponent; sau khi chọn: check shield → tile-level debuff giảm 50% toll (+ cặp màu nếu cùng chủ), 5 lượt, visitor đầu trả 50% + xóa debuff |
+| EF_10 | IT_CA_12   | eff_festival                      | Lễ Hội               | Teleport đến FESTIVAL tile hiện tại |
+| EF_11 | IT_CA_13   | eff_festival_tour                 | Tour Lễ Hội          | Teleport đến tile đang tổ chức lễ hội (board.festival_tile_position); nếu không có festival → kết thúc lượt |
+| EF_12 | IT_CA_15   | eff_travel                        | Du Lịch              | Teleport đến TRAVEL tile gần nhất, set pending_travel = True |
+| EF_13 | IT_CA_14   | eff_exploring                     | Khám Phá             | Teleport đến PRISON, ngồi tù 3 lượt |
+| EF_14 | IT_CA_16   | eff_start                         | Về Vạch Xuất Phát    | Di chuyển từng ô về START (move_type=3), nhận passing bonus (15% starting_cash) |
+| EF_15 | IT_CA_17   | eff_host_dice_festival            | Tổ Chức Lễ Hội       | Đặt festival marker miễn phí trên tile sở hữu có building_level cao nhất |
+| EF_16 | IT_CA_18   | eff_fee                           | Phí Phạt             | Self-debuff: double toll trong 1 lượt tiếp theo |
+| EF_17 | IT_CA_19   | eff_city_donate                   | Tặng Đất             | Human: popup bắt buộc 2 bước — chọn 1 tile bất kỳ của mình → chọn người nhận (không thể bỏ qua); AI: tặng tile rẻ nhất cho player nghèo nhất |
+| EF_18 | IT_CA_20   | eff_charity                       | Từ Thiện             | Mỗi player (trừ nghèo nhất) đóng 10% starting_cash cho player nghèo nhất |
+| EF_21 | IT_CA_22   | eff_god_hand                      | Bàn Tay Thần         | Teleport đến GOD tile gần nhất; mapNotAvail=[1,3] |
+| EF_24 | IT_CA_24   | eff_bank                          | Ngân Hàng            | Stub — Map 3 only |
+| EF_25 | IT_CA_25   | eff_agency                        | Đại Lý               | Stub — Map 3 only |
+| EF_26 | IT_CA_11   | eff_tax                           | Thuế                 | Teleport đến TAX tile gần nhất; mapNotAvail=[2,3] |
+| EF_30 | IT_CA_30   | eff_water_slide                   | Cầu Trượt            | Teleport đến WATER_SLIDE tile gần nhất; mapNotAvail=[1,2] |
+
+#### EF_4 — IT_CA_4 "Bán Nhà" (chi tiết)
+
+Khi rút được thẻ này, **popup danh sách** hiện ra ngay, liệt kê tất cả tile đang có chủ và không thuộc về người chơi hiện tại. Mỗi mục hiển thị: `Ô {pos}  lv{building_level}  [{owner_id}]`.
+
+- **Chọn 1 tile** → kiểm tra chủ tile có đang giữ IT_CA_3 (EF_3 Shield) không:
+  - Nếu có → popup "Dùng thẻ / Bỏ qua" hiện ra cho chủ tile (chỉ P1; AI luôn dùng). Nếu chủ dùng Shield → đòn bị huỷ, Shield tiêu, không có hiệu lực.
+  - Nếu không có (hoặc chủ bỏ qua) → tile bị reset về trạng thái unowned (`building_level = 0`, `owner_id = None`), chủ cũ nhận lại **50% tổng build cost đã đầu tư** vào tile đó.
+- **Bỏ qua** (không chọn tile) → không có hiệu lực.
+- Thẻ bị tiêu **dù có dùng hay không**.
+
+AI (P2–P4): tự chọn tile có `building_level` cao nhất trong tất cả tile không phải của mình; không có popup.
 
 ### 13.4 Toll modifiers (priority order — D-44)
 
@@ -688,7 +715,8 @@ tổng tài sản = cash + Σ(build_cost đầu tư cho từng cấp đã xây) 
 | Skills / Pendant / Pet | Schema validate OK, chưa apply vào gameplay | Phase 2.5 |
 | Festival accumulation | Implemented: X2/X3/X4 theo `tile.festival_level`, xóa festival cũ | ✅ Done |
 | History / SQLite | Chưa implement | Phase 3 |
-| Pygame visualization | Chưa implement | Phase 4 |
+| Pygame visualization | **Implemented** — BoardRenderer, InfoPanel, SpeedController (pause/1x-10x), walk animation, dice animation, card overlay, debug F8 picker, scoreboard | ✅ Phase 02.1.1 |
+| Popup UI (held cards) | **Implemented** — accept_card popup khi rút IT_CA_1/IT_CA_2, use_card popup khi đạp đất đối thủ; callback injection qua `controller.accept_card_fn` / `use_card_fn` | ✅ Phase 02.1.1 |
 
 ---
 
@@ -716,14 +744,27 @@ ctp/
 │   ├── god.py      — GodStrategy (Map 2: mua đất / xây nhà / nâng ô)
 │   └── water_slide.py — WaterSlideStrategy (Map 3: tạo sóng / AI pick_dest)
 └── controller/
-    ├── fsm.py         — GameController, TurnPhase FSM
+    ├── fsm.py         — GameController, TurnPhase FSM; accept_card_fn/use_card_fn callback slots
     ├── acquisition.py — resolve_acquisition()
     ├── upgrade.py     — resolve_upgrades()
     └── bankruptcy.py  — resolve_bankruptcy()
+ctp/ui/
+├── __init__.py        — run_pygame() entry point
+├── game_view.py       — GameView coordinator; popup callbacks; threading model
+├── board_renderer.py  — BoardRenderer (vẽ 32 ô + token + dice + card overlay)
+├── info_panel.py      — InfoPanel (cash, log, speed indicator)
+└── speed_controller.py — SpeedController (pause/0.5x/1x/2x/5x/10x, dice barrier)
 ```
 
 **Pattern kiến trúc:** MVC + EventBus + Strategy (mỗi loại ô là 1 Strategy class).
 
+**Threading model (Phase 02.1.1):**
+- **Background thread:** `SpeedController._run()` → `GameController.step()` → EventBus handlers (ghi `_ui_state`)
+- **Main thread:** `pygame.event.get()` → render 60fps (đọc snapshot `_ui_state`)
+- **Lock:** `threading.Lock` bảo vệ `_ui_state` — handlers giữ lock suốt; render lấy snapshot nhanh rồi thả
+- **Dice barrier:** `SpeedController._dice_barrier` (threading.Event) — background thread wait, main thread set sau animation
+- **Popup barrier:** `GameView._popup_event` (threading.Event) — game thread wait, main thread set sau click người chơi
+
 ---
 
-*GDD này mô tả đúng code đang chạy tính đến Phase 2.1. Khi Phase 2.5+ hoàn thành, cần cập nhật mục 14 và 16.*
+*GDD này mô tả đúng code đang chạy tính đến Phase 02.1.1. Khi Phase 2.5+ hoàn thành, cần cập nhật mục 14 và 16.*

@@ -3,19 +3,13 @@
 import json
 import os
 import random
-from typing import Optional
+from typing import Any, Optional
 
-import json
-import os
-from typing import Any
 from ctp.tiles.base import TileStrategy
 from ctp.core.models import Player
 from ctp.core.board import Tile, Board, SpaceId
 from ctp.core.events import GameEvent, EventType
 from ctp.core.constants import calc_invested_build_cost, STARTING_CASH
-
-# Module-level cache để tránh đọc file nhiều lần (RISK-02 resolution)
-_CARD_DATA_CACHE: Optional[dict] = None
 
 # Effect IDs cho held cards (D-06)
 _HELD_EFFECTS = {"EF_2", "EF_3", "EF_19", "EF_20", "EF_22"}
@@ -32,18 +26,6 @@ def set_debug_card(card_id: Optional[str]) -> None:
     """
     global _debug_forced_card
     _debug_forced_card = card_id
-
-
-def _load_raw_card_data() -> dict:
-    """Load Card.json một lần, cache kết quả."""
-    global _CARD_DATA_CACHE
-    if _CARD_DATA_CACHE is None:
-        config_path = os.path.join(
-            os.path.dirname(__file__), "..", "config", "Card.json"
-        )
-        with open(config_path, encoding="utf-8") as f:
-            _CARD_DATA_CACHE = json.load(f)["Card"]
-    return _CARD_DATA_CACHE
 
 
 def _load_card_pool(map_id: int) -> dict:
@@ -81,15 +63,12 @@ def _draw_card(pool: dict) -> str:
     weights = [pool[c]["rate"] for c in card_ids]
     return random.choices(card_ids, weights=weights, k=1)[0]
 
+
 _card_data_cache: dict[str, Any] | None = None
 
 
 def _load_raw_card_data() -> dict[str, Any]:
-    """Load và cache raw card data từ Card.json.
-
-    Returns:
-        Dict mapping card_id -> {"effect": "EF_XX", ...}
-    """
+    """Load và cache raw card data từ Card.json."""
     global _card_data_cache
     if _card_data_cache is not None:
         return _card_data_cache
@@ -107,7 +86,14 @@ class FortuneStrategy(TileStrategy):
 
     def on_land(
         self, player: Player, tile: Tile, board: Board, event_bus,
-        players: list | None = None
+        players: list | None = None,
+        accept_card_fn=None,
+        shield_block_fn=None,
+        force_sell_select_fn=None,
+        swap_city_select_fn=None,
+        downgrade_select_fn=None,
+        virus_select_fn=None,
+        donate_select_fn=None,
     ) -> list[GameEvent]:
         """Rút thẻ, apply effect (held hoặc instant)."""
         events = []
@@ -136,13 +122,19 @@ class FortuneStrategy(TileStrategy):
         ))
         event_bus.publish(events[-1])
 
-        # Held card: lưu vào slot (overwrite), không apply effect ngay (D-05, D-06)
+        # Held card: hỏi player có muốn lấy không (D-05, D-06)
         if effect_id in _HELD_EFFECTS:
-            player.held_card = card_id
+            want_accept = (accept_card_fn is None) or accept_card_fn(player, card_id)
+            if want_accept:
+                player.held_card = card_id
             return events
 
         # Instant card: apply effect ngay (D-07)
-        effect_events = _apply_instant(card_id, effect_id, player, board, players, event_bus)
+        effect_events = _apply_instant(
+            card_id, effect_id, player, board, players, event_bus,
+            shield_block_fn, force_sell_select_fn, swap_city_select_fn,
+            downgrade_select_fn, virus_select_fn, donate_select_fn,
+        )
         events.extend(effect_events)
         return events
 
@@ -153,30 +145,46 @@ class FortuneStrategy(TileStrategy):
         return []
 
 
-def _try_block_attack(defender: Player, attacker_card: str, event_bus) -> bool:
-    """Kiểm tra EF_3 Shield block. Consume nếu có. Return True nếu bị chặn.
+def _try_block_attack(defender: Player, attacker_card: str, event_bus, shield_block_fn=None) -> bool:
+    """Kiểm tra EF_3 Shield block. Hỏi defender qua callback nếu có.
+
+    shield_block_fn(defender, attacker_card) -> bool:
+      True = dùng thẻ (chặn + tiêu thẻ), False = bỏ qua (không chặn, giữ thẻ).
+    Nếu shield_block_fn=None: auto-block (backward compat).
 
     Per D-15, RISK-05.
     """
-    if defender.held_card is not None:
-        raw = _load_raw_card_data()
-        held_effect = raw.get(defender.held_card, {}).get("effect", "")
-        if held_effect == "EF_3":
-            defender.held_card = None  # consume (D-08)
-            event_bus.publish(GameEvent(
-                event_type=EventType.CARD_EFFECT_SHIELD_BLOCKED,
-                player_id=defender.player_id,
-                data={"blocked_card": attacker_card, "attacker_card": attacker_card}
-            ))
-            return True
-    return False
+    if defender.held_card is None:
+        return False
+    raw = _load_raw_card_data()
+    held_effect = raw.get(defender.held_card, {}).get("effect", "")
+    if held_effect != "EF_3":
+        return False
+    # Hỏi defender có muốn dùng thẻ không
+    if shield_block_fn is not None:
+        want_block = shield_block_fn(defender, attacker_card)
+    else:
+        want_block = True  # auto-block khi không có callback
+    if not want_block:
+        return False
+    defender.held_card = None  # consume (D-08)
+    event_bus.publish(GameEvent(
+        event_type=EventType.CARD_EFFECT_SHIELD_BLOCKED,
+        player_id=defender.player_id,
+        data={"blocked_card": attacker_card, "attacker_card": attacker_card}
+    ))
+    return True
 
 
 def _apply_instant(
     card_id: str, effect_id: str, player: Player, board: Board,
-    players: list, event_bus
+    players: list, event_bus, shield_block_fn=None, force_sell_select_fn=None,
+    swap_city_select_fn=None, downgrade_select_fn=None, virus_select_fn=None,
+    donate_select_fn=None,
 ) -> list[GameEvent]:
     """Dispatch instant card effects."""
+    # Attack effects need shield_block_fn threaded through
+    _attack = {"EF_4", "EF_5", "EF_6", "EF_7", "EF_8"}
     dispatch = {
         "EF_4":  _ef_force_sell,
         "EF_5":  _ef_swap_city,
@@ -193,32 +201,59 @@ def _apply_instant(
         "EF_17": _ef_donate_city,
         "EF_18": _ef_charity,
         "EF_21": _ef_go_to_god,
+        "EF_24": _ef_bank_stub,
+        "EF_25": _ef_agency_stub,
         "EF_26": _ef_go_to_tax,
         "EF_30": _ef_go_to_water_slide,
     }
     handler = dispatch.get(effect_id)
     if handler:
+        if effect_id == "EF_4":
+            return handler(card_id, player, board, players, event_bus, shield_block_fn, force_sell_select_fn)
+        if effect_id == "EF_5":
+            return handler(card_id, player, board, players, event_bus, shield_block_fn, swap_city_select_fn)
+        if effect_id == "EF_6":
+            return handler(card_id, player, board, players, event_bus, shield_block_fn, downgrade_select_fn)
+        if effect_id in ("EF_7", "EF_8"):
+            return handler(card_id, player, board, players, event_bus, shield_block_fn, virus_select_fn)
+        if effect_id == "EF_17":
+            return handler(card_id, player, board, players, event_bus, donate_select_fn)
+        if effect_id in _attack:
+            return handler(card_id, player, board, players, event_bus, shield_block_fn)
         return handler(card_id, player, board, players, event_bus)
     return []
 
 
 # --- Group B: Attack cards ---
 
-def _ef_force_sell(card_id, player, board, players, event_bus):
-    """EF_4: Force sell một tile của opponent đắt nhất. IT_CA_4."""
+def _ef_force_sell(card_id, player, board, players, event_bus, shield_block_fn=None, force_sell_select_fn=None):
+    """EF_4: Force sell 1 tile của opponent do player chọn. IT_CA_4."""
     events = []
-    opponent = _richest_opponent(player, players)
-    if not opponent:
-        return events
-    if _try_block_attack(opponent, card_id, event_bus):
-        return events
-    # Tìm tile có building_level cao nhất của opponent
-    target_tile = None
-    for pos in opponent.owned_properties:
-        t = board.get_tile(pos)
-        if target_tile is None or t.building_level > target_tile.building_level:
-            target_tile = t
-    if target_tile is None:
+
+    if force_sell_select_fn is not None:
+        # Human or delegated selection: callback returns (opponent_id, tile_pos) or None (skip)
+        result = force_sell_select_fn(player, board, players)
+        if result is None:
+            return events  # player bỏ qua, thẻ vẫn tiêu
+        opponent_id, tile_pos = result
+        opponent = next((p for p in players if p.player_id == opponent_id), None)
+        if not opponent:
+            return events
+        target_tile = board.get_tile(tile_pos)
+    else:
+        # AI: chọn richest opponent + tile building_level cao nhất
+        opponent = _richest_opponent(player, players)
+        if not opponent:
+            return events
+        target_tile = None
+        for pos in opponent.owned_properties:
+            t = board.get_tile(pos)
+            if target_tile is None or t.building_level > target_tile.building_level:
+                target_tile = t
+        if target_tile is None:
+            return events
+
+    if _try_block_attack(opponent, card_id, event_bus, shield_block_fn):
         return events
     # Tính refund 50% invested cost
     invested = calc_invested_build_cost(board, target_tile.position)
@@ -242,10 +277,14 @@ def _ef_force_sell(card_id, player, board, players, event_bus):
     return events
 
 
-def _ef_swap_city(card_id, player, board, players, event_bus):
-    """EF_5: Swap ownership giữa 1 CITY của mình và 1 CITY của opponent. IT_CA_5."""
+def _ef_swap_city(card_id, player, board, players, event_bus, shield_block_fn=None, swap_city_select_fn=None):
+    """EF_5: Swap ownership giữa 1 CITY của mình và 1 CITY của opponent. IT_CA_5.
+
+    Human: 2-step popup — chọn CITY của mình, rồi chọn CITY của đối thủ.
+    Sau đó check EF_3 shield của đối thủ. Nếu không có hoặc không dùng → swap.
+    AI: đổi tile rẻ nhất của mình ↔ tile đắt nhất của đối thủ giàu nhất.
+    """
     events = []
-    # Tìm CITY tiles của mình (per Claude's Discretion: nếu không có CITY → no effect)
     my_cities = [
         board.get_tile(pos)
         for pos in player.owned_properties
@@ -253,22 +292,38 @@ def _ef_swap_city(card_id, player, board, players, event_bus):
     ]
     if not my_cities:
         return events
-    opponent = _richest_opponent(player, players)
-    if not opponent:
+
+    if swap_city_select_fn is not None:
+        # Human: 2-step selection — (my_pos, opponent_id, their_pos) or None
+        result = swap_city_select_fn(player, board, players)
+        if result is None:
+            return events
+        my_pos, opponent_id, their_pos = result
+        my_tile = board.get_tile(my_pos)
+        opponent = next((p for p in players if p.player_id == opponent_id), None)
+        if opponent is None:
+            return events
+        their_tile = board.get_tile(their_pos)
+    else:
+        # AI: đổi tile rẻ nhất của mình lấy tile đắt nhất của đối thủ giàu nhất
+        opponent = _richest_opponent(player, players)
+        if not opponent:
+            return events
+        their_cities = [
+            board.get_tile(pos)
+            for pos in opponent.owned_properties
+            if board.get_tile(pos).space_id == SpaceId.CITY
+        ]
+        if not their_cities:
+            return events
+        my_tile = min(my_cities, key=lambda t: t.building_level)
+        their_tile = max(their_cities, key=lambda t: t.building_level)
+
+    # Check EF_3 shield của đối thủ
+    if _try_block_attack(opponent, card_id, event_bus, shield_block_fn):
         return events
-    if _try_block_attack(opponent, card_id, event_bus):
-        return events
-    their_cities = [
-        board.get_tile(pos)
-        for pos in opponent.owned_properties
-        if board.get_tile(pos).space_id == SpaceId.CITY
-    ]
-    if not their_cities:
-        return events
-    # Stub AI: đổi tile rẻ nhất của mình lấy tile đắt nhất của đối thủ (D-19)
-    my_tile = min(my_cities, key=lambda t: t.building_level)
-    their_tile = max(their_cities, key=lambda t: t.building_level)
-    # Swap ownership (per RISK-08: building_level và festival_level theo tile)
+
+    # Swap ownership (building_level và festival_level theo tile, không đổi)
     my_tile.owner_id = opponent.player_id
     their_tile.owner_id = player.player_id
     player.remove_property(my_tile.position)
@@ -284,76 +339,137 @@ def _ef_swap_city(card_id, player, board, players, event_bus):
     return events
 
 
-def _ef_downgrade(card_id, player, board, players, event_bus):
-    """EF_6/7: Hạ building_level của opponent tile 1 bậc. IT_CA_6, IT_CA_7."""
+def _ef_downgrade(card_id, player, board, players, event_bus, shield_block_fn=None, downgrade_select_fn=None):
+    """EF_6: Player chọn 1 CITY của opponent (không phải Landmark L5) để hạ 1 bậc.
+    Nếu về 0 thì mất quyền sở hữu. Nếu không có ô hợp lệ: bỏ qua hiệu ứng, mất thẻ.
+    IT_CA_6, IT_CA_7."""
     events = []
-    opponent = _richest_opponent(player, players)
-    if not opponent:
+
+    # Kiểm tra trước: có ô hợp lệ nào không (CITY, non-Landmark, của đối thủ còn sống)?
+    has_valid_target = any(
+        board.get_tile(pos).space_id == SpaceId.CITY and board.get_tile(pos).building_level < 5
+        for p in players
+        if p.player_id != player.player_id and not p.is_bankrupt
+        for pos in p.owned_properties
+    )
+    if not has_valid_target:
+        ev = GameEvent(
+            event_type=EventType.CARD_EFFECT_DOWNGRADE,
+            player_id=player.player_id,
+            data={"skipped": True, "reason": "no_valid_target"},
+        )
+        events.append(ev)
+        event_bus.publish(ev)
         return events
-    if _try_block_attack(opponent, card_id, event_bus):
-        return events
-    # Stub AI: tile có building_level cao nhất
-    target_tile = None
-    for pos in opponent.owned_properties:
-        t = board.get_tile(pos)
-        if t.space_id in (SpaceId.CITY, SpaceId.RESORT):
-            if target_tile is None or t.building_level > target_tile.building_level:
-                target_tile = t
-    if target_tile is None:
-        return events
+
+    if downgrade_select_fn is not None:
+        # Human: callback trả về (opponent_id, tile_pos) hoặc None (bỏ qua)
+        result = downgrade_select_fn(player, board, players)
+        if result is None:
+            return events
+        opponent_id, tile_pos = result
+        opponent = next((p for p in players if p.player_id == opponent_id), None)
+        target_tile = board.get_tile(tile_pos) if opponent else None
+        if opponent is None or target_tile is None:
+            return events
+        if _try_block_attack(opponent, card_id, event_bus, shield_block_fn):
+            return events
+    else:
+        # AI: chọn richest opponent + CITY (non-Landmark) có building_level cao nhất
+        opponent = _richest_opponent(player, players)
+        if not opponent:
+            return events
+        if _try_block_attack(opponent, card_id, event_bus, shield_block_fn):
+            return events
+        target_tile = None
+        for pos in opponent.owned_properties:
+            t = board.get_tile(pos)
+            if t.space_id == SpaceId.CITY and t.building_level < 5:
+                if target_tile is None or t.building_level > target_tile.building_level:
+                    target_tile = t
+        if target_tile is None:
+            return events
+
     target_tile.building_level = max(0, target_tile.building_level - 1)
+    lost_ownership = target_tile.building_level == 0
+    if lost_ownership:
+        target_tile.owner_id = None
+        opponent.remove_property(target_tile.position)
     events.append(GameEvent(
         event_type=EventType.CARD_EFFECT_DOWNGRADE,
         player_id=player.player_id,
-        data={"target_player": opponent.player_id, "position": target_tile.position, "new_level": target_tile.building_level}
+        data={
+            "target_player": opponent.player_id,
+            "position": target_tile.position,
+            "new_level": target_tile.building_level,
+            "lost_ownership": lost_ownership,
+        }
     ))
     event_bus.publish(events[-1])
     return events
 
 
-def _ef_virus(card_id, player, board, players, event_bus):
+def _ef_virus(card_id, player, board, players, event_bus, shield_block_fn=None, virus_select_fn=None):
     """EF_7: toll = 0 trên CITY cùng cặp màu của opponent trong 5 lượt. IT_CA_8, IT_CA_10."""
-    return _apply_color_pair_debuff(card_id, player, board, players, event_bus, debuff_rate=0.0)
+    return _apply_color_pair_debuff(card_id, player, board, players, event_bus, debuff_rate=0.0, shield_block_fn=shield_block_fn, virus_select_fn=virus_select_fn)
 
 
-def _ef_yellow_sand(card_id, player, board, players, event_bus):
+def _ef_yellow_sand(card_id, player, board, players, event_bus, shield_block_fn=None, virus_select_fn=None):
     """EF_8: toll giảm 50% trên CITY cùng cặp màu của opponent trong 5 lượt. IT_CA_9."""
-    return _apply_color_pair_debuff(card_id, player, board, players, event_bus, debuff_rate=0.5)
+    return _apply_color_pair_debuff(card_id, player, board, players, event_bus, debuff_rate=0.5, shield_block_fn=shield_block_fn, virus_select_fn=virus_select_fn)
 
 
-def _apply_color_pair_debuff(card_id, player, board, players, event_bus, debuff_rate: float):
+def _apply_color_pair_debuff(card_id, player, board, players, event_bus, debuff_rate: float, shield_block_fn=None, virus_select_fn=None):
     """Virus/yellow-sand: áp tile-level debuff lên 1 tile target của opponent.
 
-    - AI chọn tile có building_level cao nhất của opponent (CITY only).
+    - Human: virus_select_fn callback hiện popup chọn tile; trả None = bỏ qua (mất thẻ).
+    - AI: chọn tile có building_level cao nhất của opponent (CITY only).
     - Nếu toàn bộ cặp màu của tile đó đều cùng chủ opponent → debuff cả cặp.
     - Visitor đầu tiên nhảy vào tile bị debuff: miễn phí + xóa debuff tile đó ngay.
     - Duration: 5 lượt (countdown mỗi END_TURN trong FSM).
     """
     events = []
-    opponent = _richest_opponent(player, players)
-    if not opponent:
-        return events
-    if _try_block_attack(opponent, card_id, event_bus):
-        return events
 
-    # Chọn tile CITY của opponent có building_level cao nhất
-    target_tile = None
-    for pos in opponent.owned_properties:
-        t = board.get_tile(pos)
-        if t.space_id == SpaceId.CITY:
-            if target_tile is None or t.building_level > target_tile.building_level:
-                target_tile = t
-    if target_tile is None:
-        return events
+    if virus_select_fn is not None:
+        # Human: callback trả về (opponent_id, tile_pos) hoặc None (bỏ qua)
+        result = virus_select_fn(player, board, players, card_id=card_id)
+        if result is None:
+            return events
+        opponent_id, tile_pos = result
+        opponent = next((p for p in players if p.player_id == opponent_id), None)
+        target_tile = board.get_tile(tile_pos) if opponent else None
+        if opponent is None or target_tile is None:
+            return events
+        if _try_block_attack(opponent, card_id, event_bus, shield_block_fn):
+            return events
+    else:
+        # AI: chọn richest opponent + CITY có building_level cao nhất
+        opponent = _richest_opponent(player, players)
+        if not opponent:
+            return events
+        if _try_block_attack(opponent, card_id, event_bus, shield_block_fn):
+            return events
+
+        # Chọn tile CITY của opponent có building_level cao nhất
+        target_tile = None
+        for pos in opponent.owned_properties:
+            t = board.get_tile(pos)
+            if t.space_id == SpaceId.CITY:
+                if target_tile is None or t.building_level > target_tile.building_level:
+                    target_tile = t
+        if target_tile is None:
+            return events
 
     # Tìm color pair: tất cả CITY tile cùng màu với target
     color_group_positions = board.get_color_group_positions(target_tile.opt)
     affected_positions = [target_tile.position]
 
     # Nếu toàn bộ cặp màu đều thuộc opponent → debuff cả cặp
-    color_group_tiles = [board.get_tile(p) for p in color_group_positions]
-    if all(t.owner_id == opponent.player_id for t in color_group_tiles):
-        affected_positions = color_group_positions
+    # Ghi chú: phải check color_group_positions không rỗng trước để tránh vacuous truth
+    if color_group_positions:
+        color_group_tiles = [board.get_tile(p) for p in color_group_positions]
+        if all(t.owner_id == opponent.player_id for t in color_group_tiles):
+            affected_positions = color_group_positions
 
     # Áp debuff lên từng tile
     for pos in affected_positions:
@@ -378,15 +494,23 @@ def _apply_color_pair_debuff(card_id, player, board, players, event_bus, debuff_
 # --- Group C: Self-debuff cards ---
 
 def _ef_go_to_start(card_id, player, board, players, event_bus):
-    """EF_14: Teleport đến START, nhận passing bonus. IT_CA_16."""
+    """EF_14: Đi từng ô về START (move_type=3), nhận passing bonus. IT_CA_16."""
     events = []
+    old_pos = player.position
     passing_bonus = int(STARTING_CASH * 0.15)  # passingBonusRate=0.15 per GDD
     player.move_to(1)
     player.receive(passing_bonus)
+    # move_type=3: walk tile-by-tile về START (phân biệt với walk bình thường=1 và teleport=2)
+    events.append(GameEvent(
+        event_type=EventType.PLAYER_MOVE,
+        player_id=player.player_id,
+        data={"old_pos": old_pos, "new_pos": 1, "move_type": 3}
+    ))
+    event_bus.publish(events[-1])
     events.append(GameEvent(
         event_type=EventType.CARD_EFFECT_GO_TO_START,
         player_id=player.player_id,
-        data={"bonus_received": passing_bonus}
+        data={"old_pos": old_pos, "new_pos": 1, "bonus_received": passing_bonus}
     ))
     event_bus.publish(events[-1])
     return events
@@ -410,9 +534,13 @@ def _ef_go_to_prison(card_id, player, board, players, event_bus):
 
 
 def _ef_double_toll_debuff(card_id, player, board, players, event_bus):
-    """EF_16: Self-debuff — double_toll_turns = 1. IT_CA_18."""
+    """EF_16: Self-debuff — double toll cho lượt tiếp theo. IT_CA_18.
+
+    double_toll_turns = 2 vì FSM decrements ở đầu ROLL (trước khi di chuyển),
+    nên cần value=2 để sau khi decrement vẫn còn 1 và fire khi trả toll.
+    """
     events = []
-    player.double_toll_turns = 1
+    player.double_toll_turns = 2
     events.append(GameEvent(
         event_type=EventType.CARD_EFFECT_DOUBLE_TOLL_DEBUFF,
         player_id=player.player_id,
@@ -444,24 +572,20 @@ def _ef_go_to_festival(card_id, player, board, players, event_bus):
 
 
 def _ef_go_to_festival_tile(card_id, player, board, players, event_bus):
-    """EF_11: Teleport đến tile có festival_level cao nhất. IT_CA_13.
+    """EF_11: Teleport đến tile đang tổ chức lễ hội. IT_CA_13.
 
-    Per Claude's Discretion: nếu nhiều tile có festival → chọn festival_level cao nhất.
+    Dùng board.festival_tile_position (ô đang active festival).
+    Nếu không có festival đang diễn ra → kết thúc lượt (trả về empty).
     """
     events = []
-    # Tìm tile có festival_level > 0, chọn cao nhất
-    best_tile = None
-    for tile in board.board:
-        if tile.festival_level > 0:
-            if best_tile is None or tile.festival_level > best_tile.festival_level:
-                best_tile = tile
-    if best_tile is None:
+    fest_pos = board.festival_tile_position
+    if fest_pos is None:
         return events
-    player.move_to(best_tile.position)
+    player.move_to(fest_pos)
     events.append(GameEvent(
         event_type=EventType.CARD_EFFECT_GO_TO_FESTIVAL_TILE,
         player_id=player.player_id,
-        data={"target_position": best_tile.position}
+        data={"target_position": fest_pos}
     ))
     event_bus.publish(events[-1])
     return events
@@ -566,28 +690,44 @@ def _ef_host_festival(card_id, player, board, players, event_bus):
     return events
 
 
-def _ef_donate_city(card_id, player, board, players, event_bus):
-    """EF_17: Tặng tile rẻ nhất cho player nghèo nhất. IT_CA_19."""
+def _ef_donate_city(card_id, player, board, players, event_bus, donate_select_fn=None):
+    """EF_17: Tặng 1 tile cho 1 player khác. IT_CA_19.
+
+    Human: donate_select_fn callback 2 bước (chọn tile → chọn người nhận), bắt buộc.
+    AI: tặng tile rẻ nhất cho player nghèo nhất.
+    """
     events = []
     if not player.owned_properties:
         return events
-    # Tìm player nghèo nhất (ít tài sản, không bankrupt, không phải mình)
     recipients = [p for p in players if not p.is_bankrupt and p.player_id != player.player_id]
     if not recipients:
         return events
-    poorest = min(recipients, key=lambda p: p.cash + len(p.owned_properties) * 100_000)
-    # Tile rẻ nhất: building_level thấp nhất
-    give_tile = min(
-        (board.get_tile(pos) for pos in player.owned_properties),
-        key=lambda t: t.building_level
-    )
-    give_tile.owner_id = poorest.player_id
+
+    if donate_select_fn is not None:
+        # Human: callback trả về (tile_pos, recipient_id) — bắt buộc, không thể bỏ qua
+        result = donate_select_fn(player, board, players)
+        if result is None:
+            return events
+        tile_pos, recipient_id = result
+        give_tile = board.get_tile(tile_pos)
+        recipient = next((p for p in recipients if p.player_id == recipient_id), None)
+        if recipient is None:
+            return events
+    else:
+        # AI: tile rẻ nhất → player nghèo nhất
+        give_tile = min(
+            (board.get_tile(pos) for pos in player.owned_properties),
+            key=lambda t: t.building_level
+        )
+        recipient = min(recipients, key=lambda p: p.cash + len(p.owned_properties) * 100_000)
+
+    give_tile.owner_id = recipient.player_id
     player.remove_property(give_tile.position)
-    poorest.add_property(give_tile.position)
+    recipient.add_property(give_tile.position)
     events.append(GameEvent(
         event_type=EventType.CARD_EFFECT_DONATE_CITY,
         player_id=player.player_id,
-        data={"position": give_tile.position, "recipient": poorest.player_id}
+        data={"position": give_tile.position, "recipient": recipient.player_id}
     ))
     event_bus.publish(events[-1])
     return events
@@ -612,6 +752,32 @@ def _ef_charity(card_id, player, board, players, event_bus):
         event_type=EventType.CARD_EFFECT_CHARITY,
         player_id=player.player_id,
         data={"recipient": poorest.player_id, "total_received": total}
+    ))
+    event_bus.publish(events[-1])
+    return events
+
+
+# --- Group F: Map 3 stubs (EF_24, EF_25) ---
+
+def _ef_bank_stub(card_id, player, board, players, event_bus):
+    """EF_24: Bank effect — Map 3 only stub. IT_CA_24."""
+    events = []
+    events.append(GameEvent(
+        event_type=EventType.CARD_DRAWN,
+        player_id=player.player_id,
+        data={"card_id": card_id, "effect": "EF_24", "stub": True}
+    ))
+    event_bus.publish(events[-1])
+    return events
+
+
+def _ef_agency_stub(card_id, player, board, players, event_bus):
+    """EF_25: Agency effect — Map 3 only stub. IT_CA_25."""
+    events = []
+    events.append(GameEvent(
+        event_type=EventType.CARD_DRAWN,
+        player_id=player.player_id,
+        data={"card_id": card_id, "effect": "EF_25", "stub": True}
     ))
     event_bus.publish(events[-1])
     return events

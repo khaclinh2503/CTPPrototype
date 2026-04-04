@@ -53,7 +53,7 @@ class EventType(Enum):
     CARD_EFFECT_SWAP_CITY = auto()           # EF_5: swap city ownership
     CARD_EFFECT_DOWNGRADE = auto()           # EF_6/7: downgrade tile level
     CARD_EFFECT_VIRUS = auto()               # EF_7/8/9: virus debuff applied
-    CARD_EFFECT_GO_TO_START = auto()         # EF_14: teleport to START
+    CARD_EFFECT_GO_TO_START = auto()         # EF_14: walk tile-by-tile to START (move_type=3)
     CARD_EFFECT_GO_TO_PRISON = auto()        # EF_13: teleport to PRISON
     CARD_EFFECT_DOUBLE_TOLL_DEBUFF = auto()  # EF_16: self double toll debuff
     CARD_EFFECT_GO_TO_FESTIVAL = auto()      # EF_10: teleport to FESTIVAL tile

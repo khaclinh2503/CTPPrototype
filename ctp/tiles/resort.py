@@ -20,7 +20,7 @@ class ResortStrategy(TileStrategy):
     """
 
     def on_land(self, player: Player, tile: Tile, board: Board, event_bus,
-                players: list | None = None) -> list[GameEvent]:
+                players: list | None = None, use_card_fn=None) -> list[GameEvent]:
         """Handle player landing on a resort tile.
 
         Args:
@@ -98,7 +98,7 @@ class ResortStrategy(TileStrategy):
 
                 # Toll modifier checks (Phase 02.1, per D-44)
                 owner = next((p for p in (players or []) if p.player_id == tile.owner_id), None)
-                rent, skip = apply_toll_modifiers(player, owner, tile, rent, event_bus)
+                rent, skip = apply_toll_modifiers(player, owner, tile, rent, event_bus, use_card_fn=use_card_fn)
                 if skip:
                     return events
 

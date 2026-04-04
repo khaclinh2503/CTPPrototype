@@ -161,6 +161,30 @@ class GameView:
             starting_cash=config_loader.starting_cash,
         )
 
+        # -- Popup callback state ---
+        # popup_event: set = not blocked; clear = waiting for human click
+        self._popup_event: threading.Event = threading.Event()
+        self._popup_event.set()
+        self._popup_decision: bool = False
+        self._popup_btn_yes_rect:  pygame.Rect | None = None
+        self._popup_btn_no_rect:   pygame.Rect | None = None
+        self._popup_btn_card_rect: pygame.Rect | None = None  # 3rd button (prison choice)
+        # List-selection popup (force_sell and future multi-choice popups)
+        self._popup_select_result = None   # any — set by click on list item or skip
+        self._popup_list_rects: list = []  # [(pygame.Rect, value), ...]
+
+        # Wire popup callbacks — shows popup only for human player (index 0 = P1)
+        self._controller.accept_card_fn       = self._accept_card_callback
+        self._controller.use_card_fn          = self._use_card_callback
+        self._controller.shield_block_fn      = self._shield_block_callback
+        self._controller.force_sell_select_fn = self._force_sell_select_callback
+        self._controller.swap_city_select_fn  = self._swap_city_select_callback
+        self._controller.downgrade_select_fn  = self._downgrade_select_callback
+        self._controller.virus_select_fn      = self._virus_select_callback
+        self._controller.donate_select_fn     = self._donate_select_callback
+        self._controller.prison_choice_fn     = self._prison_choice_callback
+        self._controller.pinwheel_bypass_fn   = self._pinwheel_bypass_callback
+
         # -- Shared UI state ---
         self._lock = threading.Lock()
         self._ui_state: dict = {
@@ -177,6 +201,7 @@ class GameView:
         self._ui_state["active_player_id"] = self._players[0].player_id
         self._ui_state["speed"]            = "1x"
         self._ui_state["log_scroll"]       = 0
+        self._ui_state["popup"]            = None
         self._game_over_flag               = False
 
         # Walk animation state (main-thread only — no lock needed)
@@ -283,6 +308,43 @@ class GameView:
                             scroll = max(0, min(scroll - event.y,
                                                 max(0, log_len - _max_log_lines)))
                             self._ui_state["log_scroll"] = scroll
+                elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    # Handle popup button clicks (popup blocks background game thread)
+                    if not self._popup_event.is_set():
+                        mx, my = event.pos
+                        with self._lock:
+                            popup = self._ui_state.get("popup")
+                        popup_type = popup.get("type") if popup else None
+                        if popup_type in ("force_sell_tiles", "swap_city_step1", "swap_city_step2", "donate_city_step1", "donate_city_step2"):
+                            # List-selection popup: check item rects, then skip button
+                            handled = False
+                            for rect, value in self._popup_list_rects:
+                                if rect.collidepoint(mx, my):
+                                    self._popup_select_result = value
+                                    self._popup_event.set()
+                                    handled = True
+                                    break
+                            if not handled and self._popup_btn_no_rect and self._popup_btn_no_rect.collidepoint(mx, my):
+                                self._popup_select_result = None
+                                self._popup_event.set()
+                        elif popup_type == "prison_choice":
+                            # 3-button popup: roll / pay / card
+                            if self._popup_btn_yes_rect and self._popup_btn_yes_rect.collidepoint(mx, my):
+                                self._popup_select_result = "roll"
+                                self._popup_event.set()
+                            elif self._popup_btn_no_rect and self._popup_btn_no_rect.collidepoint(mx, my):
+                                self._popup_select_result = "pay"
+                                self._popup_event.set()
+                            elif self._popup_btn_card_rect and self._popup_btn_card_rect.collidepoint(mx, my):
+                                self._popup_select_result = "card"
+                                self._popup_event.set()
+                        else:
+                            if self._popup_btn_yes_rect and self._popup_btn_yes_rect.collidepoint(mx, my):
+                                self._popup_decision = True
+                                self._popup_event.set()
+                            elif self._popup_btn_no_rect and self._popup_btn_no_rect.collidepoint(mx, my):
+                                self._popup_decision = False
+                                self._popup_event.set()
 
             # Advance walk + dice animations (main thread)
             now = time.time()
@@ -354,6 +416,11 @@ class GameView:
                 screen, state_snapshot, self._player_ids, font_body, font_heading
             )
 
+            # Popup overlay — waits for human player decision (blocks game thread)
+            popup_data = state_snapshot.get("popup")
+            if popup_data:
+                self._draw_popup(screen, popup_data, font_overlay, font_body)
+
             # Scoreboard overlay when game ends
             if self._game_over_flag:
                 self._draw_scoreboard(screen, state_snapshot, font_heading, font_body)
@@ -372,6 +439,8 @@ class GameView:
             pygame.display.flip()
             clock.tick(_FPS)
 
+        # Safety: unblock any game thread waiting for popup or dice
+        self._popup_event.set()
         pygame.quit()
         # Safety: unblock game thread if closed during dice animation
         self._speed_ctrl.resume_after_dice()
@@ -448,7 +517,7 @@ class GameView:
                 if pid and pid in self._ui_state and new_pos is not None:
                     self._ui_state[pid]["position"] = new_pos
 
-                    if move_type == 1 and old_pos is not None:
+                    if move_type in (1, 3) and old_pos is not None:
                         path = _build_walk_path(old_pos, new_pos)
                         existing = self._ui_state[pid].get("anim_path")
                         if existing is not None:
@@ -702,12 +771,23 @@ class GameView:
                     f"  {pid} doi o{my_p} lay o{thr_p} cua {their}"
                 )
             elif et == EventType.CARD_EFFECT_DOWNGRADE:
-                target = event.data.get("target_player", "?")
-                pos    = event.data.get("position", "?")
-                lvl    = event.data.get("new_level", "?")
-                self._ui_state["event_log"].append(
-                    f"  o{pos} cua {target} bi ha cap con lv{lvl}"
-                )
+                if event.data.get("skipped"):
+                    self._ui_state["event_log"].append(
+                        "  Khong co o hop le — the bi mat, bo qua hieu ung"
+                    )
+                elif event.data.get("lost_ownership"):
+                    target = event.data.get("target_player", "?")
+                    pos    = event.data.get("position", "?")
+                    self._ui_state["event_log"].append(
+                        f"  o{pos} cua {target} bi ha cap ve 0 — mat quyen so huu!"
+                    )
+                else:
+                    target = event.data.get("target_player", "?")
+                    pos    = event.data.get("position", "?")
+                    lvl    = event.data.get("new_level", "?")
+                    self._ui_state["event_log"].append(
+                        f"  o{pos} cua {target} bi ha cap con lv{lvl}"
+                    )
             elif et == EventType.CARD_EFFECT_VIRUS:
                 if event.data.get("cleared_by"):
                     # Tile debuff bị clear khi visitor đặt chân vào
@@ -846,6 +926,665 @@ class GameView:
             self._ui_state[pid]["total_assets"] = total_assets
             self._ui_state[pid]["position"]     = player.position
             self._ui_state[pid]["is_bankrupt"]  = player.is_bankrupt
+
+    # ------------------------------------------------------------------
+    # Popup callbacks (called from background thread, blocks until click)
+    # ------------------------------------------------------------------
+
+    def _accept_card_callback(self, player, card_id: str) -> bool:
+        """Called when player draws a held card (IT_CA_1 / IT_CA_2 etc.).
+        Human player (P1, index 0) → show popup; AI → always accept.
+        Returns True = keep card, False = discard.
+        """
+        if player.player_id != self._player_ids[0]:
+            return True   # AI: always accept
+        with self._lock:
+            self._ui_state["popup"] = {
+                "type":      "accept_card",
+                "player_id": player.player_id,
+                "card_id":   card_id,
+                "card_name": _CARD_NAMES.get(card_id, card_id),
+                "card_desc": _CARD_DESCS.get(card_id, ""),
+                "btn_yes":   "Lấy thẻ",
+                "btn_no":    "Bỏ thẻ",
+            }
+        self._popup_event.clear()
+        self._popup_event.wait()    # blocks background thread until click
+        with self._lock:
+            self._ui_state["popup"] = None
+        return self._popup_decision
+
+    def _use_card_callback(self, player, card_id: str, toll_amount: int) -> bool:
+        """Called when player lands on opponent land and has a usable held card.
+        Human player (P1, index 0) → show popup; AI → always use.
+        Returns True = use card, False = keep card and pay toll normally.
+        """
+        if player.player_id != self._player_ids[0]:
+            return True   # AI: always use
+        with self._lock:
+            self._ui_state["popup"] = {
+                "type":        "use_card",
+                "player_id":   player.player_id,
+                "card_id":     card_id,
+                "card_name":   _CARD_NAMES.get(card_id, card_id),
+                "card_desc":   _CARD_DESCS.get(card_id, ""),
+                "toll_amount": toll_amount,
+                "btn_yes":     "Dùng thẻ",
+                "btn_no":      "Giữ thẻ",
+            }
+        self._popup_event.clear()
+        self._popup_event.wait()
+        with self._lock:
+            self._ui_state["popup"] = None
+        return self._popup_decision
+
+    def _shield_block_callback(self, defender, attacker_card: str) -> bool:
+        """Called when defender has IT_CA_3 and is being attacked.
+        Human defender → show popup; AI defender → always use.
+        Returns True = dùng thẻ (chặn + tiêu thẻ), False = bỏ qua (giữ thẻ).
+        """
+        if defender.player_id != self._player_ids[0]:
+            return True   # AI: always block
+        atk_name = _CARD_NAMES.get(attacker_card, attacker_card)
+        with self._lock:
+            self._ui_state["popup"] = {
+                "type":      "shield_block",
+                "player_id": defender.player_id,
+                "card_id":   defender.held_card,
+                "card_name": _CARD_NAMES.get(defender.held_card or "", "Bảo Vệ"),
+                "card_desc": f"Bị tấn công bởi [{attacker_card}] {atk_name}. Dùng thẻ để huỷ đòn (thẻ sẽ bị tiêu)?",
+                "btn_yes":   "Dùng thẻ",
+                "btn_no":    "Bỏ qua",
+            }
+        self._popup_event.clear()
+        self._popup_event.wait()
+        with self._lock:
+            self._ui_state["popup"] = None
+        return self._popup_decision
+
+    def _pinwheel_bypass_callback(self, player) -> bool:
+        """IT_CA_23: hỏi player có muốn dùng thẻ Chong Chóng để bỏ qua ô nâng không.
+        Human P1 → popup; AI → auto True.
+        Returns True = dùng thẻ (bypass), False = giữ thẻ (bị chặn bởi ô nâng).
+        """
+        if player.player_id != self._player_ids[0]:
+            return True  # AI: auto-dùng
+        with self._lock:
+            self._ui_state["popup"] = {
+                "type":      "use_card",
+                "player_id": player.player_id,
+                "card_id":   "IT_CA_23",
+                "card_name": _CARD_NAMES.get("IT_CA_23", "Chong Chóng"),
+                "card_desc": "Co o nang tren duong di. Dung the de bo qua?",
+                "toll_amount": 0,
+                "btn_yes":   "Dùng thẻ",
+                "btn_no":    "Giữ thẻ",
+            }
+        self._popup_event.clear()
+        self._popup_event.wait()
+        with self._lock:
+            self._ui_state["popup"] = None
+        return self._popup_decision
+
+    def _force_sell_select_callback(self, player, board, players):
+        """IT_CA_4: player chọn 1 tile của bất kỳ đối thủ để ép bán.
+        Human P1 → 1-step popup (list tất cả tile không phải của mình).
+        AI → tự chọn richest opponent + tile cao nhất.
+        Returns (opponent_id, tile_pos) or None (bỏ qua / không có target).
+        """
+        # Gom tất cả tile của đối thủ
+        opponent_tiles = []
+        for p in players:
+            if p.player_id == player.player_id:
+                continue
+            for pos in p.owned_properties:
+                t = board.get_tile(pos)
+                opponent_tiles.append((p, t))
+
+        if not opponent_tiles:
+            return None
+
+        if player.player_id != self._player_ids[0]:
+            # AI: chọn tile building_level cao nhất
+            _, best_tile = max(opponent_tiles, key=lambda pt: pt[1].building_level)
+            opp = next(p for p, t in opponent_tiles if t.position == best_tile.position)
+            return (opp.player_id, best_tile.position)
+
+        # Human P1: single-list popup
+        tile_items = [
+            {
+                "pos":   t.position,
+                "id":    p.player_id,
+                "label": f"Ô {t.position}  lv{t.building_level}  [{p.player_id}]",
+            }
+            for p, t in opponent_tiles
+        ]
+        with self._lock:
+            self._ui_state["popup"] = {
+                "type":      "force_sell_tiles",
+                "card_id":   "IT_CA_4",
+                "card_name": _CARD_NAMES.get("IT_CA_4", "Bán Nhà"),
+                "items":     tile_items,
+                "btn_no":    "Bỏ qua",
+            }
+            self._popup_select_result = None
+        self._popup_event.clear()
+        self._popup_event.wait()
+        with self._lock:
+            self._ui_state["popup"] = None
+            result = self._popup_select_result  # (owner_id, pos) or None
+
+        return result
+
+    def _swap_city_select_callback(self, player, board, players):
+        """IT_CA_5: 2-step popup — chọn CITY của mình, rồi chọn CITY của đối thủ.
+        Human P1 → popup step 1 + step 2.
+        AI → trả None (fortune.py xử lý AI riêng).
+        Returns (my_pos, opponent_id, their_pos) or None.
+        """
+        if player.player_id != self._player_ids[0]:
+            return None  # AI: handled in fortune.py
+
+        from ctp.core.board import SpaceId
+
+        # Step 1: chọn CITY của bản thân
+        my_city_tiles = [
+            board.get_tile(pos)
+            for pos in player.owned_properties
+            if board.get_tile(pos).space_id == SpaceId.CITY
+        ]
+        if not my_city_tiles:
+            return None
+
+        my_items = [
+            {"pos": t.position, "id": player.player_id,
+             "label": f"Ô {t.position}  lv{t.building_level}"}
+            for t in my_city_tiles
+        ]
+        with self._lock:
+            self._ui_state["popup"] = {
+                "type":      "swap_city_step1",
+                "card_id":   "IT_CA_5",
+                "card_name": _CARD_NAMES.get("IT_CA_5", "Hoán Đổi"),
+                "prompt":    "Chọn CITY của bạn để đổi:",
+                "items":     my_items,
+                "btn_no":    "Bỏ qua",
+            }
+            self._popup_select_result = None
+        self._popup_event.clear()
+        self._popup_event.wait()
+        with self._lock:
+            self._ui_state["popup"] = None
+            step1 = self._popup_select_result  # (player_id, pos) or None
+
+        if step1 is None:
+            return None
+        _, my_pos = step1
+
+        # Step 2: chọn CITY của đối thủ
+        opponent_city_tiles = []
+        for p in players:
+            if p.player_id == player.player_id or p.is_bankrupt:
+                continue
+            for pos in p.owned_properties:
+                t = board.get_tile(pos)
+                if t.space_id == SpaceId.CITY:
+                    opponent_city_tiles.append((p, t))
+
+        if not opponent_city_tiles:
+            return None
+
+        their_items = [
+            {"pos": t.position, "id": p.player_id,
+             "label": f"Ô {t.position}  lv{t.building_level}  [{p.player_id}]"}
+            for p, t in opponent_city_tiles
+        ]
+        with self._lock:
+            self._ui_state["popup"] = {
+                "type":      "swap_city_step2",
+                "card_id":   "IT_CA_5",
+                "card_name": _CARD_NAMES.get("IT_CA_5", "Hoán Đổi"),
+                "prompt":    "Chọn CITY của đối thủ để nhận:",
+                "items":     their_items,
+                "btn_no":    "Bỏ qua",
+            }
+            self._popup_select_result = None
+        self._popup_event.clear()
+        self._popup_event.wait()
+        with self._lock:
+            self._ui_state["popup"] = None
+            step2 = self._popup_select_result  # (opponent_id, pos) or None
+
+        if step2 is None:
+            return None
+        opponent_id, their_pos = step2
+
+        return (my_pos, opponent_id, their_pos)
+
+    def _downgrade_select_callback(self, player, board, players):
+        """IT_CA_6/7: player chọn 1 CITY của đối thủ (không phải Landmark L5) để hạ cấp.
+        Human P1 → popup danh sách.
+        AI → trả None (fortune.py xử lý AI riêng).
+        Returns (opponent_id, tile_pos) or None.
+        """
+        if player.player_id != self._player_ids[0]:
+            return None  # AI: handled in fortune.py
+
+        from ctp.core.board import SpaceId
+
+        candidate_tiles = []
+        for p in players:
+            if p.player_id == player.player_id or p.is_bankrupt:
+                continue
+            for pos in p.owned_properties:
+                t = board.get_tile(pos)
+                if t.space_id == SpaceId.CITY and t.building_level < 5:
+                    candidate_tiles.append((p, t))
+
+        if not candidate_tiles:
+            return None
+
+        tile_items = [
+            {
+                "pos":   t.position,
+                "id":    p.player_id,
+                "label": f"Ô {t.position}  lv{t.building_level}  [{p.player_id}]",
+            }
+            for p, t in candidate_tiles
+        ]
+        with self._lock:
+            self._ui_state["popup"] = {
+                "type":      "force_sell_tiles",
+                "card_id":   "IT_CA_7",
+                "card_name": _CARD_NAMES.get("IT_CA_7", "Động Đất"),
+                "prompt":    "Chọn CITY của đối thủ để hạ cấp:",
+                "items":     tile_items,
+                "btn_no":    "Bỏ qua",
+            }
+            self._popup_select_result = None
+        self._popup_event.clear()
+        self._popup_event.wait()
+        with self._lock:
+            self._ui_state["popup"] = None
+            result = self._popup_select_result  # (owner_id, pos) or None
+
+        return result
+
+    def _virus_select_callback(self, player, board, players, card_id=None):
+        """IT_CA_8/10 (EF_7) và IT_CA_9 (EF_8): player chọn 1 CITY của đối thủ để debuff.
+        Human P1 → popup danh sách.
+        AI → trả None (fortune.py xử lý AI riêng).
+        Returns (opponent_id, tile_pos) or None.
+        """
+        if player.player_id != self._player_ids[0]:
+            return None  # AI: handled in fortune.py
+
+        from ctp.core.board import SpaceId
+
+        candidate_tiles = []
+        for p in players:
+            if p.player_id == player.player_id or p.is_bankrupt:
+                continue
+            for pos in p.owned_properties:
+                t = board.get_tile(pos)
+                if t.space_id == SpaceId.CITY:
+                    candidate_tiles.append((p, t))
+
+        if not candidate_tiles:
+            return None
+
+        display_id   = card_id or "IT_CA_8"
+        display_name = _CARD_NAMES.get(display_id, "Tấn công")
+
+        tile_items = [
+            {
+                "pos":   t.position,
+                "id":    p.player_id,
+                "label": f"Ô {t.position}  lv{t.building_level}  [{p.player_id}]",
+            }
+            for p, t in candidate_tiles
+        ]
+        with self._lock:
+            self._ui_state["popup"] = {
+                "type":      "force_sell_tiles",
+                "card_id":   display_id,
+                "card_name": display_name,
+                "prompt":    "Chọn CITY của đối thủ để tấn công:",
+                "items":     tile_items,
+                "btn_no":    "Bỏ qua",
+            }
+            self._popup_select_result = None
+        self._popup_event.clear()
+        self._popup_event.wait()
+        with self._lock:
+            self._ui_state["popup"] = None
+            result = self._popup_select_result  # (owner_id, pos) or None
+
+        return result
+
+    def _donate_select_callback(self, player, board, players):
+        """IT_CA_19 (EF_17): player chọn 1 tile của mình → chọn người nhận. Bắt buộc.
+        Human P1 → 2-step popup không có nút bỏ qua.
+        AI → trả None (fortune.py xử lý AI riêng).
+        Returns (tile_pos, recipient_id) or None.
+        """
+        if player.player_id != self._player_ids[0]:
+            return None  # AI: handled in fortune.py
+
+        from ctp.core.board import SpaceId
+
+        # Step 1: chọn tile của bản thân
+        my_tiles = [
+            board.get_tile(pos)
+            for pos in player.owned_properties
+        ]
+        if not my_tiles:
+            return None
+
+        my_items = [
+            {
+                "pos":   t.position,
+                "id":    player.player_id,
+                "label": f"Ô {t.position}  lv{t.building_level}" + ("  [khu nghỉ dưỡng]" if t.space_id == SpaceId.RESORT else ""),
+            }
+            for t in my_tiles
+        ]
+        with self._lock:
+            self._ui_state["popup"] = {
+                "type":      "donate_city_step1",
+                "card_id":   "IT_CA_19",
+                "card_name": _CARD_NAMES.get("IT_CA_19", "Tặng Đất"),
+                "prompt":    "Chọn nhà muốn tặng:",
+                "items":     my_items,
+                # Không có btn_no — bắt buộc phải chọn
+            }
+            self._popup_select_result = None
+        self._popup_event.clear()
+        self._popup_event.wait()
+        with self._lock:
+            self._ui_state["popup"] = None
+            step1 = self._popup_select_result  # (player_id, tile_pos) or None
+
+        if step1 is None:
+            return None
+        _, tile_pos = step1
+
+        # Step 2: chọn người nhận
+        recipients = [p for p in players if not p.is_bankrupt and p.player_id != player.player_id]
+        if not recipients:
+            return None
+
+        recipient_items = [
+            {
+                "pos":   None,
+                "id":    p.player_id,
+                "label": f"{p.player_id}  ${p.cash:,}",
+            }
+            for p in recipients
+        ]
+        with self._lock:
+            self._ui_state["popup"] = {
+                "type":      "donate_city_step2",
+                "card_id":   "IT_CA_19",
+                "card_name": _CARD_NAMES.get("IT_CA_19", "Tặng Đất"),
+                "prompt":    "Chọn người nhận:",
+                "items":     recipient_items,
+                # Không có btn_no — bắt buộc phải chọn
+            }
+            self._popup_select_result = None
+        self._popup_event.clear()
+        self._popup_event.wait()
+        with self._lock:
+            self._ui_state["popup"] = None
+            step2 = self._popup_select_result  # (recipient_id, None) or None
+
+        if step2 is None:
+            return None
+        recipient_id, _ = step2
+
+        return (tile_pos, recipient_id)
+
+    def _prison_choice_callback(self, player, escape_fee: int, has_escape_card: bool) -> str:
+        """Popup 3 lựa chọn khi human player đang ở tù đầu lượt.
+        AI → tự quyết (không gọi hàm này).
+        Returns 'roll' | 'pay' | 'card'.
+        """
+        if player.player_id != self._player_ids[0]:
+            # AI fallback (không nên gọi, nhưng an toàn)
+            if has_escape_card:
+                return 'card'
+            if player.can_afford(escape_fee):
+                return 'pay'
+            return 'roll'
+
+        with self._lock:
+            self._ui_state["popup"] = {
+                "type":            "prison_choice",
+                "escape_fee":      escape_fee,
+                "has_escape_card": has_escape_card,
+                "can_pay":         player.can_afford(escape_fee),
+            }
+            self._popup_select_result = None
+        self._popup_event.clear()
+        self._popup_event.wait()
+        with self._lock:
+            self._ui_state["popup"] = None
+            result = self._popup_select_result or "roll"
+        return result
+
+    def _draw_prison_choice_popup(
+        self,
+        screen: pygame.Surface,
+        popup: dict,
+        font_big: pygame.font.Font,
+        font_body: pygame.font.Font,
+    ) -> None:
+        """Vẽ popup chọn hành động khi ở tù: Đổ / Trả tiền / Dùng thẻ."""
+        box_w = 520
+        box_h = 220
+        pad   = 20
+        btn_w = 145
+        btn_h = 42
+        box_x = (_WIN_W - box_w) // 2
+        box_y = (_WIN_H - box_h) // 2
+
+        dim = pygame.Surface((_WIN_W, _WIN_H), pygame.SRCALPHA)
+        dim.fill((0, 0, 0, 160))
+        screen.blit(dim, (0, 0))
+
+        panel = pygame.Surface((box_w, box_h), pygame.SRCALPHA)
+        panel.fill((30, 15, 50, 245))
+        screen.blit(panel, (box_x, box_y))
+        pygame.draw.rect(screen, (200, 120, 255), (box_x, box_y, box_w, box_h), 2)
+
+        title = font_big.render("Dang o tu — Chon hanh dong:", True, (255, 200, 80))
+        screen.blit(title, (box_x + pad, box_y + pad))
+
+        escape_fee  = popup.get("escape_fee", 0)
+        can_pay     = popup.get("can_pay", False)
+        has_card    = popup.get("has_escape_card", False)
+
+        # Nút 1: Đổ xúc xắc (luôn hiện)
+        # Nút 2: Dùng tiền (dim nếu không đủ)
+        # Nút 3: Dùng thẻ (chỉ hiện nếu có thẻ)
+        spacing = 12
+        num_btns = 2 + (1 if has_card else 0)
+        total_w  = btn_w * num_btns + spacing * (num_btns - 1)
+        btn_y    = box_y + box_h - pad - btn_h
+        start_x  = box_x + (box_w - total_w) // 2
+
+        # Btn roll
+        roll_rect = pygame.Rect(start_x, btn_y, btn_w, btn_h)
+        pygame.draw.rect(screen, (40, 80, 160), roll_rect, border_radius=6)
+        pygame.draw.rect(screen, (100, 160, 255), roll_rect, 1, border_radius=6)
+        lbl = font_body.render("Do xuc xac", True, (220, 230, 255))
+        screen.blit(lbl, lbl.get_rect(center=roll_rect.center))
+        self._popup_btn_yes_rect = roll_rect
+
+        # Btn pay
+        pay_color  = (40, 130, 60) if can_pay else (60, 60, 60)
+        pay_border = (100, 220, 120) if can_pay else (100, 100, 100)
+        pay_rect   = pygame.Rect(start_x + btn_w + spacing, btn_y, btn_w, btn_h)
+        pygame.draw.rect(screen, pay_color, pay_rect, border_radius=6)
+        pygame.draw.rect(screen, pay_border, pay_rect, 1, border_radius=6)
+        pay_lbl = font_body.render(f"Tra ${escape_fee:,}", True, (220, 255, 220) if can_pay else (140, 140, 140))
+        screen.blit(pay_lbl, pay_lbl.get_rect(center=pay_rect.center))
+        self._popup_btn_no_rect = pay_rect
+
+        # Btn card (optional)
+        if has_card:
+            card_rect = pygame.Rect(start_x + (btn_w + spacing) * 2, btn_y, btn_w, btn_h)
+            pygame.draw.rect(screen, (130, 50, 160), card_rect, border_radius=6)
+            pygame.draw.rect(screen, (220, 120, 255), card_rect, 1, border_radius=6)
+            clbl = font_body.render("Dung the", True, (255, 220, 255))
+            screen.blit(clbl, clbl.get_rect(center=card_rect.center))
+            self._popup_btn_card_rect = card_rect
+        else:
+            self._popup_btn_card_rect = None
+
+    def _draw_list_popup(
+        self,
+        screen: pygame.Surface,
+        popup: dict,
+        font_big: pygame.font.Font,
+        font_body: pygame.font.Font,
+    ) -> None:
+        """Vẽ list-selection popup (force_sell_opponents / force_sell_tiles)."""
+        items = popup.get("items", [])
+        item_h = 38
+        pad    = 16
+        btn_h  = 36
+        header_h = font_big.get_linesize() + font_body.get_linesize() + pad * 2
+        has_skip = bool(popup.get("btn_no"))
+        box_w  = 420
+        box_h  = header_h + len(items) * item_h + pad + (btn_h + pad if has_skip else pad)
+        box_x  = (_WIN_W - box_w) // 2
+        box_y  = (_WIN_H - box_h) // 2
+
+        # Dim
+        dim = pygame.Surface((_WIN_W, _WIN_H), pygame.SRCALPHA)
+        dim.fill((0, 0, 0, 160))
+        screen.blit(dim, (0, 0))
+
+        # Panel
+        panel = pygame.Surface((box_w, box_h), pygame.SRCALPHA)
+        panel.fill((20, 25, 50, 248))
+        screen.blit(panel, (box_x, box_y))
+        pygame.draw.rect(screen, (100, 160, 255), (box_x, box_y, box_w, box_h), 2)
+
+        # Header
+        screen.blit(
+            font_big.render(f"[{popup.get('card_id', '')}]  {popup.get('card_name', '')}", True, (255, 230, 60)),
+            (box_x + pad, box_y + pad),
+        )
+        prompt = popup.get("prompt", "Chọn ngôi nhà muốn ép bán:")
+        screen.blit(
+            font_body.render(prompt, True, (180, 200, 240)),
+            (box_x + pad, box_y + pad + font_big.get_linesize() + 4),
+        )
+
+        # List items — value stored as (owner_id, pos)
+        self._popup_list_rects = []
+        list_top = box_y + header_h
+        for i, item in enumerate(items):
+            iy = list_top + i * item_h
+            rect = pygame.Rect(box_x + pad, iy + 3, box_w - pad * 2, item_h - 6)
+            self._popup_list_rects.append((rect, (item.get("id"), item.get("pos"))))
+            pygame.draw.rect(screen, (40, 60, 110), rect, border_radius=5)
+            pygame.draw.rect(screen, (80, 120, 200), rect, 1, border_radius=5)
+            lbl = font_body.render(item.get("label", ""), True, (220, 230, 255))
+            screen.blit(lbl, lbl.get_rect(midleft=(rect.x + 10, rect.centery)))
+
+        # Skip button (bottom centre) — chỉ hiển thị nếu popup có btn_no
+        self._popup_btn_yes_rect = None
+        if has_skip:
+            skip_w = 140
+            skip_rect = pygame.Rect(box_x + (box_w - skip_w) // 2, box_y + box_h - pad - btn_h, skip_w, btn_h)
+            self._popup_btn_no_rect = skip_rect
+            pygame.draw.rect(screen, (100, 40, 40), skip_rect, border_radius=6)
+            pygame.draw.rect(screen, (200, 80, 80), skip_rect, 1, border_radius=6)
+            skip_lbl = font_body.render(popup.get("btn_no", "Bỏ qua"), True, (255, 180, 180))
+            screen.blit(skip_lbl, skip_lbl.get_rect(center=skip_rect.center))
+        else:
+            self._popup_btn_no_rect = None
+
+    def _draw_popup(
+        self,
+        screen: pygame.Surface,
+        popup: dict,
+        font_big: pygame.font.Font,
+        font_body: pygame.font.Font,
+    ) -> None:
+        """Vẽ modal popup chờ quyết định người chơi (Lấy/Bỏ thẻ hoặc Dùng/Giữ thẻ)."""
+        if popup.get("type") in ("force_sell_tiles", "swap_city_step1", "swap_city_step2", "donate_city_step1", "donate_city_step2"):
+            self._draw_list_popup(screen, popup, font_big, font_body)
+            return
+        if popup.get("type") == "prison_choice":
+            self._draw_prison_choice_popup(screen, popup, font_big, font_body)
+            return
+        box_w = 500
+        box_h = 230
+        pad   = 20
+        btn_w = 160
+        btn_h = 40
+        box_x = (_WIN_W - box_w) // 2
+        box_y = (_WIN_H - box_h) // 2
+
+        # Dim entire screen
+        dim = pygame.Surface((_WIN_W, _WIN_H), pygame.SRCALPHA)
+        dim.fill((0, 0, 0, 150))
+        screen.blit(dim, (0, 0))
+
+        # Panel background
+        panel = pygame.Surface((box_w, box_h), pygame.SRCALPHA)
+        panel.fill((20, 25, 50, 245))
+        screen.blit(panel, (box_x, box_y))
+        pygame.draw.rect(screen, (100, 160, 255), (box_x, box_y, box_w, box_h), 2)
+
+        # Card name
+        name_surf = font_big.render(
+            f"[{popup['card_id']}]  {popup['card_name']}", True, (255, 230, 60)
+        )
+        screen.blit(name_surf, (box_x + pad, box_y + pad))
+
+        # Card description
+        desc_surf = font_body.render(popup["card_desc"], True, (200, 200, 200))
+        screen.blit(desc_surf, (box_x + pad, box_y + pad + font_big.get_linesize() + 6))
+
+        # Toll info (use_card popup only)
+        if popup.get("type") == "use_card":
+            toll_amt = popup.get("toll_amount", 0)
+            toll_surf = font_body.render(
+                f"Phí cần trả: ${int(toll_amt):,}", True, (255, 160, 60)
+            )
+            screen.blit(toll_surf, (
+                box_x + pad,
+                box_y + pad + font_big.get_linesize() + 6 + font_body.get_linesize() + 4,
+            ))
+
+        # Buttons (Yes left, No right)
+        spacing = 20
+        total_btn_w = btn_w * 2 + spacing
+        btn_y = box_y + box_h - pad - btn_h
+        yes_x = box_x + (box_w - total_btn_w) // 2
+        no_x  = yes_x + btn_w + spacing
+
+        yes_rect = pygame.Rect(yes_x, btn_y, btn_w, btn_h)
+        no_rect  = pygame.Rect(no_x,  btn_y, btn_w, btn_h)
+
+        # Store rects for click detection (main-thread only — no lock needed)
+        self._popup_btn_yes_rect = yes_rect
+        self._popup_btn_no_rect  = no_rect
+
+        pygame.draw.rect(screen, (40, 140, 80),  yes_rect, border_radius=6)
+        pygame.draw.rect(screen, (140, 50,  50), no_rect,  border_radius=6)
+        pygame.draw.rect(screen, (100, 220, 120), yes_rect, 1, border_radius=6)
+        pygame.draw.rect(screen, (220, 100, 100), no_rect,  1, border_radius=6)
+
+        yes_label = font_body.render(popup.get("btn_yes", "Có"),    True, (220, 255, 220))
+        no_label  = font_body.render(popup.get("btn_no",  "Không"), True, (255, 220, 220))
+        screen.blit(yes_label, yes_label.get_rect(center=yes_rect.center))
+        screen.blit(no_label,  no_label.get_rect(center=no_rect.center))
 
     # ------------------------------------------------------------------
     # Debug card picker (main-thread only — no lock needed)

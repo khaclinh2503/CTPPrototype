@@ -25,7 +25,8 @@ def _get_held_card_effect(card_id: str) -> str:
 
 
 def apply_toll_modifiers(
-    player: Player, owner: Optional[Player], tile, rent: float, event_bus
+    player: Player, owner: Optional[Player], tile, rent: float, event_bus,
+    use_card_fn=None,
 ) -> tuple[float, bool]:
     """Apply virus/double_toll/held_card modifiers lên rent.
 
@@ -37,6 +38,9 @@ def apply_toll_modifiers(
         tile: Tile đang trả toll (để check toll_debuff_turns).
         rent: Toll gốc đã tính.
         event_bus: Event bus.
+        use_card_fn: Optional callback (player, card_id, toll_amount) -> bool.
+            Nếu None (headless/AI): luôn dùng thẻ.
+            Nếu trả về False: giữ thẻ, trả toll bình thường.
 
     Returns:
         (modified_rent, skip_toll) — nếu skip_toll=True thì không trừ tiền.
@@ -64,23 +68,28 @@ def apply_toll_modifiers(
     if player.held_card is not None:
         effect = _get_held_card_effect(player.held_card)
         if effect == "EF_20":
-            player.held_card = None
-            event_bus.publish(GameEvent(
-                event_type=EventType.CARD_EFFECT_ANGEL,
-                player_id=player.player_id,
-                data={"toll_waived": rent}
-            ))
-            return 0.0, True
+            want_use = (use_card_fn is None) or use_card_fn(player, player.held_card, int(rent))
+            if want_use:
+                player.held_card = None
+                event_bus.publish(GameEvent(
+                    event_type=EventType.CARD_EFFECT_ANGEL,
+                    player_id=player.player_id,
+                    data={"toll_waived": rent}
+                ))
+                return 0.0, True
+            # else: user giữ thẻ, trả toll bình thường
 
         # Step 4: EF_2 Discount — 50%
         if effect == "EF_2":
-            original = rent
-            rent = rent // 2
-            player.held_card = None
-            event_bus.publish(GameEvent(
-                event_type=EventType.CARD_EFFECT_DISCOUNT_TOLL,
-                player_id=player.player_id,
-                data={"original_toll": original, "paid_toll": rent}
-            ))
+            want_use = (use_card_fn is None) or use_card_fn(player, player.held_card, int(rent))
+            if want_use:
+                original = rent
+                rent = rent // 2
+                player.held_card = None
+                event_bus.publish(GameEvent(
+                    event_type=EventType.CARD_EFFECT_DISCOUNT_TOLL,
+                    player_id=player.player_id,
+                    data={"original_toll": original, "paid_toll": rent}
+                ))
 
     return rent, False

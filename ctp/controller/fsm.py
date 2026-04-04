@@ -76,6 +76,16 @@ class GameController:
         self.buy_decision_fn = buy_decision_fn  # None = always buy if affordable
         self.travel_decision_fn = None  # set bên ngoài nếu cần UI/interactive
         self.water_slide_decision_fn = None  # (controller, player, candidates) -> Tile | None
+        self.accept_card_fn = None   # (player, card_id) -> bool; None = AI luôn nhận
+        self.use_card_fn = None      # (player, card_id, toll_amount) -> bool; None = AI luôn dùng
+        self.shield_block_fn = None  # (defender, attacker_card) -> bool; None = auto-block
+        self.force_sell_select_fn = None     # (player, board, players) -> (opponent_id, tile_pos) | None
+        self.swap_city_select_fn = None      # (player, board, players) -> (my_pos, opponent_id, their_pos) | None
+        self.downgrade_select_fn = None      # (player, board, players) -> (opponent_id, tile_pos) | None
+        self.virus_select_fn = None          # (player, board, players) -> (opponent_id, tile_pos) | None
+        self.donate_select_fn = None         # (player, board, players) -> (tile_pos, recipient_id) | None
+        self.prison_choice_fn = None         # (player, escape_fee, has_escape_card) -> 'roll'|'pay'|'card'
+        self.pinwheel_bypass_fn = None       # (player) -> bool; True = dùng thẻ bypass, False = giữ thẻ
         self._starting_cash = starting_cash
         self.phase = TurnPhase.ROLL
         self.current_player_index = 0
@@ -214,21 +224,7 @@ class GameController:
             self.phase = TurnPhase.END_TURN
             return []
 
-        # [NEW D-42 Step A] EF_19 Escape card — auto-use khi ở tù (D-16)
-        if (self.current_player.prison_turns_remaining > 0
-                and self.current_player.held_card is not None):
-            from ctp.tiles.fortune import _load_raw_card_data
-            raw = _load_raw_card_data()
-            held_effect = raw.get(self.current_player.held_card, {}).get("effect", "")
-            if held_effect == "EF_19":
-                self.current_player.held_card = None  # consume (D-08)
-                self.current_player.exit_prison()     # prison_turns = 0
-                self.event_bus.publish(GameEvent(
-                    event_type=EventType.CARD_EFFECT_ESCAPE_USED,
-                    player_id=self.current_player.player_id,
-                    data={}
-                ))
-                # Tiếp tục roll bình thường (không return, fall through)
+        # EF_19 Escape card — handled inside _resolve_prison_attempt via prison_choice_fn
 
         # [NEW D-42 Step B] Decrement double_toll_turns ở đầu ROLL phase
         if self.current_player.double_toll_turns > 0:
@@ -331,22 +327,64 @@ class GameController:
     def _resolve_prison_attempt(self) -> str:
         """Xử lý lượt của người chơi đang ở trong tù.
 
-        2 lựa chọn (headless: trả tiền nếu đủ, không đủ thì đổ xúc xắc):
-          A. Trả phí → ra tù, roll mới để đi bình thường  → return 'play'
-          B. Đổ xúc xắc:
-             - Ra đôi → ra tù, di chuyển bình thường, cuối lượt được đổ thêm → return 'play'
-             - Không ra đôi → ngồi tiếp (decrement), hoặc hết hạn thì ra + play → return 'skip' / 'play'
+        3 lựa chọn (qua prison_choice_fn nếu có, không thì AI tự quyết):
+          'card' — Dùng thẻ EF_19: thoát tù ngay, roll bình thường → 'play'
+          'pay'  — Trả phí: thoát tù, roll bình thường → 'play'
+          'roll' — Đổ xúc xắc:
+             - Ra đôi → thoát tù, di chuyển → 'play'
+             - Không ra đôi / lượt cuối → ngồi tiếp hoặc mãn hạn → 'skip'/'play'
 
         Return values:
-          'play'    – đã ra tù, _current_dice đã set, tiếp tục chơi bình thường
-          'skip'    – không ra đôi, vẫn trong tù, bỏ lượt
+          'play'  – đã ra tù, _current_dice đã set, tiếp tục chơi bình thường
+          'skip'  – không ra đôi, vẫn trong tù, bỏ lượt
         """
+        from ctp.tiles.fortune import _load_raw_card_data
         prison_cfg = self.board.get_prison_config() or {}
         escape_fee = int(prison_cfg.get("escapeCostRate", 0.05) * self._starting_cash)
         pid = self.current_player.player_id
 
-        if self.current_player.can_afford(escape_fee):
-            # --- Lựa chọn A: Trả phí ---
+        # Kiểm tra có thẻ EF_19 không
+        raw = _load_raw_card_data()
+        held = self.current_player.held_card
+        has_escape_card = (
+            held is not None and
+            raw.get(held, {}).get("effect", "") == "EF_19"
+        )
+
+        # Lấy lựa chọn từ callback hoặc AI tự quyết
+        if self.prison_choice_fn is not None:
+            choice = self.prison_choice_fn(self.current_player, escape_fee, has_escape_card)
+        else:
+            # AI: ưu tiên thẻ > tiền > đổ xúc xắc
+            if has_escape_card:
+                choice = 'card'
+            elif self.current_player.can_afford(escape_fee):
+                choice = 'pay'
+            else:
+                choice = 'roll'
+
+        # --- Lựa chọn A: Dùng thẻ EF_19 ---
+        if choice == 'card' and has_escape_card:
+            self.current_player.held_card = None
+            self.current_player.exit_prison()
+            self.event_bus.publish(GameEvent(
+                event_type=EventType.CARD_EFFECT_ESCAPE_USED,
+                player_id=pid,
+                data={}
+            ))
+            dice = self.roll_dice()
+            self._rolled_doubles = (dice[0] == dice[1])
+            self._doubles_streak = 1 if self._rolled_doubles else 0
+            self.event_bus.publish(GameEvent(
+                event_type=EventType.DICE_ROLL,
+                player_id=pid,
+                data={"dice": dice, "total": sum(dice), "doubles": self._rolled_doubles,
+                      "doubles_streak": self._doubles_streak}
+            ))
+            return 'play'
+
+        # --- Lựa chọn B: Trả phí ---
+        if choice == 'pay' and self.current_player.can_afford(escape_fee):
             self.current_player.cash -= escape_fee
             self.current_player.exit_prison()
             self.event_bus.publish(GameEvent(
@@ -359,7 +397,6 @@ class GameController:
                 player_id=pid,
                 data={"reason": "paid"}
             ))
-            # Roll mới để di chuyển
             dice = self.roll_dice()
             self._rolled_doubles = (dice[0] == dice[1])
             self._doubles_streak = 1 if self._rolled_doubles else 0
@@ -371,7 +408,7 @@ class GameController:
             ))
             return 'play'
 
-        # --- Lựa chọn B: Đổ xúc xắc (bắt buộc nếu không đủ tiền) ---
+        # --- Lựa chọn C: Đổ xúc xắc (bắt buộc nếu không đủ tiền / chọn roll) ---
 
         # Nếu đây là lượt cuối trong tù → mãn hạn, ra luôn, không cần thử đôi
         if self.current_player.prison_turns_remaining <= 1:
@@ -548,20 +585,26 @@ class GameController:
         # Check for elevated tile in path
         elevated_pos = self.board.find_elevated_in_path(old_pos, dice_total)
 
-        # [NEW D-43] EF_22 Pinwheel bypass — bỏ qua elevated tile nếu player giữ Pinwheel card
+        # EF_22 Pinwheel — hỏi player có muốn dùng thẻ bypass elevated tile không
         if elevated_pos is not None and self.current_player.held_card is not None:
             from ctp.tiles.fortune import _load_raw_card_data
             raw = _load_raw_card_data()
             held_effect = raw.get(self.current_player.held_card, {}).get("effect", "")
             if held_effect == "EF_22":
-                self.current_player.held_card = None   # consume (D-08)
-                self.board.elevated_tile = None         # clear elevated state
-                elevated_pos = None                     # skip elevated block
-                self.event_bus.publish(GameEvent(
-                    event_type=EventType.CARD_EFFECT_PINWHEEL_BYPASS,
-                    player_id=self.current_player.player_id,
-                    data={}
-                ))
+                use_card = (
+                    self.pinwheel_bypass_fn(self.current_player)
+                    if self.pinwheel_bypass_fn is not None
+                    else True  # AI: auto-dùng
+                )
+                if use_card:
+                    self.current_player.held_card = None
+                    self.board.elevated_tile = None
+                    elevated_pos = None
+                    self.event_bus.publish(GameEvent(
+                        event_type=EventType.CARD_EFFECT_PINWHEEL_BYPASS,
+                        player_id=self.current_player.player_id,
+                        data={}
+                    ))
 
         if elevated_pos is not None:
             # Tính xem có qua Start không (so với ô nâng, không phải đích ban đầu)
@@ -702,9 +745,20 @@ class GameController:
         cash_before_resolve = self.current_player.cash
 
         strategy = TileRegistry.resolve(tile.space_id)
+        extra: dict = {}
+        if tile.space_id == SpaceId.CHANCE:
+            extra["accept_card_fn"] = self.accept_card_fn
+            extra["shield_block_fn"] = self.shield_block_fn
+            extra["force_sell_select_fn"] = self.force_sell_select_fn
+            extra["swap_city_select_fn"] = self.swap_city_select_fn
+            extra["downgrade_select_fn"] = self.downgrade_select_fn
+            extra["virus_select_fn"] = self.virus_select_fn
+            extra["donate_select_fn"] = self.donate_select_fn
+        elif tile.space_id in (SpaceId.CITY, SpaceId.RESORT):
+            extra["use_card_fn"] = self.use_card_fn
         events = strategy.on_land(
             self.current_player, tile, self.board, self.event_bus,
-            players=self.players
+            players=self.players, **extra
         )
 
         # Water Slide: di chuyển player đến dest, sau đó resolve ô đích
@@ -717,9 +771,12 @@ class GameController:
             is_own = (tile.space_id == SpaceId.CITY
                       and tile.owner_id == self.current_player.player_id)
             dest_strategy = TileRegistry.resolve(tile.space_id)
+            dest_extra: dict = {}
+            if tile.space_id in (SpaceId.CITY, SpaceId.RESORT):
+                dest_extra["use_card_fn"] = self.use_card_fn
             dest_events = dest_strategy.on_land(
                 self.current_player, tile, self.board, self.event_bus,
-                players=self.players
+                players=self.players, **dest_extra
             )
             events.extend(dest_events)
 
