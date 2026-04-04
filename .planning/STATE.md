@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02.1.1-01-PLAN.md
-last_updated: "2026-04-04T01:31:01.579Z"
+stopped_at: Completed 02.1.1-02-PLAN.md
+last_updated: "2026-04-04T01:36:09.105Z"
 last_activity: 2026-04-04
 progress:
   total_phases: 7
   completed_phases: 2
   total_plans: 13
-  completed_plans: 10
+  completed_plans: 11
   percent: 0
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-01)
 ## Current Position
 
 Phase: 02.1 (card-draw-and-ch-nh-x-c) — EXECUTING
-Plan: 3 of 4
+Plan: 4 of 4
 Status: Ready to execute
 Last activity: 2026-04-04
 
@@ -58,6 +58,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02.1-card-draw-and-ch-nh-x-c PGAP | 5 | 2 tasks | 0 files |
 | Phase 02.1 PGAP | 145 | 2 tasks | 7 files |
 | Phase 02.1.1-minimal-pygameui P01 | 1 | 2 tasks | 3 files |
+| Phase 02.1.1-minimal-pygameui P02 | 153 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -94,6 +95,8 @@ Recent decisions affecting current work:
 - [Phase 02.1]: virus_turns is player-level field (not tile-level): single field on Player covers all owned tiles per D-11/D-22/D-44, clears early on visitor land
 - [Phase 02.1.1-minimal-pygameui]: Lazy import of GameView in run_pygame() ensures headless mode never initialises pygame
 - [Phase 02.1.1-minimal-pygameui]: SpeedController daemon thread: threading.Event for pause, _prev_speed for toggle resume, is_game_over() checked before and after wait()
+- [Phase 02.1.1-minimal-pygameui]: BoardRenderer uses int keys for _SPECIAL_COLORS (SpaceId int values) for direct sid lookup without enum import
+- [Phase 02.1.1-minimal-pygameui]: Ownership tint: 0.7x RGB multiplier on fill colour — simple approach, no extra assets needed
 
 ### Pending Todos
 
@@ -107,6 +110,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-04T01:31:01.575Z
-Stopped at: Completed 02.1.1-01-PLAN.md
+Last session: 2026-04-04T01:36:09.098Z
+Stopped at: Completed 02.1.1-02-PLAN.md
 Resume file: None
