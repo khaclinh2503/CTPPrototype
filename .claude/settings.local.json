@@ -62,7 +62,14 @@
       "Bash([ -f \"ctp/core/models.py\" ])",
       "Bash([ -f \"ctp/tiles/_toll_modifiers.py\" ])",
       "Bash([ -f \"ctp/tiles/fortune.py\" ])",
-      "Bash([ -f \"ctp/controller/fsm.py\" ])"
+      "Bash([ -f \"ctp/controller/fsm.py\" ])",
+      "Bash(git -C /e/workspace/cty/CTPPrototype log --oneline)",
+      "Bash(git -C /e/workspace/cty/CTPPrototype show d24ec3b --stat)",
+      "Bash(git -C /e/workspace/cty/CTPPrototype show d24ec3b -- ctp/core/models.py)",
+      "Bash(git -C /e/workspace/cty/CTPPrototype show e9cc115 -- ctp/core/models.py)",
+      "Bash(git -C /e/workspace/cty/CTPPrototype show 9473254 -- ctp/core/models.py)",
+      "Bash(head -5 echo \"---\" ls *.md)",
+      "Bash(true ls:*)"
     ]
   }
 }

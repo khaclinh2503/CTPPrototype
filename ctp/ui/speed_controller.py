@@ -1,7 +1,7 @@
 """SpeedController — background daemon thread for game loop.
 
 Runs GameController.step() with configurable delays.
-Speed levels: PAUSED / 1x (800ms) / 5x (160ms) / MAX (0ms).
+Speed levels: PAUSED / 1x (800ms).
 
 Threading design: This class owns the background thread. GameView owns
 the threading.Lock for shared UI state. SpeedController receives the
@@ -22,16 +22,12 @@ if TYPE_CHECKING:
 _DELAYS: dict[str, float | None] = {
     "pause": None,
     "1x":   0.8,
-    "5x":   0.16,
-    "max":  0.0,
 }
 
 # Display strings for UI speed indicator (per UI-SPEC Copywriting Contract).
 SPEED_LABELS: dict[str, str] = {
     "pause": "[PAUSED]",
     "1x":    "[1x]",
-    "5x":    "[5x]",
-    "max":   "[MAX]",
 }
 
 

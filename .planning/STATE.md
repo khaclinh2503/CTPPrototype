@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
-stopped_at: "Completed 02.1.1-03-PLAN.md (checkpoint:human-verify pending)"
-last_updated: "2026-04-04T01:40:27.680Z"
-last_activity: 2026-04-04
+status: executing
+stopped_at: Inserted Phase 02.1.1 Minimal PygameUI, ready to plan
+last_updated: "2026-04-04T01:27:48.733Z"
+last_activity: 2026-04-04 -- Phase 02.1.1 execution started
 progress:
   total_phases: 7
   completed_phases: 3
   total_plans: 13
-  completed_plans: 12
+  completed_plans: 10
   percent: 0
 ---
 
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-01)
 
 **Core value:** AI tự động hoàn chỉnh một ván đấu, lưu kết quả, và dùng lịch sử đó để chơi tốt hơn ở ván tiếp theo.
-**Current focus:** Phase 02.1 — card-draw-and-ch-nh-x-c
+**Current focus:** Phase 02.1.1 — minimal-pygameui
 
 ## Current Position
 
-Phase: 02.1 (card-draw-and-ch-nh-x-c) — EXECUTING
-Plan: 4 of 4
-Status: Phase complete — ready for verification
-Last activity: 2026-04-04
+Phase: 02.1.1 (minimal-pygameui) — EXECUTING
+Plan: 1 of 3
+Status: Executing Phase 02.1.1
+Last activity: 2026-04-04 -- Phase 02.1.1 execution started
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -57,9 +57,6 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02.1-card-draw-and-ch-nh-x-c P03 | 25 | 2 tasks | 6 files |
 | Phase 02.1-card-draw-and-ch-nh-x-c PGAP | 5 | 2 tasks | 0 files |
 | Phase 02.1 PGAP | 145 | 2 tasks | 7 files |
-| Phase 02.1.1-minimal-pygameui P01 | 1 | 2 tasks | 3 files |
-| Phase 02.1.1-minimal-pygameui P02 | 153 | 2 tasks | 2 files |
-| Phase 02.1.1-minimal-pygameui P03 | 10 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -94,12 +91,10 @@ Recent decisions affecting current work:
 - [Phase 02.1-card-draw-and-ch-nh-x-c]: EF_22 bypass: clear board.elevated_tile=None và elevated_pos=None để skip elevated block trong MOVE
 - [Phase 02.1-card-draw-and-ch-nh-x-c]: virus_turns is player-level field (not tile-level): one field on Player covers all owned tiles per D-11/D-22/D-44
 - [Phase 02.1]: virus_turns is player-level field (not tile-level): single field on Player covers all owned tiles per D-11/D-22/D-44, clears early on visitor land
-- [Phase 02.1.1-minimal-pygameui]: Lazy import of GameView in run_pygame() ensures headless mode never initialises pygame
-- [Phase 02.1.1-minimal-pygameui]: SpeedController daemon thread: threading.Event for pause, _prev_speed for toggle resume, is_game_over() checked before and after wait()
-- [Phase 02.1.1-minimal-pygameui]: BoardRenderer uses int keys for _SPECIAL_COLORS (SpaceId int values) for direct sid lookup without enum import
-- [Phase 02.1.1-minimal-pygameui]: Ownership tint: 0.7x RGB multiplier on fill colour — simple approach, no extra assets needed
-- [Phase 02.1.1-minimal-pygameui]: GameView imports create_board/create_players from main to reuse exact factory pattern as run_headless()
-- [Phase 02.1.1-minimal-pygameui]: Single _on_event dispatcher handles all 21 EventType values under one lock scope
+
+### Roadmap Evolution
+
+- Phase 02.1.1 inserted after Phase 02.1: Minimal PygameUI (URGENT) — build visual layer sớm để test headless runner hiện tại
 
 ### Pending Todos
 
@@ -113,6 +108,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-04T01:40:27.675Z
-Stopped at: Completed 02.1.1-03-PLAN.md (checkpoint:human-verify pending)
+Last session: 2026-04-04
+Stopped at: Inserted Phase 02.1.1 Minimal PygameUI, ready to plan
 Resume file: None

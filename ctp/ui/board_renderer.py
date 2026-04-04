@@ -7,9 +7,9 @@ Board geometry:
     Diamond centre: (427, 360) — left 2/3 of 1280×720 window.
     Half-radius R: 280 px.
     Tile half-size s: 24 px.
-    Corners: pos 1 = bottom (427,640), pos 9 = right (707,360),
-             pos 17 = top (427,80), pos 25 = left (147,360).
-    Traversal: clockwise 1→2→…→32.
+    Corners: pos 1 = bottom (427,640), pos 9 = left (147,360),
+             pos 17 = top (427,80), pos 25 = right (707,360).
+    Traversal: clockwise 1→2→…→32 (bottom→left→top→right→bottom).
 """
 from __future__ import annotations
 
@@ -81,18 +81,21 @@ _TOKEN_OFFSETS: dict[int, list[tuple[int, int]]] = {
 
 
 def _tile_center(pos: int) -> tuple[float, float]:
-    """Compute screen pixel centre for board position pos (1–32)."""
+    """Compute screen pixel centre for board position pos (1–32).
+
+    Traversal is clockwise: bottom(1) → left(9) → top(17) → right(25) → bottom.
+    """
     i = (pos - 1) % 8
     side = (pos - 1) // 8
     t = i / 8
-    if side == 0:
-        return (_CX + t * _R, _CY + _R - t * _R)
-    elif side == 1:
-        return (_CX + _R - t * _R, _CY - t * _R)
-    elif side == 2:
-        return (_CX - t * _R, _CY - _R + t * _R)
-    else:
-        return (_CX - _R + t * _R, _CY + t * _R)
+    if side == 0:   # pos 1-8: bottom → left (S→W)
+        return (_CX - t * _R, _CY + _R - t * _R)
+    elif side == 1: # pos 9-16: left → top (W→N)
+        return (_CX - _R + t * _R, _CY - t * _R)
+    elif side == 2: # pos 17-24: top → right (N→E)
+        return (_CX + t * _R, _CY - _R + t * _R)
+    else:           # pos 25-32: right → bottom (E→S)
+        return (_CX + _R - t * _R, _CY + t * _R)
 
 
 def _tile_polygon(cx: float, cy: float, s: float = _S) -> list[tuple[int, int]]:
@@ -124,8 +127,9 @@ class BoardRenderer:
         ui_state: dict,
         font_tile: pygame.font.Font,
         font_token: pygame.font.Font,
+        font_overlay: pygame.font.Font | None = None,
     ) -> None:
-        """Draw all 32 tiles then all player tokens.
+        """Draw all 32 tiles, center decorations, player tokens, and card overlay.
 
         Args:
             screen: Target pygame Surface (main window).
@@ -133,6 +137,7 @@ class BoardRenderer:
             ui_state: Shared state snapshot dict (positions + board_ownership).
             font_tile: SysFont(None, 14) for tile labels.
             font_token: SysFont(None, 16) for player tokens.
+            font_overlay: SysFont(None, 20) for card overlay text (optional).
         """
         board_ownership: dict[int, str] = ui_state.get("board_ownership", {})
 
@@ -171,6 +176,9 @@ class BoardRenderer:
             self._draw_centered_text(screen, font_tile, str(pos),  cx, cy - 5, text_color)
             self._draw_centered_text(screen, font_tile, abbr,      cx, cy + 7, text_color)
 
+        # ── Draw center card pile decorations ────────────────────────
+        self._draw_center_decorations(screen, font_tile)
+
         # ── Draw player tokens ────────────────────────────────────────
         # Group players by current position
         pos_to_players: dict[int, list[str]] = {}
@@ -190,7 +198,80 @@ class BoardRenderer:
                 dx, dy = offsets[min(idx, len(offsets) - 1)]
                 self._draw_token(screen, font_token, pid, cx + dx, cy + dy)
 
+        # ── Card overlay (on top of everything) ──────────────────────
+        if ui_state.get("card_overlay") and font_overlay:
+            self._draw_card_overlay(screen, ui_state["card_overlay"], font_overlay, font_tile)
+
     # ── Private helpers ───────────────────────────────────────────────
+
+    def _draw_center_decorations(
+        self,
+        screen: pygame.Surface,
+        font: pygame.font.Font,
+    ) -> None:
+        """Draw two card-pile icons at the board centre."""
+        piles = [
+            (_CX - 32, _CY - 12, (70, 130, 210), "?"),   # left pile (blue)
+            (_CX + 32, _CY + 12, (210, 150, 50), "?"),   # right pile (gold)
+        ]
+        for cx, cy, color, label in piles:
+            # Shadow layers (stacked cards effect)
+            for k in range(3, 0, -1):
+                shadow_poly = _tile_polygon(cx + k, cy - k * 2, 18)
+                shade = (max(0, color[0] - 40), max(0, color[1] - 40), max(0, color[2] - 40))
+                pygame.draw.polygon(screen, shade, shadow_poly)
+                pygame.draw.polygon(screen, (60, 60, 60), shadow_poly, 1)
+            # Top card
+            poly = _tile_polygon(cx, cy, 18)
+            pygame.draw.polygon(screen, color, poly)
+            pygame.draw.polygon(screen, (200, 200, 200), poly, 1)
+            self._draw_centered_text(screen, font, label, cx, cy, (255, 255, 255))
+
+    def _draw_card_overlay(
+        self,
+        screen: pygame.Surface,
+        overlay: dict,
+        font_heading: pygame.font.Font,
+        font_body: pygame.font.Font,
+    ) -> None:
+        """Draw semi-transparent card reveal box at board centre."""
+        box_w, box_h = 220, 110
+        box_x = _CX - box_w // 2
+        box_y = _CY - box_h // 2
+
+        # Semi-transparent background
+        surf = pygame.Surface((box_w, box_h), pygame.SRCALPHA)
+        surf.fill((15, 20, 55, 220))
+        screen.blit(surf, (box_x, box_y))
+        pygame.draw.rect(screen, (100, 150, 255), (box_x, box_y, box_w, box_h), 2)
+
+        player   = overlay.get("player", "?")
+        card_id  = overlay.get("card_id", "?")
+        effect   = overlay.get("effect", "?")
+        content  = overlay.get("content_id", "")
+
+        title_surf = font_heading.render("RUT THE", True, (255, 215, 0))
+        screen.blit(title_surf, title_surf.get_rect(centerx=_CX, top=box_y + 8))
+
+        line1 = font_body.render(f"{player}: {card_id}", True, (220, 220, 220))
+        screen.blit(line1, line1.get_rect(centerx=_CX, top=box_y + 36))
+
+        if content:
+            line2 = font_body.render(content, True, (160, 220, 160))
+            screen.blit(line2, line2.get_rect(centerx=_CX, top=box_y + 56))
+
+        line3 = font_body.render(f"[{effect}]", True, (160, 180, 255))
+        screen.blit(line3, line3.get_rect(centerx=_CX, top=box_y + 76))
+
+        # Progress bar (shrinks over 3 seconds — purely visual)
+        expires = overlay.get("expires_at", 0)
+        created = overlay.get("created_at", expires - 3.0)
+        import time as _t
+        elapsed = _t.time() - created
+        frac = max(0.0, min(1.0, 1.0 - elapsed / 3.0))
+        bar_w = int((box_w - 16) * frac)
+        pygame.draw.rect(screen, (80, 80, 80),  (box_x + 8, box_y + box_h - 10, box_w - 16, 6))
+        pygame.draw.rect(screen, (100, 150, 255), (box_x + 8, box_y + box_h - 10, bar_w, 6))
 
     @staticmethod
     def _draw_centered_text(

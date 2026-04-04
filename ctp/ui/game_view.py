@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import threading
 import random
+import time
 import pygame
 from collections import deque
 from typing import TYPE_CHECKING
@@ -27,7 +28,7 @@ from ctp.core.board import Board, SpaceId
 from ctp.core.models import Player
 from ctp.controller import GameController
 from ctp.ui.board_renderer import BoardRenderer
-from ctp.ui.info_panel import InfoPanel
+from ctp.ui.info_panel import InfoPanel, PANEL_X, LOG_Y, LOG_H
 from ctp.ui.speed_controller import SpeedController
 
 import ctp.tiles   # register tile strategies (same as main.py)
@@ -90,9 +91,10 @@ class GameView:
             for p in self._players
         }
         self._ui_state["board_ownership"]  = {}
-        self._ui_state["event_log"]        = deque(maxlen=10)
+        self._ui_state["event_log"]        = deque(maxlen=200)
         self._ui_state["active_player_id"] = self._players[0].player_id
         self._ui_state["speed"]            = "1x"
+        self._ui_state["log_scroll"]       = 0
         self._game_over_flag               = False
 
         # -- Subscribe EventBus BEFORE thread starts ---
@@ -124,6 +126,10 @@ class GameView:
         font_token   = pygame.font.SysFont(None, 16)   # player tokens
         font_body    = pygame.font.SysFont(None, 18)   # panel body
         font_heading = pygame.font.SysFont(None, 22)   # panel headings / speed
+        font_overlay = pygame.font.SysFont(None, 20)   # card overlay text
+
+        _LOG_LINE_H = 16  # must match info_panel._LOG_LINE_H
+        _max_log_lines = (LOG_H - 24) // _LOG_LINE_H
 
         # Publish game start event (same as run_headless)
         self._event_bus.publish(GameEvent(
@@ -146,15 +152,23 @@ class GameView:
                         self._speed_ctrl.toggle_pause()
                     elif event.key == pygame.K_1:
                         self._speed_ctrl.set_speed("1x")
-                    elif event.key == pygame.K_2:
-                        self._speed_ctrl.set_speed("5x")
-                    elif event.key == pygame.K_3:
-                        self._speed_ctrl.set_speed("max")
+                elif event.type == pygame.MOUSEWHEEL:
+                    mx, my = pygame.mouse.get_pos()
+                    if mx >= PANEL_X and my >= LOG_Y:
+                        with self._lock:
+                            log_len = len(self._ui_state["event_log"])
+                            scroll = self._ui_state.get("log_scroll", 0)
+                            # event.y > 0 = scroll up (show older); < 0 = scroll down
+                            scroll = max(0, min(scroll - event.y,
+                                                max(0, log_len - _max_log_lines)))
+                            self._ui_state["log_scroll"] = scroll
 
-            # Update speed in UI state (read from SpeedController - no lock needed,
-            # speed is a simple string property read from main thread only)
+            # Update speed + expire card overlay under one lock acquire
             with self._lock:
                 self._ui_state["speed"] = self._speed_ctrl.speed
+                overlay = self._ui_state.get("card_overlay")
+                if overlay and time.time() > overlay.get("expires_at", 0):
+                    del self._ui_state["card_overlay"]
 
             # Snapshot shared state under lock (hold lock minimally)
             with self._lock:
@@ -167,7 +181,7 @@ class GameView:
             # Draw
             screen.fill(_BG)
             self._board_renderer.draw(
-                screen, self._board, state_snapshot, font_tile, font_token
+                screen, self._board, state_snapshot, font_tile, font_token, font_overlay
             )
             self._info_panel.draw(
                 screen, state_snapshot, self._player_ids, font_body, font_heading
@@ -312,8 +326,18 @@ class GameView:
 
             # -- Card drawn ---
             elif et == EventType.CARD_DRAWN:
-                card_id = event.data.get("card_id", "?")
-                self._ui_state["event_log"].append(f"{pid} rut the {card_id}")
+                card_id   = event.data.get("card_id", "?")
+                effect    = event.data.get("effect", "?")
+                now = time.time()
+                self._ui_state["card_overlay"] = {
+                    "player":     pid or "?",
+                    "card_id":    card_id,
+                    "effect":     effect,
+                    "content_id": "",   # raw card data not cached here
+                    "created_at": now,
+                    "expires_at": now + 3.0,
+                }
+                self._ui_state["event_log"].append(f"{pid} rut the {card_id} [{effect}]")
 
             # -- Dice roll ---
             elif et == EventType.DICE_ROLL:
