@@ -105,8 +105,15 @@ _FPS    = 60
 _TITLE  = "CTP \u2014 Co Ty Phu AI Simulator"
 _BG     = (30, 30, 30)
 
-# Walk animation: seconds between each tile step (70ms → max 12 tiles = 840ms < 800ms turn delay)
-_ANIM_STEP_S = 0.07
+# Walk animation: seconds between each tile step, keyed by speed level
+_ANIM_STEP_BY_SPEED: dict[str, float] = {
+    "pause": 0.07,
+    "0.5x": 0.12,
+    "1x":   0.07,
+    "2x":   0.04,
+    "5x":   0.02,
+    "10x":  0.01,
+}
 
 
 def _build_walk_path(old_pos: int, new_pos: int) -> list[int]:
@@ -247,10 +254,22 @@ class GameView:
                 elif event.type == pygame.KEYDOWN:
                     if self._dbg_picker_open:
                         self._handle_dbg_picker_key(event.key)
-                    elif event.key == pygame.K_SPACE:
+                    elif event.key in (pygame.K_SPACE, pygame.K_RETURN):
                         self._speed_ctrl.toggle_pause()
-                    elif event.key == pygame.K_1:
-                        self._speed_ctrl.set_speed("1x")
+                        with self._lock:
+                            self._ui_state["speed"] = self._speed_ctrl.speed
+                    elif event.key in (pygame.K_LEFT, pygame.K_RIGHT):
+                        _speeds = ["0.5x", "1x", "2x", "5x", "10x"]
+                        _cur = self._speed_ctrl.speed
+                        _idx = _speeds.index(_cur) if _cur in _speeds else 1
+                        if event.key == pygame.K_RIGHT:
+                            _idx = min(_idx + 1, len(_speeds) - 1)
+                        else:
+                            _idx = max(_idx - 1, 0)
+                        _new_speed = _speeds[_idx]
+                        self._speed_ctrl.set_speed(_new_speed)
+                        with self._lock:
+                            self._ui_state["speed"] = _new_speed
                     elif event.key == pygame.K_F8:
                         self._dbg_picker_open = True
                         self._dbg_picker_idx  = 0
@@ -274,7 +293,8 @@ class GameView:
                     if not isinstance(pdata, dict):
                         continue
                     anim = pdata.get("anim_path")
-                    if anim and now - self._anim_step_time.get(_pid, 0) >= _ANIM_STEP_S:
+                    anim_step_s = _ANIM_STEP_BY_SPEED.get(self._ui_state.get("speed", "1x"), 0.07)
+                    if anim and now - self._anim_step_time.get(_pid, 0) >= anim_step_s:
                         pdata["display_pos"] = anim.pop(0)
                         self._anim_step_time[_pid] = now
                         if not anim:
@@ -334,8 +354,9 @@ class GameView:
                 screen, state_snapshot, self._player_ids, font_body, font_heading
             )
 
-            # Game over notice in event log (no separate screen - UI-SPEC Copywriting)
-            # GAME_ENDED handler already appended the game over line to event_log.
+            # Scoreboard overlay when game ends
+            if self._game_over_flag:
+                self._draw_scoreboard(screen, state_snapshot, font_heading, font_body)
 
             # Debug card picker overlay
             if self._dbg_picker_open:
@@ -383,6 +404,27 @@ class GameView:
             EventType.MINIGAME_RESULT,
             EventType.RENT_OWED,
             EventType.DEBT_SETTLED,
+            EventType.CARD_EFFECT_FORCE_SELL,
+            EventType.CARD_EFFECT_SWAP_CITY,
+            EventType.CARD_EFFECT_DOWNGRADE,
+            EventType.CARD_EFFECT_VIRUS,
+            EventType.CARD_EFFECT_GO_TO_START,
+            EventType.CARD_EFFECT_GO_TO_PRISON,
+            EventType.CARD_EFFECT_DOUBLE_TOLL_DEBUFF,
+            EventType.CARD_EFFECT_GO_TO_FESTIVAL,
+            EventType.CARD_EFFECT_GO_TO_FESTIVAL_TILE,
+            EventType.CARD_EFFECT_GO_TO_TRAVEL,
+            EventType.CARD_EFFECT_GO_TO_TAX,
+            EventType.CARD_EFFECT_GO_TO_GOD,
+            EventType.CARD_EFFECT_HOST_FESTIVAL,
+            EventType.CARD_EFFECT_DONATE_CITY,
+            EventType.CARD_EFFECT_CHARITY,
+            EventType.CARD_EFFECT_GO_TO_WATER_SLIDE,
+            EventType.CARD_EFFECT_SHIELD_BLOCKED,
+            EventType.CARD_EFFECT_ANGEL,
+            EventType.CARD_EFFECT_DISCOUNT_TOLL,
+            EventType.CARD_EFFECT_ESCAPE_USED,
+            EventType.CARD_EFFECT_PINWHEEL_BYPASS,
         ]
         for et in relevant_types:
             self._event_bus.subscribe(et, self._on_event)
@@ -644,6 +686,129 @@ class GameView:
                     f"  Minigame: {'THANG' if won else 'THUA'} (cuoc ${int(bet):,})"
                 )
 
+            # -- Card effects ---
+            elif et == EventType.CARD_EFFECT_FORCE_SELL:
+                target = event.data.get("target_player", "?")
+                pos    = event.data.get("position", "?")
+                refund = event.data.get("refund", 0)
+                self._ui_state["event_log"].append(
+                    f"  {pid} ep {target} ban o{pos} (hoan ${int(refund):,})"
+                )
+            elif et == EventType.CARD_EFFECT_SWAP_CITY:
+                their = event.data.get("opponent", "?")
+                my_p  = event.data.get("my_pos", "?")
+                thr_p = event.data.get("their_pos", "?")
+                self._ui_state["event_log"].append(
+                    f"  {pid} doi o{my_p} lay o{thr_p} cua {their}"
+                )
+            elif et == EventType.CARD_EFFECT_DOWNGRADE:
+                target = event.data.get("target_player", "?")
+                pos    = event.data.get("position", "?")
+                lvl    = event.data.get("new_level", "?")
+                self._ui_state["event_log"].append(
+                    f"  o{pos} cua {target} bi ha cap con lv{lvl}"
+                )
+            elif et == EventType.CARD_EFFECT_VIRUS:
+                if event.data.get("cleared_by"):
+                    # Tile debuff bị clear khi visitor đặt chân vào
+                    pos        = event.data.get("tile_pos", "?")
+                    cleared_by = event.data.get("cleared_by", "?")
+                    self._ui_state["event_log"].append(
+                        f"  {cleared_by} vao o{pos} bi virus - mien phi, hieu ung xoa!"
+                    )
+                else:
+                    target    = event.data.get("target_player", "?")
+                    positions = event.data.get("affected_positions", [])
+                    duration  = event.data.get("duration", 0)
+                    rate      = event.data.get("debuff_rate", 0.0)
+                    effect_str = "mat phi" if rate == 0.0 else f"giam {int((1-rate)*100)}% phi"
+                    pos_str    = ", ".join(f"o{p}" for p in positions)
+                    self._ui_state["event_log"].append(
+                        f"  {target} bi virus {duration} luot: {pos_str} ({effect_str})"
+                    )
+            elif et == EventType.CARD_EFFECT_GO_TO_START:
+                bonus = event.data.get("bonus_received", 0)
+                self._ui_state["event_log"].append(
+                    f"  {pid} ve o Xuat Phat (+${int(bonus):,})"
+                )
+            elif et == EventType.CARD_EFFECT_GO_TO_PRISON:
+                pos = event.data.get("position", "?")
+                self._ui_state["event_log"].append(
+                    f"  {pid} bi dua thang vao Tu (o{pos})"
+                )
+            elif et == EventType.CARD_EFFECT_DOUBLE_TOLL_DEBUFF:
+                self._ui_state["event_log"].append(
+                    f"  {pid} phai tra gap doi phi luot toi"
+                )
+            elif et == EventType.CARD_EFFECT_GO_TO_FESTIVAL:
+                pos = event.data.get("target_position", "?")
+                self._ui_state["event_log"].append(
+                    f"  {pid} di chuyen den Le Hoi (o{pos})"
+                )
+            elif et == EventType.CARD_EFFECT_GO_TO_FESTIVAL_TILE:
+                pos = event.data.get("target_position", "?")
+                self._ui_state["event_log"].append(
+                    f"  {pid} di chuyen den o dat Le Hoi (o{pos})"
+                )
+            elif et == EventType.CARD_EFFECT_GO_TO_TRAVEL:
+                pos = event.data.get("target_position", "?")
+                self._ui_state["event_log"].append(
+                    f"  {pid} di chuyen den Ben Xe (o{pos})"
+                )
+            elif et == EventType.CARD_EFFECT_GO_TO_TAX:
+                pos = event.data.get("target_position", "?")
+                self._ui_state["event_log"].append(
+                    f"  {pid} di chuyen den o Thue (o{pos})"
+                )
+            elif et == EventType.CARD_EFFECT_GO_TO_GOD:
+                pos = event.data.get("target_position", "?")
+                self._ui_state["event_log"].append(
+                    f"  {pid} di chuyen den Tuong Than (o{pos})"
+                )
+            elif et == EventType.CARD_EFFECT_GO_TO_WATER_SLIDE:
+                pos = event.data.get("target_position", "?")
+                self._ui_state["event_log"].append(
+                    f"  {pid} di chuyen den Xoay Nuoc (o{pos})"
+                )
+            elif et == EventType.CARD_EFFECT_HOST_FESTIVAL:
+                pos = event.data.get("position", "?")
+                self._ui_state["event_log"].append(
+                    f"  {pid} to chuc Le Hoi mien phi tai o{pos}"
+                )
+            elif et == EventType.CARD_EFFECT_DONATE_CITY:
+                recipient = event.data.get("recipient", "?")
+                pos       = event.data.get("position", "?")
+                self._ui_state["event_log"].append(
+                    f"  {pid} tang o{pos} cho {recipient}"
+                )
+            elif et == EventType.CARD_EFFECT_CHARITY:
+                recipient = event.data.get("recipient", "?")
+                total     = event.data.get("total_received", 0)
+                self._ui_state["event_log"].append(
+                    f"  Tu thien: moi nguoi gop tien cho {recipient} (+${int(total):,})"
+                )
+            elif et == EventType.CARD_EFFECT_SHIELD_BLOCKED:
+                blocked_by = event.data.get("blocked_card", "?")
+                self._ui_state["event_log"].append(
+                    f"  {pid} chan tan cong bang Khien!"
+                )
+            elif et == EventType.CARD_EFFECT_ANGEL:
+                self._ui_state["event_log"].append(
+                    f"  {pid} duoc Thien Than bao ve - mien toan bo phi!"
+                )
+            elif et == EventType.CARD_EFFECT_DISCOUNT_TOLL:
+                self._ui_state["event_log"].append(
+                    f"  {pid} dung the Giam Phi - chi tra 50%"
+                )
+            elif et == EventType.CARD_EFFECT_ESCAPE_USED:
+                self._ui_state["event_log"].append(
+                    f"  {pid} dung the Thoat Nguc - ra tu ngay!"
+                )
+            elif et == EventType.CARD_EFFECT_PINWHEEL_BYPASS:
+                self._ui_state["event_log"].append(
+                    f"  {pid} dung Chong Chong - bo qua bep/cau tuot!"
+                )
+
             # Auto-scroll log to latest on every new event
             self._ui_state["log_scroll"] = 0
 
@@ -746,3 +911,99 @@ class GameView:
             name  = _CARD_NAMES.get(cid, cid)
             label = font_list.render(f"{cid}  {name}", True, color)
             screen.blit(label, (tx, ty))
+
+    # ------------------------------------------------------------------
+    # Scoreboard overlay (main-thread only)
+    # ------------------------------------------------------------------
+
+    _RANK_COLORS = [
+        (255, 215,   0),   # 1st — gold
+        (192, 192, 192),   # 2nd — silver
+        (205, 127,  50),   # 3rd — bronze
+        (160, 160, 160),   # 4th+
+    ]
+    _RANK_MEDALS = ["1", "2", "3", "4"]
+
+    def _draw_scoreboard(
+        self,
+        screen: pygame.Surface,
+        state: dict,
+        font_head: pygame.font.Font,
+        font_body: pygame.font.Font,
+    ) -> None:
+        """Vẽ bảng kết quả xếp hạng phủ lên board khi game kết thúc."""
+        # Build sorted player list by total_assets desc (bankrupt last)
+        rows: list[tuple[str, int, int, bool]] = []   # (pid, cash, total_assets, bankrupt)
+        for pid in self._player_ids:
+            pstate = state.get(pid, {})
+            rows.append((
+                pid,
+                pstate.get("cash", 0),
+                pstate.get("total_assets", 0),
+                pstate.get("is_bankrupt", False),
+            ))
+        rows.sort(key=lambda r: (r[3], -r[2]))   # bankrupt last, then highest assets first
+
+        row_h   = font_body.get_linesize() + 6
+        head_h  = font_head.get_linesize() + 4
+        pad     = 16
+        col_w   = 200
+        n_cols  = 4   # Hạng | Người chơi | Tài sản | Tiền mặt
+        box_w   = col_w * n_cols + pad * 2
+        box_h   = head_h + pad * 2 + row_h * (len(rows) + 1) + 28  # +1 for column header
+        box_x   = (_WIN_W - box_w) // 2
+        box_y   = (_WIN_H - box_h) // 2
+
+        # Semi-transparent background
+        surf = pygame.Surface((box_w, box_h), pygame.SRCALPHA)
+        surf.fill((10, 10, 30, 230))
+        screen.blit(surf, (box_x, box_y))
+        pygame.draw.rect(screen, (100, 160, 255), (box_x, box_y, box_w, box_h), 2)
+
+        # Title
+        title = font_head.render("KẾT THÚC — BẢNG XẾP HẠNG", True, (255, 215, 0))
+        screen.blit(title, title.get_rect(centerx=box_x + box_w // 2, top=box_y + pad))
+
+        # Column headers
+        hdr_y = box_y + pad + head_h + 4
+        for ci, hdr in enumerate(["HẠNG", "NGƯỜI CHƠI", "TỔNG TÀI SẢN", "TIỀN MẶT"]):
+            hsurf = font_body.render(hdr, True, (140, 180, 255))
+            screen.blit(hsurf, (box_x + pad + ci * col_w, hdr_y))
+
+        # Separator line
+        sep_y = hdr_y + row_h - 2
+        pygame.draw.line(screen, (80, 100, 180),
+                         (box_x + pad, sep_y), (box_x + box_w - pad, sep_y))
+
+        # Player rows
+        for rank, (pid, cash, assets, bankrupt) in enumerate(rows):
+            ry = sep_y + 4 + rank * row_h
+            color = self._RANK_COLORS[min(rank, len(self._RANK_COLORS) - 1)]
+            if bankrupt:
+                color = (100, 100, 100)
+
+            # Highlight winner row
+            if rank == 0 and not bankrupt:
+                hl = pygame.Surface((box_w - pad * 2, row_h), pygame.SRCALPHA)
+                hl.fill((255, 215, 0, 30))
+                screen.blit(hl, (box_x + pad, ry))
+
+            medal = self._RANK_MEDALS[min(rank, len(self._RANK_MEDALS) - 1)]
+            cells = [
+                f"#{medal}",
+                pid,
+                f"{assets:,}",
+                f"{cash:,}",
+            ]
+            for ci, text in enumerate(cells):
+                if bankrupt and ci == 1:
+                    text += " (phá sản)"
+                csurf = font_body.render(text, True, color)
+                screen.blit(csurf, (box_x + pad + ci * col_w, ry))
+
+        # Footer hint
+        hint = font_body.render("Đóng cửa sổ để thoát", True, (100, 100, 140))
+        screen.blit(hint, hint.get_rect(
+            centerx=box_x + box_w // 2,
+            bottom=box_y + box_h - 6
+        ))

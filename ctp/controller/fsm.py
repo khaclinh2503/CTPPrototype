@@ -872,11 +872,6 @@ class GameController:
             ))
             return []
 
-        # [D-46] Decrement virus_turns for all debuffed players
-        for p in self.players:
-            if p.virus_turns > 0:
-                p.virus_turns -= 1
-
         # [D-46] Decrement toll_debuff_turns trên tất cả tiles sau mỗi END_TURN
         for tile in self.board.board:
             if tile.toll_debuff_turns > 0:

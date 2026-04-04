@@ -21,13 +21,21 @@ if TYPE_CHECKING:
 # None = PAUSED (thread blocks on _pause_event.wait()).
 _DELAYS: dict[str, float | None] = {
     "pause": None,
+    "0.5x": 1.6,
     "1x":   0.8,
+    "2x":   0.4,
+    "5x":   0.16,
+    "10x":  0.08,
 }
 
 # Display strings for UI speed indicator (per UI-SPEC Copywriting Contract).
 SPEED_LABELS: dict[str, str] = {
     "pause": "[PAUSED]",
-    "1x":    "[1x]",
+    "0.5x": "[0.5x]",
+    "1x":   "[1x]",
+    "2x":   "[2x]",
+    "5x":   "[5x]",
+    "10x":  "[10x]",
 }
 
 

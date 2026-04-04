@@ -563,10 +563,10 @@ Events: `WATER_SLIDE_WAVE_SET` (sóng tạo/thay thế), `WATER_SLIDE_PUSHED` (p
 | EF_4 | IT_CA_4 | Thẻ Vàng | +tiền (bonus_money) |
 | EF_5 | IT_CA_5 | Thẻ Đen | -tiền (penalty_money) |
 | EF_6 | IT_CA_6 | Thẻ Đặc Biệt | Nhận tiền từ tất cả đối thủ |
-| EF_7 | IT_CA_7 | Thẻ Dịch Bệnh | `opponent.virus_turns = 3` — owner bị debuff 3 lượt, visitor miễn toll |
-| EF_8 | IT_CA_8 | Thẻ Cát Vàng | `opponent.virus_turns = 3` (cùng hiệu ứng virus ở player-level) |
+| EF_7 | IT_CA_7 | Thẻ Dịch Bệnh | Tile-level virus: debuff 1 tile target (+ cả cặp màu nếu cùng chủ), 5 lượt, visitor đầu miễn toll + xóa debuff tile đó |
+| EF_8 | IT_CA_8 | Thẻ Cát Vàng | Tile-level yellow-sand: giảm 50% toll trên 1 tile target (+ cặp màu nếu cùng chủ), 5 lượt, visitor đầu trả 50% + xóa debuff |
 | EF_9 | IT_CA_9 | — | Xem IT_CA_10 |
-| EF_10 | IT_CA_10 | Thẻ Mất Điện | `opponent.virus_turns = 3` |
+| EF_10 | IT_CA_10 | Thẻ Mất Điện | Cùng cơ chế EF_7 (tile-level virus) |
 | EF_11–EF_18 | IT_CA_11–18 | Các hiệu ứng khác | Teleport, buff/debuff tiền, thu thuế v.v. |
 | EF_21 | IT_CA_21 | — | Instant effect |
 | EF_26 | IT_CA_26 | — | Instant effect |
@@ -576,16 +576,21 @@ Events: `WATER_SLIDE_WAVE_SET` (sóng tạo/thay thế), `WATER_SLIDE_PUSHED` (p
 
 Khi visitor đến ô có chủ, áp dụng theo thứ tự ưu tiên:
 
-1. **Virus** (`owner.virus_turns > 0`): toll = 0, `owner.virus_turns = 0` (xóa sớm)
+1. **Tile virus/yellow-sand** (`tile.toll_debuff_turns > 0`): áp `tile.toll_debuff_rate` (0.0 = miễn phí, 0.5 = giảm 50%), xóa debuff tile ngay (`toll_debuff_turns = 0, toll_debuff_rate = 1.0`)
 2. **Double toll** (`player.double_toll_turns > 0`): toll × 2
 3. **Angel** (held EF_20): toll = 0, tiêu thẻ
-4. **Discount** (held EF_2 của chủ): toll × 0.5
+4. **Discount** (held EF_2): toll × 0.5, tiêu thẻ
 
-### 13.5 Virus debuff (D-11/D-22/D-44/D-46)
+### 13.5 Virus / Yellow-sand debuff (D-22/D-44/D-46)
 
-- `opponent.virus_turns = 3` khi player rút EF_7/EF_8/EF_10 — **player-level**, áp dụng cho tất cả ô của chủ.
-- Visitor đến bất kỳ ô nào của chủ bị virus: trả 0 toll + `owner.virus_turns` reset về 0 (xóa sớm).
-- `_do_end_turn()` giảm `p.virus_turns -= 1` cho mọi player có debuff sau mỗi lượt.
+**Cơ chế tile-level (EF_7/EF_8):**
+
+1. AI chọn tile CITY có `building_level` cao nhất của opponent.
+2. Nếu toàn bộ cặp màu (tất cả tile cùng `color` trong LandSpace) đều thuộc opponent → debuff cả cặp (thường 2–3 tile).
+3. Nếu không → chỉ debuff tile đã chọn.
+4. Set `tile.toll_debuff_turns = 5`, `tile.toll_debuff_rate = 0.0` (virus) hoặc `0.5` (yellow-sand).
+5. **Visitor đầu tiên** nhảy vào tile bị debuff: không trả toll (hoặc trả 50%) + debuff tile đó bị xóa ngay.
+6. Nếu không ai ghé: `_do_end_turn()` giảm `tile.toll_debuff_turns -= 1` mỗi lượt, tự hết sau 5 lượt.
 
 ---
 
@@ -604,7 +609,7 @@ Player:
   held_card: str | None          # card_id đang giữ (held card), per D-09
   accuracy_rate: int             # Căn lực base accuracy (%), mặc định 15, per D-10
   double_toll_turns: int         # EF_16 self-debuff rounds còn lại, per D-12
-  virus_turns: int               # EF_7/8/10 owner debuff rounds còn lại, per D-11
+  # virus_turns đã bỏ — EF_7/8 debuff nay là tile-level (tile.toll_debuff_turns/rate)
 ```
 
 **Chưa implement (Phase 2.5):**
@@ -673,7 +678,7 @@ tổng tài sản = cash + Σ(build_cost đầu tư cho từng cấp đã xây) 
 |-----------|------------|-------------|
 | Card effects (CHANCE) | **Implemented** — 23 cards, weighted random, held/instant, toll modifiers | ✅ Phase 2.1 |
 | Đổ Chính Xác (Căn Lực) | **Implemented** — 15% base accuracy, 4 khoảng, AI target-aware | ✅ Phase 2.1 |
-| Virus debuff (EF_7/8/10) | **Implemented** — player-level `virus_turns`, early clear, END_TURN decrement | ✅ Phase 2.1 |
+| Virus debuff (EF_7/8/10) | **Implemented** — tile-level `toll_debuff_turns/rate`, color-pair spread, clear-on-visit, END_TURN decrement | ✅ Phase 2.1 |
 | TRAVEL đích thật | Teleport về Start thay vì đích config | Phase 2.5? |
 | GOD tile effect | **Implemented** — mua đất (turn 1), xây nhà/nâng ô (turn 2+) | ✅ |
 | WATER_SLIDE | **Implemented** — tạo sóng, trượt đến dest, đẩy player vào vùng sóng | ✅ |

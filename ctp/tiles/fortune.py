@@ -322,7 +322,13 @@ def _ef_yellow_sand(card_id, player, board, players, event_bus):
 
 
 def _apply_color_pair_debuff(card_id, player, board, players, event_bus, debuff_rate: float):
-    """Set player-level virus debuff on opponent per D-11/D-22."""
+    """Virus/yellow-sand: áp tile-level debuff lên 1 tile target của opponent.
+
+    - AI chọn tile có building_level cao nhất của opponent (CITY only).
+    - Nếu toàn bộ cặp màu của tile đó đều cùng chủ opponent → debuff cả cặp.
+    - Visitor đầu tiên nhảy vào tile bị debuff: miễn phí + xóa debuff tile đó ngay.
+    - Duration: 5 lượt (countdown mỗi END_TURN trong FSM).
+    """
     events = []
     opponent = _richest_opponent(player, players)
     if not opponent:
@@ -330,15 +336,39 @@ def _apply_color_pair_debuff(card_id, player, board, players, event_bus, debuff_
     if _try_block_attack(opponent, card_id, event_bus):
         return events
 
-    # Player-level virus: affects ALL owned tiles, not individual tiles
-    opponent.virus_turns = 3
+    # Chọn tile CITY của opponent có building_level cao nhất
+    target_tile = None
+    for pos in opponent.owned_properties:
+        t = board.get_tile(pos)
+        if t.space_id == SpaceId.CITY:
+            if target_tile is None or t.building_level > target_tile.building_level:
+                target_tile = t
+    if target_tile is None:
+        return events
+
+    # Tìm color pair: tất cả CITY tile cùng màu với target
+    color_group_positions = board.get_color_group_positions(target_tile.opt)
+    affected_positions = [target_tile.position]
+
+    # Nếu toàn bộ cặp màu đều thuộc opponent → debuff cả cặp
+    color_group_tiles = [board.get_tile(p) for p in color_group_positions]
+    if all(t.owner_id == opponent.player_id for t in color_group_tiles):
+        affected_positions = color_group_positions
+
+    # Áp debuff lên từng tile
+    for pos in affected_positions:
+        t = board.get_tile(pos)
+        t.toll_debuff_turns = 5
+        t.toll_debuff_rate  = debuff_rate
 
     events.append(GameEvent(
         event_type=EventType.CARD_EFFECT_VIRUS,
         player_id=player.player_id,
         data={
-            "target_player": opponent.player_id,
-            "duration": 3,
+            "target_player":      opponent.player_id,
+            "affected_positions": affected_positions,
+            "debuff_rate":        debuff_rate,
+            "duration":           5,
         }
     ))
     event_bus.publish(events[-1])
