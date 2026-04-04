@@ -182,8 +182,11 @@ class BoardRenderer:
         # ── Draw player tokens ────────────────────────────────────────
         # Group players by current position
         pos_to_players: dict[int, list[str]] = {}
-        player_ids = [k for k in ui_state if isinstance(k, str) and k not in
-                      ("board_ownership", "event_log", "active_player_id", "speed")]
+        _NON_PLAYER_KEYS = {"board_ownership", "event_log", "active_player_id",
+                             "speed", "log_scroll", "card_overlay"}
+        player_ids = [k for k in ui_state if isinstance(k, str)
+                      and k not in _NON_PLAYER_KEYS
+                      and isinstance(ui_state[k], dict)]
         for pid in player_ids:
             pdata = ui_state[pid]
             if pdata.get("is_bankrupt"):
