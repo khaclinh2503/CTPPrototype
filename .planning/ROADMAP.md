@@ -87,11 +87,25 @@ Plans:
   2. SkillEngine.fire(trigger, player, ctx) dispatches đúng handler tại mỗi trigger point
   3. Rate calculation theo D-05: base_rate + (star - min_star) * chance, R dùng S config
   4. Pet stamina depletes khi active, stops at 0
-**Plans**: 2 plans
+**Plans**: 16 plans
 
 Plans:
-- [ ] 02.5-01-PLAN.md — Foundation: Player/Board extensions (15+ fields), schema redesign (trigger-based), SkillEngine core, YAML configs (27 skills + 12 pendants + 4 pets), random assignment, unit tests
-- [ ] 02.5-02-PLAN.md — All 43 handler implementations (27 skills + 12 pendants + 4 pets), FSM hook injection at 20+ trigger points, integration tests
+- [ ] 02.5-01-PLAN.md — Foundation: Player/Board extensions, schema redesign, SkillEngine core, YAML configs, random assignment, unit tests
+- [ ] 02.5-02-PLAN.md — ROLL-trigger skills: SK_XXCT_1, SK_XE_DO, SK_MOONWALK, SK_XXCT_2 (4 skills)
+- [ ] 02.5-03-PLAN.md — MOVE-trigger skills: SK_CAM_CO, SK_PHA_HUY (2 skills)
+- [ ] 02.5-04-PLAN.md — RESOLVE_TILE toll/reactive skills: SK_BUA_SET, SK_NGOI_SAO, SK_CUONG_CHE (3 skills)
+- [ ] 02.5-05-PLAN.md — RESOLVE_TILE same-tile + travel skills: SK_SUNG_VANG, SK_LOC_XOAY, SK_TOC_CHIEN (3 skills)
+- [ ] 02.5-06-PLAN.md — Prison + landmark skills: SK_JOKER, SK_HQXX, SK_LAU_DAI_TINH_AI (3 skills)
+- [ ] 02.5-07-PLAN.md — UPGRADE-trigger skills: SK_TEDDY, SK_O_KY_DIEU, SK_MONG_NGUA (3 skills)
+- [ ] 02.5-08-PLAN.md — Hybrid upgrade+land skills: SK_AO_ANH, SK_BIEN_CAM (2 skills)
+- [ ] 02.5-09-PLAN.md — START-pass skills: SK_GRAMMY, SK_MU_PHEP (2 skills)
+- [ ] 02.5-10-PLAN.md — ACQUIRE-trigger skills: SK_MC2, SK_TRUM_DU_LICH (2 skills)
+- [ ] 02.5-11-PLAN.md — Multi-trigger complex skills: SK_GAY_NHU_Y, SK_HO_DIEP, SK_SO_10 (3 skills)
+- [ ] 02.5-12-PLAN.md — Pendants land/travel: PT_GIAY_BAY, PT_CUOP_NHA, PT_MANG_NHEN, PT_SIEU_TAXI (4 pendants)
+- [ ] 02.5-13-PLAN.md — Pendants own-land + opponent-land: PT_TU_TRUONG, PT_BAN_TAY_VANG, PT_TUI_BA_GANG, PT_KET_VANG (4 pendants)
+- [ ] 02.5-14-PLAN.md — Pendants special triggers: PT_DKXX2, PT_XICH_NGOC, PT_CHONG_MUA_NHA, PT_SIEU_SAO_CHEP (4 pendants)
+- [ ] 02.5-15-PLAN.md — All 4 pets: PET_THIEN_THAN, PET_XI_CHO, PET_PHU_THU, PET_TROI_CHAN
+- [ ] 02.5-16-PLAN.md — FSM hook injection (20+ trigger points), register_all.py, main.py wiring, integration tests
 
 ### Phase 3: AI Engine + History
 **Goal**: Each AI player makes economically rational decisions driven by heuristic scoring and Monte Carlo rollouts, with personality affecting thresholds — and every completed game is persisted to SQLite for cross-session learning.
@@ -139,6 +153,6 @@ Phases execute in numeric order: 1 → 2 → 2.1 → 2.1.1 → 2.5 → 3 → 4
 | 2. Player + Property Rules | 0/2 | Not started | - |
 | 2.1. Card Draw + Căn Lực | 0/3 | Complete    | 2026-04-03 |
 | 2.1.1. Minimal PygameUI | 0/3 | Not started | - |
-| 2.5. Skill/Pendant/Pet | 0/2 | Planning complete | - |
+| 2.5. Skill/Pendant/Pet | 0/16 | Planning complete | - |
 | 3. AI Engine + History | 0/3 | Not started | - |
 | 4. Pygame Visualization | 0/3 | Not started | - |
