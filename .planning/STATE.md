@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: ready_to_plan
-stopped_at: Phase 02.1.1 complete (popup UI done), next is Phase 2.5 Skill/Pendant/Pet System
-last_updated: "2026-04-04T12:00:00.000Z"
-last_activity: 2026-04-04 -- card effect bugs fixed + popup UI (IT_CA_1/IT_CA_2) implemented
+status: completed
+stopped_at: Phase 2.5 context complete — skills + pendants (12) + pets (4) captured, effective_stat() dropped
+last_updated: "2026-04-05T04:47:02.148Z"
+last_activity: 2026-04-04 -- Phase 02.1.1 all 3 plans complete
 progress:
   total_phases: 7
   completed_phases: 4
   total_plans: 13
   completed_plans: 13
-  percent: 57
+  percent: 100
 ---
 
 # Project State
@@ -108,13 +108,15 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-04
-Stopped at: Phase 02.1.1 COMPLETE. Tất cả items đã xong:
+Last session: 2026-04-05T04:47:02.144Z
+Stopped at: Phase 2.5 context complete — skills + pendants (12) + pets (4) captured, effective_stat() dropped
+
   - Card effect bugs fixed (EF_16 timing, vacuous truth EF_7/8, EF_24/EF_25 stubs, duplicate fn)
   - Tests updated: tile-level virus debuff (test_cards.py, test_fsm.py), 240 pass / 1 pre-existing fail
   - Callback injection: accept_card_fn + use_card_fn slots trên GameController
   - Popup UI: game_view.py — accept_card popup (Lấy/Bỏ thẻ) + use_card popup (Dùng/Giữ thẻ)
   - Popup chỉ hiện cho P1 (human); AI auto-accept/use
   - GDD-CORE.md updated: held card mapping đã sửa đúng (EF_20=IT_CA_1, EF_19=IT_CA_21, EF_22=IT_CA_23)
+
 Next: Phase 2.5 — Skill/Pendant/Pet System
-Resume file: None
+Resume file: .planning/phases/02.5-skill-pendant-pet-system/02.5-CONTEXT.md
