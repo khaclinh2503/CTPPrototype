@@ -41,3 +41,6 @@ if random(0, 100) < rate_at_star:
 - Di chuyển lùi wrap around board (vị trí 1 → 32 → 31...)
 - Di chuyển lùi **không nhận thưởng qua START** (chỉ tiến mới nhận)
 - Stub AI: chọn hướng có lợi hơn (ô đến có giá trị cao hơn)
+- **Kết hợp với SK_XE_DO**: chọn parity (chẵn/lẻ) + chọn hướng → tiến hoặc lùi bằng số cùng parity
+- **Kết hợp với SK_XXCT**: dice±1 × 2 hướng → player chọn 1 trong 4 ô đến
+- **Không kết hợp 3 skill** (XeĐộ + XXCT + Moonwalk): không có tổ hợp này

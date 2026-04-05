@@ -53,4 +53,5 @@ if random(0, 100) < rate_at_star:
 - Secondary rate cố định 60% (không phụ thuộc rank/star)
 - Cần track `skills_disabled_this_turn` và `cards_disabled_this_turn` trên Player (reset cuối lượt)
 - Nếu player không có property → đẩy fail silently, disable vẫn xảy ra
+- **Thứ tự với SK_SUNG_VANG**: SừngVàng effect 1 (steal cash) → LốcXoáy check → SừngVàng effect 2 (đẩy) check. Mỗi bước độc lập
 - Stub AI: không cần logic đặc biệt

@@ -44,4 +44,5 @@ if random(0, 100) < rate_at_star:
 
 - Effect 2 rate cố định 60%, không phụ thuộc rank/star
 - Skill không có ở rank C, D, B
+- **Mutually exclusive với SK_GAY_NHU_Y**: không thể trang bị cả hai cùng lúc (cùng mechanic L5 + teleport Travel)
 - Stub AI: nếu di chuyển đến travel tile → xử lý bình thường như TravelStrategy

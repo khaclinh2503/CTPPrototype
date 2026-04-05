@@ -55,6 +55,7 @@ Stub AI (bị trói): chọn số chẵn nếu có DKXX; không có DKXX thì ra
 - Trigger: `ON_OPPONENT_PASS_YOURS` — đối thủ ĐI QUA (không phải dừng tại) ô của player
 - Nếu đối thủ tung số chẵn: bound_turns -= 1, di chuyển bình thường (không bị phạt)
 - Nếu đối thủ tung số lẻ: bound_turns -= 1, **skip move** (không di chuyển lượt đó)
+- **Check kết quả xúc xắc thật**: SK_XXCT (±1 điều chỉnh) không được tính — phải là kết quả dice gốc chẵn mới thoát bind
 - Nhiều pet có thể stack: nếu bị trói nhiều lần, `bound_turns` tăng tương ứng
 - Tier max (5): 70% — không phải 100%, vẫn có chance không active
 - Kết hợp cực tốt khi player có nhiều ô đất → đối thủ thường đi qua

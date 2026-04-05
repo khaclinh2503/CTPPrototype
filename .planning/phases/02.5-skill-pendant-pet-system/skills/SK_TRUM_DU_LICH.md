@@ -67,5 +67,6 @@ if unowned:
 ## Notes
 
 - Effect 1: nếu không còn ô CITY trống trên map → fail silently
+- **Stack với SK_MC2**: MC2 check trước và lấy 1 ô (loại khỏi pool), TrùmDuLịch effect 1 check sau và random ô khác → player nhận 2 ô miễn phí, không trùng nhau
 - Effect 2: toll Resort trả trước, sau đó mới check skill acquisition
 - Stub AI: Effect 2 — luôn mua nếu đủ tiền

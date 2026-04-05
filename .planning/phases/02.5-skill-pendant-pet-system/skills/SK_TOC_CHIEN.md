@@ -27,6 +27,7 @@ Nếu active → player được **đổ thêm 1 lượt xúc xắc** ngay sau k
 
 ## Notes
 
-- Trigger sau khi player **đã đến đích** của Travel tile (không phải khi đi qua)
-- Lượt thêm là đổ xúc xắc bình thường (không bị hạn chế ô đến)
+- Trigger sau khi **toàn bộ di chuyển Travel hoàn tất** (player đã đến đích cuối cùng)
+- Di chuyển bằng Travel không thể đến Travel tile → không có chain vô hạn
+- Lượt thêm là đổ xúc xắc bình thường (có thể dùng Moonwalk, XXCT, v.v.)
 - Stub AI: không cần logic đặc biệt

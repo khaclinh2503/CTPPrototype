@@ -51,6 +51,7 @@ r2_active = random(0, 100) < rate2_at_rank
 ## Notes
 
 - Rate1 và Rate2 là hai trigger point khác nhau, check độc lập
+- **Stack với SK_SUNG_VANG**: cả hai đều fire độc lập khi player đáp ô đối thủ → steal 2 lần riêng biệt
 - `ON_SAME_TILE`: trigger khi bất kỳ player (không chỉ opponent) kết thúc lượt cùng ô với player
 - STEAL_RATIO của Rate2: cần define trong config (ví dụ: 5–10% tuỳ thiết kế)
 - Kết hợp với PT_KET_VANG: cả hai đều có Rate1 tăng toll → stack lên nhau

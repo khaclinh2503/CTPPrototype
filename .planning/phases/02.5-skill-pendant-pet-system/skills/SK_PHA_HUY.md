@@ -41,5 +41,6 @@ opponent.remove_property(tile.position)
 
 - Trigger khi **đi qua** (mid-path), không phải khi dừng lại tại ô
 - Ô trở thành đất trống hoàn toàn — không còn chủ, level = 0
+- **Chain với SK_CAM_CO**: ngay sau khi PhaHuy phá xong → tile trống → CắmCờ check ngay tại ô đó (trong cùng lượt di chuyển)
 - `calc_invested_build_cost()` đã có sẵn trong `ctp/core/constants.py`
 - Stub AI: không cần logic đặc biệt

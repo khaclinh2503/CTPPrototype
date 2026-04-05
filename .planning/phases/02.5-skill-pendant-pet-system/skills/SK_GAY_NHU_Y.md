@@ -32,7 +32,7 @@
 
 ---
 
-## Effect 2 — Xây Biểu Tượng + Di chuyển đến Resort
+## Effect 2 — Xây Biểu Tượng + Di chuyển đến Travel tile
 
 **Trigger:** UPGRADE phase — khi xây nhà (bất kỳ level nào).
 
@@ -40,7 +40,7 @@
 
 **Effect chain** (giống SK_TEDDY):
 1. Nâng cấp thẳng lên **L5 (Biểu Tượng)**
-2. Nếu active → check tiếp: `random(0, 100) < 70` → di chuyển đến ô Resort
+2. Nếu active → check tiếp: `random(0, 100) < 70` → di chuyển đến ô Du Lịch (Travel tile)
 
 ### Rate 2 Config
 
@@ -58,6 +58,7 @@
 ## Notes
 
 - Effect 1 là reactive — trigger khi đối thủ đến Resort, không phải lượt của player
-- Effect 2 giống SK_TEDDY nhưng rate khác
+- Effect 2 giống SK_TEDDY: cùng mechanic (L5 + teleport Travel), chỉ khác secondary rate (70% vs 60%)
 - Effect 2: secondary rate cố định 70% (không phụ thuộc rank/star)
+- **Mutually exclusive với SK_TEDDY**: không thể trang bị cả hai cùng lúc
 - Stub AI: Effect 1 — di chuyển theo; Effect 2 — xử lý như Teddy

@@ -53,4 +53,5 @@ if new_level == 5:
 
 - "Cùng cạnh" = cùng 1 trong 4 cạnh của bàn cờ hình thoi
 - `find_resort_on_side()` cần biết layout cạnh bàn cờ từ Board.json
+- **Không bị PT_CHONG_MUA_NHA block**: MongNgua là cơ chế cướp, không phải mua lại
 - Stub AI: không cần logic đặc biệt — skill trigger tự động

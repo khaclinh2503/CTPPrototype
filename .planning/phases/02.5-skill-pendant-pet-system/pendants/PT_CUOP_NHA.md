@@ -40,7 +40,8 @@ active = random(0, 100) < rate_at_rank
 
 ## Notes
 
-- Trigger **sau khi trả toll** — player đã nộp phí nhưng vẫn có thể cướp nhà
+- Trigger **sau khi trả toll** — toll = 0 (do SK_BUA_SET, PT_MANG_NHEN, v.v.) vẫn được coi là đã trả toll → CướpNhà vẫn check bình thường
+- **Không bị PT_CHONG_MUA_NHA block**: cướp nhà là cơ chế riêng, không phải "mua lại"
 - Resort khi cướp: chỉ đổi `owner_id`, không thay đổi level (D-28)
 - Tương tự effect của PT_MANG_NHEN R2 nhưng PT_CUOP_NHA là single-rate pendant
 - Kết hợp cực mạnh với các pendant tăng toll như PT_KET_VANG (trả ít hơn rồi cướp)

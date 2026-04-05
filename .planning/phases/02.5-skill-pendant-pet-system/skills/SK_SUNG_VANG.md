@@ -63,4 +63,7 @@ if random(0, 100) < rate_at_star:
 - "Ô đắt nhất" = ô có `calc_invested_build_cost` cao nhất trong `player.owned_properties`
 - Nếu player không có property → Effect 2 skip (không có ô để đẩy)
 - Phong toả chỉ áp dụng trong scope của event này, không persist sang lượt sau
+- **Stack với PT_TUI_BA_GANG effect 2**: cả hai đều fire độc lập → player steal 2 lần (Sừng Vàng 15% trước, TúiBaGăng thêm % sau)
+- **Stack với PT_MANG_NHEN**: không conflict — SừngVàng tác động lên **player** (steal cash, đẩy), MạngNhện tác động lên **ô đất** (free toll, cướp nhà)
+- **Thứ tự với SK_LOC_XOAY**: Effect 1 (steal cash) → LốcXoáy check → Effect 2 (đẩy đối thủ) check. Mỗi bước check độc lập
 - Stub AI: không cần logic đặc biệt — skill trigger tự động

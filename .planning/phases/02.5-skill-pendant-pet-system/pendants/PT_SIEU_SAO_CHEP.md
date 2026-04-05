@@ -56,3 +56,4 @@ r2_active = random(0, 100) < rate2_at_rank
 - Rate2: chỉ xảy ra 1 lần duy nhất khi bắt đầu ván (`ON_GAME_START`)
 - Rate2 SR: 90% — gần như chắc chắn x2 tiền đầu ván → pendant cực kỳ mạnh ở SR
 - Rate1 tạo biểu tượng ngẫu nhiên: chọn random từ owned_properties của player, không phải copy ô của đối thủ
+- **Chain khi Rate1 active**: L5 được tạo → trigger ngay các skill của player: SK_MONG_NGUA (chiếm Resort), SK_TEDDY / SK_GAY_NHU_Y (teleport Travel). Bất kỳ skill nào liên quan đến "landmark được tạo" đều fire

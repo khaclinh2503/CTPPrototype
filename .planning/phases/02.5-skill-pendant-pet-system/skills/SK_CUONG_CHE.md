@@ -42,4 +42,5 @@ if landmarks:
 
 - Nếu player chưa có Biểu Tượng nào → skill fail silently
 - Đối thủ vẫn có thể dùng thẻ/skill để counter toll tại Biểu Tượng
+- **Priority với SK_NGOI_SAO**: CướngChế check trước → nếu active, đối thủ bị ném đến L5, NgôiSao tại ô hiện tại **không check**. NgôiSao chỉ có thể trigger tại ô đích (L5) nếu player cũng sở hữu ô đó
 - Stub AI: không cần logic đặc biệt

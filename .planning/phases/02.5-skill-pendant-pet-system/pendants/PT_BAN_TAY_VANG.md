@@ -46,3 +46,4 @@ active = random(0, 100) < rate_at_rank
 - Khác PT_TU_TRUONG R2: PT_TU_TRUONG hút trong radius 4; PT_BAN_TAY_VANG hút **toàn bộ cạnh**
 - Đối thủ bị hút phải trả toll Biểu Tượng — combo cực mạnh với property giá cao
 - Rate nhảy mạnh ở S → R → SR: 20% → 50% → 85%
+- **Stack với SK_LAU_DAI_TINH_AI**: cả hai fire độc lập — LDTA hút 1 đối thủ random, BànTayVàng hút toàn cạnh → đối thủ bị pull 2 lần, trả toll 2 lần

@@ -6,17 +6,17 @@
 |-------|-------|
 | ID | PT_XICH_NGOC |
 | Name | Xích Ngọc |
-| Trigger 1 | `ON_PRISON_ESCAPE_CHECK` — khi player đang ở tù và game check thoát tù |
+| Trigger 1 | `ON_PRISON_ROLL` — khi player đang ở tù và tung xúc xắc để thoát |
 | Trigger 2 | `ON_DKXX_CHECK` — khi game kiểm tra DKXX activation |
 
 ## Effect — 2 rate độc lập
 
-### Rate 1: Tăng xác suất ra tù
+### Rate 1: Boost tỉ lệ tung đôi để thoát tù
 
 ```
-# ON_PRISON_ESCAPE_CHECK
-if random(0, 100) < rate1_at_rank:
-    player.exit_prison()   # thoát tù ngay lập tức
+# ON_PRISON_ROLL — khi player trong tù và tung xúc xắc
+# Boost xác suất ra đôi (doubles) lần tung này
+doubles_rate += rate1_at_rank  # cộng dồn vào tỉ lệ ra đôi cơ bản
 ```
 
 ### Rate 2: Boost điều khiển xúc xắc (DKXX)
@@ -49,7 +49,8 @@ r2_active = random(0, 100) < rate2_at_rank
 
 ## Notes
 
-- SR rank: Rate1 = 100% → **luôn thoát tù** khi pendant này trang bị
+- Rate1 là **passive boost** cho tỉ lệ ra đôi khi tung xúc xắc trong tù — không phải auto-escape
+- Không conflict với SK_JOKER: Joker auto-thoát đầu turn; XíchNgọc boost xúc xắc khi Joker không active
 - Hai trigger point độc lập — mỗi trigger check rate tương ứng
 - Kết hợp với PT_DKXX2 để tối đa DKXX boost
 - Nếu player không trong tù → Rate1 trigger không xảy ra

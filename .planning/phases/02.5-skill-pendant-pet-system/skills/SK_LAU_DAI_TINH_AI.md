@@ -39,4 +39,5 @@ if opponents:
 - Chỉ trigger khi đến **ô L5 của chính mình** (không trigger tại L5 của đối thủ)
 - Đối thủ bị hút: random 1 người trong số còn sống, không phân biệt vị trí
 - Đối thủ bị hút vẫn có thể dùng thẻ/skill để counter toll bình thường
+- **Stack với PT_BAN_TAY_VANG**: cả hai fire độc lập khi đáp L5 — LDTA hút 1 đối thủ random, BànTayVàng hút tất cả đối thủ cùng cạnh → đối thủ có thể bị pull 2 lần và trả toll 2 lần
 - Stub AI: không cần logic đặc biệt

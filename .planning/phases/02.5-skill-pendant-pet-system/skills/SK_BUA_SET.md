@@ -45,6 +45,7 @@ if random(0, 100) < rate_at_star:
 ## Notes
 
 - Miễn toll không ảnh hưởng đến acquisition — player vẫn phải trả acquisition price nếu mua
+- **Stack với PT_CUOP_NHA**: BuaSet waive toll → toll = 0 vẫn là sự kiện "đã trả toll" → CướpNhà vẫn check rate sau đó
 - "Gần nhất" = ô CITY unowned gần nhất tính từ vị trí sau acquisition
 - Nếu không còn ô CITY trống → effect 3 skip (không di chuyển thêm)
 - Stub AI: luôn mua nếu đủ tiền, luôn nâng cấp nếu đủ tiền

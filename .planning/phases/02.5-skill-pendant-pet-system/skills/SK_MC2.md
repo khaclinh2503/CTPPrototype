@@ -36,6 +36,6 @@ if unowned:
 ## Notes
 
 - Logic giống Effect 1 của SK_TRUM_DU_LICH — có thể dùng chung implementation
+- **Stack với SK_TRUM_DU_LICH effect 1**: check MC2 trước → lấy 1 ô, loại ô đó khỏi pool → TrùmDuLịch check sau và random ô khác → player nhận 2 ô miễn phí
 - Nếu không còn ô CITY trống → fail silently
-- Ô ngẫu nhiên: `random.choice(unowned_city_tiles)`
 - Stub AI: không cần logic đặc biệt

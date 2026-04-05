@@ -54,6 +54,8 @@ r2_active = random(0, 100) < rate2_at_rank  # check sau, độc lập
 ## Notes
 
 - Cả 2 check đều xảy ra tại `ON_LAND_OPPONENT` — Rate2 check độc lập với Rate1
+- **Stack với SK_SUNG_VANG**: không conflict — SừngVàng tác động lên **player** (steal cash, đẩy đối thủ), MạngNhện tác động lên **ô đất** (free toll, cướp nhà) → cả hai fire độc lập
 - Rate2 giống PT_CUOP_NHA về effect (cướp nhà), nhưng tỷ lệ thấp hơn và PT_MANG_NHEN có thêm Rate1 miễn phí toll
+- **Không bị PT_CHONG_MUA_NHA block**: cướp nhà là cơ chế riêng, không phải "mua lại"
 - Resort: chỉ đổi `owner_id`, không thay đổi level (D-28)
 - Cả hai rate nhảy mạnh ở R/SR rank

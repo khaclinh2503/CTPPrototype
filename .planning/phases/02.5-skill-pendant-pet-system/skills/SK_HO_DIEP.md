@@ -12,9 +12,18 @@
 
 ## Effect 1 — Ném tù
 
-**Trigger (reactive):** Trong lượt của đối thủ, nếu đối thủ **active skill** để nhận thêm lượt roll hoặc di chuyển đến ô khác trong lượt đó.
+**Trigger (reactive):** Trong lượt của đối thủ, nếu đối thủ **active bất kỳ skill nào** trong danh sách sau:
 
 **Activation:** `random(0, 100) < rate1_at_star`
+
+**Skills kích hoạt HồĐiệp:**
+- `SK_HQXX` — extra roll
+- `SK_TOC_CHIEN` — extra roll sau Travel
+- `SK_JOKER` — extra roll sau thoát tù
+- `SK_MOONWALK` — chọn hướng di chuyển
+- `SK_XXCT` — điều chỉnh ±1 bước
+- `SK_SO_10` — dùng Travel ngay lập tức
+- `SK_GAY_NHU_Y Effect 1` — follow đối thủ đến Resort
 
 **Effect:** Ném đối thủ vào tù (`opponent.enter_prison()`).
 
@@ -57,7 +66,7 @@
 
 ## Notes
 
-- Effect 1 là **reactive** — check khi đối thủ dùng skill di chuyển, không phải lượt của player
+- Effect 1 là **reactive** — check khi đối thủ active bất kỳ skill nào trong danh sách (HQXX, TốcChiến, Joker, Moonwalk, XXCT_2, SO_10, GậyNhưÝ Effect 1)
 - Effect 2: nếu không có ô đất trống nào cùng hàng → skill fail silently
 - Effect 2: tile effect không trigger (player chỉ repositioned, không on_land)
 - Stub AI: không cần logic đặc biệt cho cả 2 effect

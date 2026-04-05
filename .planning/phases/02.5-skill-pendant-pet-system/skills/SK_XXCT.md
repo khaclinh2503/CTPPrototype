@@ -1,10 +1,10 @@
-# Skill: Xúc Xắc Chiến Thuật (2) — Tiến Lùi 1 Ô
+# Skill: Xúc Xắc Chiến Thuật — Tiến Lùi 1 Ô
 
 ## Thông tin cơ bản
 
 | Field | Value |
 |-------|-------|
-| ID | SK_XXCT_2 |
+| ID | SK_XXCT |
 | Name | Xúc Xắc Chiến Thuật |
 | Trigger | ROLL phase — **sau khi** đổ xúc xắc (có kết quả rồi) |
 
@@ -39,6 +39,9 @@ player.move_forward(final_steps)
 
 ## Notes
 
-- Check sau khi đã có kết quả xúc xắc (độc lập với SK_XXCT_1)
+- Check sau khi đã có kết quả xúc xắc
 - `dice_result - 1` tối thiểu = 1 (không thể di chuyển 0 hoặc âm bước)
+- **Không bypass PET_TROI_CHAN**: khi bị bind, điều kiện thoát là kết quả xúc xắc gốc phải chẵn — XXCT_2 điều chỉnh sau không được tính
+- **Kết hợp với SK_MOONWALK**: dice±1 × 2 hướng → player chọn 1 trong 4 ô đến
+- **Không kết hợp với SK_XE_DO**: hai skill này không tổ hợp với nhau
 - Stub AI: chọn điều chỉnh đưa đến ô có lợi nhất

@@ -40,3 +40,5 @@ R rank dùng config của S (rate=22, chance=2).
 
 - Skill này không có ở rank C, D, B
 - Stub AI luôn chọn số lớn nhất trong tập hợp hợp lệ
+- **Kết hợp với SK_MOONWALK**: cả hai active → player chọn số chẵn/lẻ cùng parity VÀ chọn tiến/lùi → di chuyển tiến hoặc lùi bằng số chẵn (hoặc lẻ)
+- **Không kết hợp với SK_XXCT**: hai skill này không tổ hợp với nhau

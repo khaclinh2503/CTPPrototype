@@ -62,3 +62,4 @@ r2_active = random(0, 100) < rate2_at_rank   # chỉ khi biểu tượng
 - "4 ô lân cận" = 4 ô tính từ vị trí player theo D-27 (cùng cạnh bàn cờ)
 - Đối thủ bị hút: phải trả toll tại ô Biểu Tượng của player
 - refund ratio từ Rate1 là % hoàn lại tiền (không phải % rate — đây là lượng tiền hoàn)
+- **Stack với SK_LAU_DAI_TINH_AI + PT_BAN_TAY_VANG**: cả 3 fire độc lập khi đáp L5 → đối thủ có thể bị pull 3 lần và trả toll 3 lần

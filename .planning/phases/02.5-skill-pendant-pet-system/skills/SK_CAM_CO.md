@@ -64,6 +64,7 @@ if random(0, 100) < player.cam_co_current_rate:
 ## Notes
 
 - Check mỗi bước đi qua (không chỉ ô dừng lại)
+- **Chain với SK_PHA_HUY**: khi PhaHuy phá nhà đối thủ → tile trở thành trống → CắmCờ check ngay lập tức tại tile đó
 - Cần track `cam_co_decay_index` và `cam_co_current_rate` trên Player trong lượt
 - Tile level giữ nguyên 0 khi cắm cờ (player chưa xây gì)
 - Stub AI: không cần logic đặc biệt

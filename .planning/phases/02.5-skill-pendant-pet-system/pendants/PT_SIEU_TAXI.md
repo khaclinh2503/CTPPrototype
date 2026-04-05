@@ -52,5 +52,7 @@ r2_active = random(0, 100) < rate2_at_rank
 
 - Rate1 cao (30–76%) — pendant này rất thường xuyên di chuyển khi tới Travel tile
 - Rate2 thấp (3–35%) — tiết kiệm tiền ngẫu nhiên khi trả toll
-- Khác PT_GIAY_BAY: PT_SIEU_TAXI di chuyển ngay (không miễn phí tham quan Travel), còn PT_GIAY_BAY miễn phí + teleport
+- **Effect 1 giống SK_SO_10**: cả hai đều cho phép dùng Travel tile ngay lập tức (cùng turn thay vì đợi turn sau)
+- **Effect 2 cùng trigger với PT_GIAY_BAY** (ON_LAND_OPPONENT_WITH_TOLL): GiàyBay check trước → nếu GiàyBay active thì effect 2 không check; nếu GiàyBay không active mới check effect 2
+- **Chain behavior**: PT_GIAY_BAY fire → player đến Travel tile → effect 1 (SO_10/SiêuTaxi) có thể trigger tại đó
 - Hai trigger point khác nhau: Rate1 tại Travel tile, Rate2 tại đất đối thủ
