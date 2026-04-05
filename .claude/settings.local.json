@@ -74,7 +74,9 @@
       "Bash(python3 -m pytest tests/ -q --tb=short)",
       "Bash(python3 -m pytest tests/ -q --tb=short --ignore=tests/test_config.py --ignore=tests/test_game_loop.py --ignore=tests/test_headless.py)",
       "Bash(python3 -m pytest tests/test_fsm.py::TestFSMStateTransitions::test_full_turn_cycle -q --tb=short)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(ls:*)",
+      "Bash(git commit:*)"
     ]
   }
 }

@@ -1,0 +1,44 @@
+# Skill: Xúc Xắc Chiến Thuật (2) — Tiến Lùi 1 Ô
+
+## Thông tin cơ bản
+
+| Field | Value |
+|-------|-------|
+| ID | SK_XXCT_2 |
+| Name | Xúc Xắc Chiến Thuật |
+| Trigger | ROLL phase — **sau khi** đổ xúc xắc (có kết quả rồi) |
+
+## Effect
+
+Activation: `random(0, 100) < rate_at_star`
+
+Nếu active → player được **chọn điều chỉnh ±1** so với kết quả xúc xắc:
+- **Tiến thêm 1** — di chuyển `dice_result + 1` bước
+- **Lùi 1** — di chuyển `dice_result - 1` bước
+- **Giữ nguyên** — di chuyển `dice_result` bình thường
+
+```
+if random(0, 100) < rate_at_star:
+    adjustment = player_choose(-1, 0, +1)  # AI stub: chọn điều chỉnh tối ưu
+    final_steps = dice_result + adjustment
+else:
+    final_steps = dice_result
+player.move_forward(final_steps)
+```
+
+## Rank Config
+
+| Rank | Min Star | Rate (base) | Chance (+/star) | Rate tại 5★ |
+|------|----------|-------------|-----------------|-------------|
+| C    | —        | —           | —               | Không có    |
+| D    | —        | —           | —               | Không có    |
+| B    | —        | —           | —               | Không có    |
+| A    | 1★       | 12%         | +1%             | 16%         |
+| S    | 1★       | 17%         | +2%             | 25%         |
+| R    | —        | dùng config S | —             | 25% (S5★)  |
+
+## Notes
+
+- Check sau khi đã có kết quả xúc xắc (độc lập với SK_XXCT_1)
+- `dice_result - 1` tối thiểu = 1 (không thể di chuyển 0 hoặc âm bước)
+- Stub AI: chọn điều chỉnh đưa đến ô có lợi nhất
