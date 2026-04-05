@@ -15,7 +15,7 @@ player tokens, info panels, speed control, and end-game stats.
 
 - [x] **Phase 1: Headless Core** - Board, config loader, tile system, FSM turn engine — game runs headless
 - [ ] **Phase 2: Property Rules** - Fix SpaceId, property acquisition/trading/mini game, complete game loop với stubs
-- [ ] **Phase 2.5: Skill / Pendant / Pet System** - Passive buff system, effective_stat() stacking, tích hợp vào game loop
+- [ ] **Phase 2.5: Skill / Pendant / Pet System** - Trigger-based passive buff system (27 skills, 12 pendants, 4 pets), SkillEngine dispatch, FSM hook integration
 - [ ] **Phase 3: AI Engine + History** - Heuristic agent, Monte Carlo rollouts, personality system, SQLite history persistence
 - [ ] **Phase 4: Pygame Visualization** - Board rendering, player tokens, info panels, speed control, end-game stats
 
@@ -79,19 +79,19 @@ Plans:
 - [x] 02.1.1-03-PLAN.md — GameView (EventBus subscriptions, shared state dict, render loop) + main.py Pygame branch integration
 
 ### Phase 2.5: Skill / Pendant / Pet System
-**Goal**: Hệ thống passive buff hoạt động hoàn chỉnh — mỗi player có bộ skill/pendant/pet ngẫu nhiên, `effective_stat()` stack đúng tất cả buffs, game loop tích hợp buff vào mọi tính toán kinh tế.
+**Goal**: Hệ thống trigger-based passive buff hoạt động hoàn chỉnh — mỗi player có bộ skill/pendant/pet ngẫu nhiên, SkillEngine dispatch tại 20+ hook points trong FSM, 27 skills + 12 pendants + 4 pets với procedural logic per GD spec.
 **Depends on**: Phase 2
 **Requirements**: PLAY-01, PLAY-02, PLAY-03, PLAY-04, PLAY-05, PLAY-06
 **Success Criteria** (what must be TRUE):
   1. Mỗi AI player bắt đầu ván với bộ ngẫu nhiên (5 skills, 3 pendants, 1 pet) từ config pools
-  2. `player.effective_stat(stat)` trả về giá trị đúng sau khi stack tất cả stat_deltas — verified bằng unit test với fixture data cố định
-  3. Toll, tax, build cost, passing bonus đều áp dụng buff từ effective_stat() khi tính toán
-  4. Buff stacking: Σ stat_deltas, multiplier floor = 0.1 (không âm)
+  2. SkillEngine.fire(trigger, player, ctx) dispatches đúng handler tại mỗi trigger point
+  3. Rate calculation theo D-05: base_rate + (star - min_star) * chance, R dùng S config
+  4. Pet stamina depletes khi active, stops at 0
 **Plans**: 2 plans
 
 Plans:
-- [ ] 02.5-01: Player slot system (5 skills / 3 pendants / 1 pet), SkillEntry/PendantEntry/PetEntry schemas, effective_stat() với stacking logic, random assignment từ config pool khi game start
-- [ ] 02.5-02: Điền skills.yaml (10 entries), pendants.yaml (5 entries), pets.yaml (3 entries) với stat_deltas theo vocab D-21; tích hợp effective_stat() vào LandStrategy, TaxSpace, StartSpace, PrisonSpace
+- [ ] 02.5-01-PLAN.md — Foundation: Player/Board extensions (15+ fields), schema redesign (trigger-based), SkillEngine core, YAML configs (27 skills + 12 pendants + 4 pets), random assignment, unit tests
+- [ ] 02.5-02-PLAN.md — All 43 handler implementations (27 skills + 12 pendants + 4 pets), FSM hook injection at 20+ trigger points, integration tests
 
 ### Phase 3: AI Engine + History
 **Goal**: Each AI player makes economically rational decisions driven by heuristic scoring and Monte Carlo rollouts, with personality affecting thresholds — and every completed game is persisted to SQLite for cross-session learning.
@@ -139,5 +139,6 @@ Phases execute in numeric order: 1 → 2 → 2.1 → 2.1.1 → 2.5 → 3 → 4
 | 2. Player + Property Rules | 0/2 | Not started | - |
 | 2.1. Card Draw + Căn Lực | 0/3 | Complete    | 2026-04-03 |
 | 2.1.1. Minimal PygameUI | 0/3 | Not started | - |
+| 2.5. Skill/Pendant/Pet | 0/2 | Planning complete | - |
 | 3. AI Engine + History | 0/3 | Not started | - |
 | 4. Pygame Visualization | 0/3 | Not started | - |
