@@ -11,47 +11,45 @@
 
 ## Effect — 2 rate độc lập
 
-### Rate 1: Tăng % phí khi người khác tham quan
+### Effect 1: Tăng % phí khi người khác tham quan
+
+**Luôn active (100%)** — không roll xác suất. Tăng toll thêm effect_ratio %.
 
 ```
-# ON_OPPONENT_LAND_YOURS
-if random(0, 100) < rate1_at_rank:
-    toll_multiplier += TOLL_BONUS  # tăng % phí tham quan lần này
+# ON_OPPONENT_LAND_YOURS — luôn xảy ra
+toll_multiplier += effect1_ratio  # B:10%, A:20%, S:30%, R:50%, SR:60%
 ```
 
-### Rate 2: Nhận lại % phí xây dựng khi player dừng nhà mình
+### Effect 2: Nhận lại % phí xây dựng khi player dừng nhà mình
+
+**Luôn active (100%)** — không roll xác suất. Refund effect_ratio % tiền đã đầu tư.
 
 ```
-# ON_LAND_OWN
-if random(0, 100) < rate2_at_rank:
-    invested = calc_invested_build_cost(board, player.position)
-    refund = invested * REFUND_RATIO
-    player.cash += refund
+# ON_LAND_OWN — luôn xảy ra
+invested = calc_invested_build_cost(board, player.position)
+refund = invested * (effect2_ratio / 100)  # B:10%, A:15%, S:25%, R:50%, SR:60%
+player.cash += refund
 ```
 
-Stub AI: cả hai rate — luôn active.
+Stub AI: cả hai effect — luôn active.
 
 ## Rank Config
 
-| Rank | Rate 1 (tăng phí) | Rate 2 (hoàn tiền xây) |
-|------|------------------|------------------------|
-| B    | 10%              | 10%                    |
-| A    | 20%              | 15%                    |
-| S    | 30%              | 25%                    |
-| R    | 50%              | 50%                    |
-| SR   | 60%              | 60%                    |
+| Rank | Effect 1 (% tăng phí) | Effect 2 (% hoàn tiền xây) |
+|------|----------------------|---------------------------|
+| B    | 10%                  | 10%                       |
+| A    | 20%                  | 15%                       |
+| S    | 30%                  | 25%                       |
+| R    | 50%                  | 50%                       |
+| SR   | 60%                  | 60%                       |
 
-## Activation Formula
+## Activation
 
-```
-r1_active = random(0, 100) < rate1_at_rank
-r2_active = random(0, 100) < rate2_at_rank
-```
+Cả hai effect **luôn active (100%)** khi trigger xảy ra — không roll xác suất. Số % trong table là magnitude effect, không phải activation rate.
 
 ## Notes
 
-- Rate1 giống PT_TUI_BA_GANG R1 — cả hai có thể stack toll modifier
-- Rate2 giống PT_TU_TRUONG R1 nhưng rate cao hơn ở cấp cao (SR: 60% vs 50%)
+- Effect1 giống PT_TUI_BA_GANG E1 — cả hai có thể stack toll modifier
+- Effect2 giống PT_TU_TRUONG R1 nhưng % cao hơn ở cấp cao (SR: 60% vs 50%)
 - Sử dụng `calc_invested_build_cost()` đã có sẵn trong codebase
-- Refund ratio: lượng % tiền hoàn lại (tách biệt với activation rate)
-- Tương tác với `_toll_modifiers.py` cho Rate1
+- Tương tác với `_toll_modifiers.py` cho Effect1

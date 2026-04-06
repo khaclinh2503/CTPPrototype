@@ -15,7 +15,11 @@ Nếu pendant active → boost xác suất kích hoạt DKXX của player trong 
 ```
 # ON_DKXX_CHECK
 if random(0, 100) < rate_at_rank:
-    player.accuracy_rate += DKXX_BOOST  # boost thêm % điều khiển xúc xắc lần này
+    player.dkxx_bonus_pool += rate_at_rank  # cộng dồn vào pool DKXX (B:2, A:3, S:4, R:12, SR:18)
+
+# Flow DKXX đầy đủ:
+# 1. Check pool (skill + pendant + pet tổng cộng) → active: player CHỌN được số xúc xắc
+# 2. Pool không active → fallback check chỉ số DKXX nhân vật → active: DKXX bị động (không chọn được)
 ```
 
 Stub AI: luôn active, chọn số có lợi nhất.

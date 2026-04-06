@@ -52,8 +52,16 @@ Stub AI: chọn ô trống có giá trị vị trí cao nhất (nhiều đối t
 ## Notes
 
 - Trigger check sau mỗi `ON_BUILD/ON_UPGRADE` của đối thủ
-- Điều kiện: `tiles_needed_to_win(opponent) == 1` — đối thủ còn thiếu **đúng 1 ô** để thắng
-- Logic check: `tiles_needed_to_win(opponent)` cần được implement theo điều kiện thắng của game
+- Điều kiện: `tiles_needed_to_win(opponent) == 1` — đối thủ còn thiếu **đúng 1 ô** để thắng theo bất kỳ path nào
+- Win condition của game (3 TH — đạt 1 trong 3 là thắng):
+  1. **3 cặp màu** — sở hữu đủ cả 2 ô cùng màu (1 cặp hoàn chỉnh) cho 3 cặp màu bất kỳ trong số 8 cặp màu trên bàn cờ
+     - "Còn thiếu 1 ô" = đối thủ đã có 2 cặp hoàn chỉnh + đã sở hữu 1 ô của cặp thứ 3, chỉ cần thêm ô còn lại của cặp đó
+     - Trigger check: khi đối thủ xây nhà **trong khi đang ở trạng thái này**
+  2. **1 hàng** — sở hữu tất cả ô CITY **và** Resort trên 1 cạnh bàn cờ
+     - "Còn thiếu 1 ô" = đối thủ đã sở hữu tất cả trừ 1 ô (CITY hoặc Resort) trên 1 cạnh
+  3. **Tất cả du lịch** — sở hữu tất cả ô Resort trên map
+     - "Còn thiếu 1 ô" = đối thủ đã sở hữu tất cả Resort trừ 1
+- `tiles_needed_to_win(opponent)` = min số ô còn thiếu để hoàn thành **bất kỳ** 1 trong 3 điều kiện trên
 - Nếu không có ô CITY trống: Effect 1 skip, chỉ có Effect 2 (anti-acquisition)
 - **Không conflict với SK_GRAMMY**: Grammy lấy ô đất **trống**, ô XíChỗ vừa đặt đã có chủ (L1 của B) → Grammy không nhắm vào ô đó
 - `acquisition_blocked_turns = 1`: chỉ block trong 1 lượt, sau đó reset

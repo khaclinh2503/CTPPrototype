@@ -11,16 +11,15 @@
 
 ## Effect — 2 rate độc lập
 
-### Rate 1: Nhận lại % phí xây dựng
+### Rate 1: Nhận lại % phí xây dựng (luôn kích hoạt)
 
-Trigger khi player dừng tại BẤT KỲ nhà của mình (bao gồm cả biểu tượng):
+Trigger khi player dừng tại BẤT KỲ nhà của mình (bao gồm cả biểu tượng). **Luôn active 100%** — không roll xác suất.
 
 ```
-# ON_LAND_OWN
-if random(0, 100) < rate1_at_rank:
-    invested = calc_invested_build_cost(board, player.position)
-    refund = invested * REFUND_RATIO  # tỷ lệ hoàn lại tuỳ rate
-    player.cash += refund
+# ON_LAND_OWN — luôn xảy ra
+invested = calc_invested_build_cost(board, player.position)
+refund = invested * (refund_ratio / 100)  # B:4%, A:10%, S:15%, R:25%, SR:50%
+player.cash += refund
 ```
 
 ### Rate 2: Hút đối thủ trong 4 ô lân cận
@@ -40,19 +39,23 @@ Stub AI: Rate1 — luôn nhận refund; Rate2 — luôn active.
 
 ## Rank Config
 
-| Rank | Rate 1 (phí xây dựng) | Rate 2 (hút đối thủ) |
-|------|----------------------|----------------------|
-| B    | 4%                   | 4%                   |
-| A    | 10%                  | 5%                   |
-| S    | 15%                  | 10%                  |
-| R    | 25%                  | 25%                  |
-| SR   | 50%                  | 42%                  |
+| Rank | Refund % Rate 1 (luôn active) | Rate 2 (hút đối thủ) |
+|------|-------------------------------|----------------------|
+| B    | 4%                            | 4%                   |
+| A    | 10%                           | 5%                   |
+| S    | 15%                           | 10%                  |
+| R    | 25%                           | 25%                  |
+| SR   | 50%                           | 42%                  |
 
 ## Activation Formula
 
 ```
-r1_active = random(0, 100) < rate1_at_rank   # bất kỳ nhà của mình
-r2_active = random(0, 100) < rate2_at_rank   # chỉ khi biểu tượng
+# Rate 1: luôn active, không roll xác suất
+refund = calc_invested_build_cost(board, player.position) * (refund_ratio / 100)
+player.cash += refund
+
+# Rate 2: roll xác suất, chỉ khi biểu tượng
+r2_active = random(0, 100) < rate2_at_rank
 ```
 
 ## Notes

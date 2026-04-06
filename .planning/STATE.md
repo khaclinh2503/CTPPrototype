@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: completed
+status: executing
 stopped_at: Phase 2.5 context complete — skills + pendants (12) + pets (4) captured, effective_stat() dropped
-last_updated: "2026-04-05T04:47:02.148Z"
-last_activity: 2026-04-04 -- Phase 02.1.1 all 3 plans complete
+last_updated: "2026-04-06T10:46:12.780Z"
+last_activity: 2026-04-06 -- Phase 02.5 execution started
 progress:
   total_phases: 7
   completed_phases: 4
-  total_plans: 13
+  total_plans: 29
   completed_plans: 13
-  percent: 100
+  percent: 45
 ---
 
 # Project State
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-01)
 
 **Core value:** AI tự động hoàn chỉnh một ván đấu, lưu kết quả, và dùng lịch sử đó để chơi tốt hơn ở ván tiếp theo.
-**Current focus:** Phase 2.5 — Skill/Pendant/Pet System (next to plan)
+**Current focus:** Phase 02.5 — skill-pendant-pet-system
 
 ## Current Position
 
-Phase: 2.5 (skill-pendant-pet) — READY TO PLAN
-Plan: 0 of 2
-Status: Phase 02.1.1 complete, ready to start Phase 2.5
-Last activity: 2026-04-04 -- Phase 02.1.1 all 3 plans complete
+Phase: 02.5 (skill-pendant-pet-system) — EXECUTING
+Plan: 1 of 16
+Status: Executing Phase 02.5
+Last activity: 2026-04-06 -- Phase 02.5 execution started
 
 Progress: [░░░░░░░░░░] 0%
 

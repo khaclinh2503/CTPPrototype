@@ -76,7 +76,12 @@
       "Bash(python3 -m pytest tests/test_fsm.py::TestFSMStateTransitions::test_full_turn_cycle -q --tb=short)",
       "Bash(python3:*)",
       "Bash(ls:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Skill(update-config)",
+      "Bash(grep -h \"^requirements:\" /d/workspace/CTP/CTPPrototype/.planning/phases/02.5-skill-pendant-pet-system/02.5-*-PLAN.md)",
+      "Bash(grep -l \"PLAY-03\" /d/workspace/CTP/CTPPrototype/.planning/phases/02.5-skill-pendant-pet-system/02.5-*-PLAN.md)",
+      "Bash(xargs -I{} grep -H \"^plan:\\\\|requirements:\" {})",
+      "Bash(grep:*)"
     ]
   }
 }

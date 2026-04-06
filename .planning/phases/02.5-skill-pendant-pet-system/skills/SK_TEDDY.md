@@ -11,7 +11,8 @@
 ## Effect Chain
 
 **Effect 1** (check trước):
-- Activation: `random(0,100) < rate` → nâng cấp thẳng lên **L5 (Biểu tượng / max level)** thay vì +1 level bình thường
+- Activation: `random(0,100) < rate` → nâng cấp thẳng lên **L5 (Biểu tượng / max level)**
+- Player chỉ trả tiền cho các level đã chọn xây (ví dụ: chọn xây đến L1 hoặc L2 → trả tiền L1/L2), các level còn lại đến L5 **miễn phí**
 
 **Effect 2** (chỉ check nếu Effect 1 active):
 - Activation: `random(0,100) < 60` (fixed 60%)

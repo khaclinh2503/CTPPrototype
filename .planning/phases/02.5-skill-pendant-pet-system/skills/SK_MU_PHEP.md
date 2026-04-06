@@ -34,7 +34,6 @@ bonus = normal_passing_bonus * (1 + value / 100)
 
 ## Notes
 
-- Đây là skill **stat buff thụ động** — không có activation chance, luôn áp dụng
+- Đây là skill **passive buff** — không có activation chance, luôn áp dụng khi ON_PASS_START trigger
 - Xuất hiện từ rank B (khác các skill khác chỉ từ A)
-- Tích hợp vào `StartStrategy.on_pass()` thông qua `effective_stat(passing_bonus_delta)`
-- Nếu player có nhiều buff passing_bonus_delta → cộng dồn tất cả theo D-22
+- Tích hợp vào `ON_PASS_START` trigger handler — check trực tiếp trong SkillEngine, không dùng stat_delta (D-30)

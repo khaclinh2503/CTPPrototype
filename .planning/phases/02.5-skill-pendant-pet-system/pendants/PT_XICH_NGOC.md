@@ -13,9 +13,12 @@
 
 ### Rate 1: Boost tỉ lệ tung đôi để thoát tù
 
+Chỉ trigger khi player **chọn đổ xúc xắc** để thoát tù. Không check khi chọn các option khác (trả tiền, dùng thẻ, v.v.).
+
+Flow: Chọn đổ xúc xắc → XíchNgọc boost doubles rate → đổ xúc xắc → tung đôi thì thoát tù.
+
 ```
-# ON_PRISON_ROLL — khi player trong tù và tung xúc xắc
-# Boost xác suất ra đôi (doubles) lần tung này
+# ON_PRISON_ROLL — chỉ khi player chọn option "đổ xúc xắc" để thoát tù
 doubles_rate += rate1_at_rank  # cộng dồn vào tỉ lệ ra đôi cơ bản
 ```
 
@@ -24,7 +27,11 @@ doubles_rate += rate1_at_rank  # cộng dồn vào tỉ lệ ra đôi cơ bản
 ```
 # ON_DKXX_CHECK
 if random(0, 100) < rate2_at_rank:
-    player.accuracy_rate += DKXX_BOOST  # tăng % điều khiển xúc xắc lần này
+    player.dkxx_bonus_pool += rate2_at_rank  # cộng dồn vào pool DKXX (B:2, A:4, S:6, R:10, SR:14)
+
+# Flow DKXX đầy đủ:
+# 1. Check pool (skill + pendant + pet tổng cộng) → active: player CHỌN được số xúc xắc
+# 2. Pool không active → fallback check chỉ số DKXX nhân vật → active: DKXX bị động (không chọn được)
 ```
 
 Stub AI: Rate1 — luôn thoát tù nếu active; Rate2 — chọn số có lợi nhất.

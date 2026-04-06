@@ -53,5 +53,5 @@ bonus = normal_passing_bonus * 1.5  # 150,000 × 1.5 = 225,000
 ## Notes
 
 - Effect 1: player chọn bất kỳ ô nào trên map (kể cả ô đang đứng)
-- Effect 2 giống SK_MU_PHEP nhưng value cố định 50% (không scale theo rank)
+- Effect 2 giống SK_MU_PHEP nhưng value cố định 50% (không scale theo rank). Tích hợp vào `ON_PASS_START` trigger handler — không dùng stat_delta (D-30)
 - Stub AI Effect 1: ưu tiên ô CITY trống gần nhất hoặc ô đất đắt nhất của mình

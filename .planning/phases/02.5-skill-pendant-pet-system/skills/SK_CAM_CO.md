@@ -11,10 +11,10 @@
 ## Trigger Conditions
 
 Check khi di chuyển bằng:
-- Đổ xúc xắc thường
-- Skill Ô Kỳ Diệu (di chuyển 1 vòng)
+- **Dice Walk** — đổ xúc xắc thường (bao gồm lượt thêm từ SK_HQXX, SK_JOKER)
+- **Sweep Walk** — SK_O_KY_DIEU (đi 32 bước, 1 vòng)
 
-**Không check** khi di chuyển bằng teleport (Travel tile, card effects).
+**Không check** khi di chuyển bằng: Travel Walk, Teleport, Skill Walk miễn nhiễm (xem D-54).
 
 ## Effect
 

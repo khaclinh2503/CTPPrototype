@@ -47,5 +47,4 @@ Toll × 2 (luôn xảy ra)
 - **Priority với SK_CUONG_CHE**: CướngChế check trước — nếu CướngChế active, đối thủ bị ném đến ô khác, NgôiSao tại ô này không check. NgôiSao chỉ trigger tại ô đích nếu player sở hữu ô đó
 - Effect 2 chỉ trigger nếu đối thủ **có** Thiên Thần và **cố dùng** — không ảnh hưởng thẻ khác
 - Nếu đối thủ không có Thiên Thần → chỉ effect 1 (toll × 2) xảy ra
-- Tương tác với IT_CA_3 "Bảo Vệ" (EF_3): nếu đối thủ có Bảo Vệ, họ có thể dùng để block Ngôi Sao trước khi bị hủy thẻ Thiên Thần
 - Stub AI: luôn dùng thẻ Thiên Thần nếu có (bị hủy 70% hay không)

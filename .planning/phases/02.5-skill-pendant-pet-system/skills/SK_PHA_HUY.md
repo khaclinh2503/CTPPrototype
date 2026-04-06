@@ -37,6 +37,14 @@ opponent.remove_property(tile.position)
 | S    | 1★       | 20%         | +1%             | 24%         |
 | R    | —        | dùng config S | —             | 24% (S5★)  |
 
+## Trigger Conditions
+
+Check khi di chuyển bằng:
+- **Dice Walk** — đổ xúc xắc thường (bao gồm lượt thêm từ SK_HQXX, SK_JOKER)
+- **Sweep Walk** — SK_O_KY_DIEU (đi 32 bước, 1 vòng)
+
+**Không check** khi di chuyển bằng: Travel Walk, Teleport, Skill Walk miễn nhiễm (xem D-54).
+
 ## Notes
 
 - Trigger khi **đi qua** (mid-path), không phải khi dừng lại tại ô
