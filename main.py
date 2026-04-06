@@ -7,10 +7,13 @@ Output: console + game.log (ghi de moi lan chay)
 import argparse
 import logging
 from ctp.config import ConfigLoader, ConfigError
+from ctp.config.loader import assign_random_loadout
 from ctp.core.board import Board, SpaceId
 from ctp.core.models import Player
 from ctp.core.events import EventBus, GameEvent, EventType
 from ctp.controller import GameController
+from ctp.skills.engine import SkillEngine
+from ctp.skills.register_all import register_all_handlers
 
 # Import tiles to register strategies
 import ctp.tiles
@@ -484,6 +487,23 @@ def run_headless(config_loader: ConfigLoader, num_players: int = 4, max_turns: i
         _t.is_golden = True
     logger.info(f"[Dat vang] 3 o dat vang van nay: {[t.position for t in _golden_tiles]}")
 
+    # Khoi tao SkillEngine va dang ky tat ca handlers
+    skill_engine = SkillEngine(
+        config_loader.skills_config,
+        config_loader.pendants_config,
+        config_loader.pets_config,
+    )
+    register_all_handlers(skill_engine)
+
+    # Phan phoi ngau nhien loadout cho tung nguoi choi (D-16/D-34/D-41)
+    assign_random_loadout(
+        players,
+        config_loader.skills_config,
+        config_loader.pendants_config,
+        config_loader.pets_config,
+    )
+    logger.info(f"[Skills] Loadout da duoc phan phoi cho {num_players} nguoi choi")
+
     # Log board map and player info before game starts
     log_board(board)
     log_players(players)
@@ -498,14 +518,18 @@ def run_headless(config_loader: ConfigLoader, num_players: int = 4, max_turns: i
     for event_type in EventType:
         event_bus.subscribe(event_type, handler)
 
-    # Create game controller
+    # Create game controller with skill_engine
     controller = GameController(
         board=board,
         players=players,
         max_turns=game_max_turns,
         event_bus=event_bus,
         starting_cash=config_loader.starting_cash,
+        skill_engine=skill_engine,
     )
+
+    # Fire ON_GAME_START hooks (PT_SIEU_SAO_CHEP R2 etc.)
+    controller.fire_game_start()
 
     # Publish game start
     event_bus.publish(GameEvent(
