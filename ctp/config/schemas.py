@@ -210,14 +210,27 @@ class CardConfig(BaseModel):
 # =============================================================================
 
 
+class RankConfig(BaseModel):
+    """Skill rank configuration for rate calculation (D-05)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    min_star: int
+    base_rate: float
+    chance: float
+
+
 class SkillEntry(BaseModel):
-    """Individual skill definition."""
+    """Trigger-based skill definition (D-08, D-10, D-11)."""
 
     model_config = ConfigDict(extra="forbid")
 
     id: str
     name: str
-    stat_deltas: dict[str, float] = {}
+    trigger: str | list[str]  # single or multiple triggers
+    rank_config: dict[str, RankConfig]  # keys: C/D/B/A/S (no R per D-03)
+    secondary_rate: float | None = None  # fixed secondary rate (e.g., 60% for SK_TEDDY)
+    always_active: bool = False  # SK_MU_PHEP — 100% activation
 
 
 class SkillsConfig(BaseModel):
@@ -226,14 +239,29 @@ class SkillsConfig(BaseModel):
     skills: list[SkillEntry] = []
 
 
+class PendantRankRates(BaseModel):
+    """Pendant rank rates — fixed per rank, no star scaling."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    B: float
+    A: float
+    S: float
+    R: float
+    SR: float
+
+
 class PendantEntry(BaseModel):
-    """Individual pendant definition."""
+    """Trigger-based pendant definition (D-33)."""
 
     model_config = ConfigDict(extra="forbid")
 
     id: str
     name: str
-    stat_deltas: dict[str, float] = {}
+    triggers: list[str]
+    rank_rates: PendantRankRates          # primary rate
+    rank_rates_2: PendantRankRates | None = None  # secondary rate for dual-rate pendants
+    always_active: bool = False  # 100% activation pendants (PT_TUI_BA_GANG, PT_KET_VANG)
 
 
 class PendantsConfig(BaseModel):
@@ -243,13 +271,16 @@ class PendantsConfig(BaseModel):
 
 
 class PetEntry(BaseModel):
-    """Individual pet definition."""
+    """Trigger-based pet definition (D-39, D-40)."""
 
     model_config = ConfigDict(extra="forbid")
 
     id: str
     name: str
-    stat_deltas: dict[str, float] = {}
+    trigger: str
+    max_stamina: int
+    tier_rates: list[float]  # len=5, index=tier-1
+    steal_ratios: list[float] | None = None  # PET_PHU_THU only
 
 
 class PetsConfig(BaseModel):

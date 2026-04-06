@@ -185,7 +185,7 @@ class TestYamlConfigs:
     """Test skeleton YAML configs validation."""
 
     def test_skills_config_validates(self):
-        """SkillsConfig.model_validate(yaml.safe_load(skills.yaml)) succeeds."""
+        """SkillsConfig.model_validate(yaml.safe_load(skills.yaml)) succeeds with 26 skills."""
         from ctp.config.schemas import SkillsConfig
 
         skills_path = CONFIG_DIR / "skills.yaml"
@@ -194,10 +194,14 @@ class TestYamlConfigs:
 
         config = SkillsConfig.model_validate(data)
         assert config is not None
-        assert config.skills == []
+        assert len(config.skills) == 26, f"Expected 26 skills, got {len(config.skills)}"
+        skill_ids = {s.id for s in config.skills}
+        assert "SK_XE_DO" in skill_ids
+        assert "SK_XXCT" in skill_ids
+        assert "SK_MU_PHEP" in skill_ids
 
     def test_pendants_config_validates(self):
-        """PendantsConfig.model_validate(yaml.safe_load(pendants.yaml)) succeeds."""
+        """PendantsConfig.model_validate(yaml.safe_load(pendants.yaml)) succeeds with 12 pendants."""
         from ctp.config.schemas import PendantsConfig
 
         pendants_path = CONFIG_DIR / "pendants.yaml"
@@ -206,10 +210,13 @@ class TestYamlConfigs:
 
         config = PendantsConfig.model_validate(data)
         assert config is not None
-        assert config.pendants == []
+        assert len(config.pendants) == 12, f"Expected 12 pendants, got {len(config.pendants)}"
+        pendant_ids = {p.id for p in config.pendants}
+        assert "PT_DKXX2" in pendant_ids
+        assert "PT_CUOP_NHA" in pendant_ids
 
     def test_pets_config_validates(self):
-        """PetsConfig.model_validate(yaml.safe_load(pets.yaml)) succeeds."""
+        """PetsConfig.model_validate(yaml.safe_load(pets.yaml)) succeeds with 4 pets."""
         from ctp.config.schemas import PetsConfig
 
         pets_path = CONFIG_DIR / "pets.yaml"
@@ -218,7 +225,10 @@ class TestYamlConfigs:
 
         config = PetsConfig.model_validate(data)
         assert config is not None
-        assert config.pets == []
+        assert len(config.pets) == 4, f"Expected 4 pets, got {len(config.pets)}"
+        pet_ids = {p.id for p in config.pets}
+        assert "PET_THIEN_THAN" in pet_ids
+        assert "PET_TROI_CHAN" in pet_ids
 
     def test_game_rules_config_validates(self):
         """GameRulesConfig.model_validate(yaml.safe_load(game_rules.yaml)) succeeds."""

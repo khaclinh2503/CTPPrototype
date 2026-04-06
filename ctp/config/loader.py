@@ -119,6 +119,30 @@ class ConfigLoader:
             raise ConfigError(f"Config validation failed for {filename}: {e}")
 
     @property
+    def board_config(self) -> "BoardConfig":
+        """Get BoardConfig (alias for self.board)."""
+        assert self.board is not None, "Call load_all() first"
+        return self.board
+
+    @property
+    def skills_config(self) -> "SkillsConfig":
+        """Get SkillsConfig."""
+        assert self.skills is not None, "Call load_all() first"
+        return self.skills
+
+    @property
+    def pendants_config(self) -> "PendantsConfig":
+        """Get PendantsConfig."""
+        assert self.pendants is not None, "Call load_all() first"
+        return self.pendants
+
+    @property
+    def pets_config(self) -> "PetsConfig":
+        """Get PetsConfig."""
+        assert self.pets is not None, "Call load_all() first"
+        return self.pets
+
+    @property
     def max_turns(self) -> int:
         """Get General.limitTurn from Board.json (max turns per game)."""
         assert self.board is not None, "Call load_all() first"
@@ -147,3 +171,63 @@ class ConfigLoader:
         """Get num_players from game_rules.yaml."""
         assert self.game_rules is not None, "Call load_all() first"
         return self.game_rules.num_players
+
+
+def assign_random_loadout(players, skills_cfg, pendants_cfg, pets_cfg, rng=None):
+    """D-16/D-34/D-41: Random assignment with replacement.
+
+    D-20: SK_TEDDY and SK_GAY_NHU_Y mutually exclusive — re-roll on conflict.
+
+    Args:
+        players: List of Player objects to assign loadout to.
+        skills_cfg: SkillsConfig instance.
+        pendants_cfg: PendantsConfig instance.
+        pets_cfg: PetsConfig instance.
+        rng: Optional random module (default: stdlib random).
+    """
+    import random as _rng_module
+    if rng is None:
+        rng = _rng_module
+
+    for p in players:
+        # Skills: 5 slots, with replacement, mutual exclusion D-20
+        # D-04: only include skills that have rank_config for player's rank
+        # D-03: R rank uses S config
+        effective_rank = "S" if p.rank == "R" else p.rank
+        pool = [
+            s.id for s in skills_cfg.skills
+            if effective_rank in s.rank_config
+        ]
+        if not pool:
+            p.skills = []
+        else:
+            p.skills = []
+            for _ in range(5):
+                candidate = rng.choice(pool)
+                # D-20 mutual exclusion: SK_TEDDY and SK_GAY_NHU_Y cannot coexist
+                if candidate == "SK_TEDDY" and "SK_GAY_NHU_Y" in p.skills:
+                    non_teddy = [x for x in pool if x != "SK_TEDDY"]
+                    candidate = rng.choice(non_teddy) if non_teddy else candidate
+                elif candidate == "SK_GAY_NHU_Y" and "SK_TEDDY" in p.skills:
+                    non_gay_nhu_y = [x for x in pool if x != "SK_GAY_NHU_Y"]
+                    candidate = rng.choice(non_gay_nhu_y) if non_gay_nhu_y else candidate
+                p.skills.append(candidate)
+
+        # Pendants: 3 slots, with replacement
+        pendant_pool = [pt.id for pt in pendants_cfg.pendants]
+        if pendant_pool:
+            p.pendants = [rng.choice(pendant_pool) for _ in range(3)]
+        else:
+            p.pendants = []
+        p.pendant_rank = rng.choice(["B", "A", "S", "R", "SR"])
+
+        # Pet: 1 slot, random tier
+        if pets_cfg.pets:
+            pet = rng.choice(pets_cfg.pets)
+            p.pet = pet.id
+            p.pet_tier = rng.randint(1, 5)
+            p.pet_stamina = pet.max_stamina
+        else:
+            p.pet = None
+            p.pet_tier = 1
+            p.pet_stamina = 0

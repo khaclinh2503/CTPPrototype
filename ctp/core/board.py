@@ -47,6 +47,7 @@ class Tile:
     festival_level: int = 0   # số lần ô này được chọn làm festival (1→2x, 2→3x, 3+→4x)
     toll_debuff_turns: int = 0   # EF_7/8: lượt còn lại của toll debuff trên tile này
     toll_debuff_rate: float = 1.0  # EF_7/8: 0.0=miễn phí, 0.5=giảm 50%, 1.0=bình thường
+    acquisition_blocked_turns: int = 0  # PET_XI_CHO anti-acquisition
 
 
 class Board:
@@ -90,6 +91,8 @@ class Board:
         self.festival_tile_position: int | None = None  # Ô đang tổ chức lễ hội
         self.elevated_tile: int | None = None  # chỉ 1 ô được nâng trên toàn map
         self.water_wave: tuple[int, int] | None = None  # (source_pos, dest_pos), Map 3
+        self.illusion_position: int | None = None   # SK_AO_ANH
+        self.stop_sign_position: int | None = None  # SK_BIEN_CAM
 
         # Build 32 tiles from SpacePosition0
         self.board: list[Tile] = []
@@ -280,6 +283,8 @@ class Board:
         self.festival_tile_position = None
         self.elevated_tile = None
         self.water_wave = None
+        self.illusion_position = None
+        self.stop_sign_position = None
         for tile in self.board:
             tile.owner_id = None
             tile.building_level = 0
@@ -288,6 +293,7 @@ class Board:
             tile.festival_level = 0
             tile.toll_debuff_turns = 0
             tile.toll_debuff_rate = 1.0
+            tile.acquisition_blocked_turns = 0
 
     def get_row_non_corner_positions(self, water_tile_pos: int) -> list[int]:
         """Lấy các ô không phải góc trong cùng hàng với water_tile_pos.

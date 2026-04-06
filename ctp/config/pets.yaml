@@ -1,3 +1,30 @@
-# Pets configuration for CTP
-# Phase 1: skeleton only - data will be filled in Phase 2
-pets: []
+# Pets configuration for CTP Phase 2.5
+# 4 pets with trigger-based schema (D-39, D-40)
+# tier_rates: list of 5 values [tier1, tier2, tier3, tier4, tier5]
+# max_stamina: số lần pet có thể kích hoạt trong 1 ván (D-40)
+
+pets:
+  - id: PET_THIEN_THAN
+    name: "Thien Than"
+    trigger: ON_CANT_AFFORD_TOLL
+    max_stamina: 1
+    tier_rates: [25, 35, 50, 70, 100]
+
+  - id: PET_XI_CHO
+    name: "Xi Cho"
+    trigger: ON_OPPONENT_COMPLETE_2_COLOR_PAIRS
+    max_stamina: 3
+    tier_rates: [25, 35, 50, 70, 100]
+
+  - id: PET_PHU_THU
+    name: "Phu Thu"
+    trigger: ON_OPPONENT_ACQUIRE_YOURS
+    max_stamina: 3
+    tier_rates: [25, 35, 50, 70, 100]
+    steal_ratios: [0.5, 0.75, 1.0, 1.5, 2.0]
+
+  - id: PET_TROI_CHAN
+    name: "Troi Chan"
+    trigger: ON_OPPONENT_PASS_YOURS
+    max_stamina: 5
+    tier_rates: [25, 35, 45, 55, 70]

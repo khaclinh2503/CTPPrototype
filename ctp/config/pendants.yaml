@@ -1,3 +1,71 @@
-# Pendants configuration for CTP
-# Phase 1: skeleton only - data will be filled in Phase 2
-pendants: []
+# Pendants configuration for CTP Phase 2.5
+# 12 pendants with trigger-based schema (D-33)
+# rank_rates: fixed per rank B/A/S/R/SR — no star scaling (D-31)
+
+pendants:
+  - id: PT_DKXX2
+    name: "Dkxx2"
+    triggers: [ON_DKXX_CHECK]
+    rank_rates: {B: 2, A: 3, S: 4, R: 12, SR: 18}
+
+  - id: PT_CUOP_NHA
+    name: "Cuop Nha"
+    triggers: [ON_LAND_OPPONENT]
+    rank_rates: {B: 5, A: 7, S: 10, R: 15, SR: 25}
+
+  - id: PT_XICH_NGOC
+    name: "Xich Ngoc"
+    triggers: [ON_PRISON_ESCAPE_CHECK, ON_DKXX_CHECK]
+    rank_rates: {B: 20, A: 40, S: 60, R: 80, SR: 100}
+    rank_rates_2: {B: 2, A: 4, S: 6, R: 10, SR: 14}
+
+  - id: PT_GIAY_BAY
+    name: "Giay Bay"
+    triggers: [ON_LAND_TRAVEL]
+    rank_rates: {B: 1, A: 3, S: 5, R: 10, SR: 15}
+
+  - id: PT_TU_TRUONG
+    name: "Tu Truong"
+    triggers: [ON_LAND_OWN]
+    rank_rates: {B: 4, A: 10, S: 15, R: 25, SR: 50}
+    rank_rates_2: {B: 4, A: 5, S: 10, R: 25, SR: 42}
+
+  - id: PT_BAN_TAY_VANG
+    name: "Ban Tay Vang"
+    triggers: [ON_LAND_OWN]
+    rank_rates: {B: 2, A: 5, S: 20, R: 50, SR: 85}
+
+  - id: PT_TUI_BA_GANG
+    name: "Tui Ba Gang"
+    triggers: [ON_OPPONENT_LAND_YOURS, ON_SAME_TILE]
+    rank_rates: {B: 10, A: 20, S: 30, R: 50, SR: 60}
+    rank_rates_2: {B: 5, A: 7, S: 10, R: 15, SR: 36}
+
+  - id: PT_KET_VANG
+    name: "Ket Vang"
+    triggers: [ON_OPPONENT_LAND_YOURS, ON_LAND_OWN]
+    rank_rates: {B: 10, A: 20, S: 30, R: 50, SR: 60}
+    rank_rates_2: {B: 10, A: 15, S: 25, R: 50, SR: 60}
+
+  - id: PT_CHONG_MUA_NHA
+    name: "Chong Mua Nha"
+    triggers: [ON_OPPONENT_LAND_YOURS]
+    rank_rates: {B: 10, A: 20, S: 43, R: 62, SR: 70}
+
+  - id: PT_SIEU_SAO_CHEP
+    name: "Sieu Sao Chep"
+    triggers: [ON_OPPONENT_UPGRADE_SYMBOL, ON_GAME_START]
+    rank_rates: {B: 5, A: 7, S: 10, R: 15, SR: 30}
+    rank_rates_2: {B: 10, A: 15, S: 20, R: 75, SR: 90}
+
+  - id: PT_SIEU_TAXI
+    name: "Sieu Taxi"
+    triggers: [ON_LAND_TRAVEL, ON_LAND_OPPONENT]
+    rank_rates: {B: 30, A: 40, S: 50, R: 66, SR: 76}
+    rank_rates_2: {B: 3, A: 5, S: 8, R: 20, SR: 35}
+
+  - id: PT_MANG_NHEN
+    name: "Mang Nhen"
+    triggers: [ON_LAND_OPPONENT]
+    rank_rates: {B: 3, A: 5, S: 8, R: 20, SR: 30}
+    rank_rates_2: {B: 5, A: 7, S: 10, R: 15, SR: 25}

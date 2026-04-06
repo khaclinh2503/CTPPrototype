@@ -1,3 +1,210 @@
-# Skills configuration for CTP
-# Phase 1: skeleton only - data will be filled in Phase 2
-skills: []
+# Skills configuration for CTP Phase 2.5
+# 26 skills with trigger-based schema (D-08, D-10, D-11)
+# rank_config keys: C/D/B/A/S only — R rank uses S config (D-03)
+# Formula: rate_at_star = base_rate + (current_star - min_star) * chance (D-05)
+
+skills:
+  # --- ON_ROLL_AFTER ---
+  - id: SK_XE_DO
+    name: "Xe Do"
+    trigger: ON_ROLL_AFTER
+    rank_config:
+      A: {min_star: 1, base_rate: 17, chance: 1}
+      S: {min_star: 1, base_rate: 22, chance: 2}
+
+  - id: SK_XXCT
+    name: "Xuc Xac Chien Thuat"
+    trigger: ON_ROLL_AFTER
+    rank_config:
+      A: {min_star: 1, base_rate: 12, chance: 1}
+      S: {min_star: 1, base_rate: 17, chance: 2}
+
+  - id: SK_MOONWALK
+    name: "Moonwalk"
+    trigger: ON_ROLL_AFTER
+    rank_config:
+      A: {min_star: 1, base_rate: 15, chance: 2}
+      S: {min_star: 1, base_rate: 25, chance: 5}
+
+  # --- ON_MOVE_PASS ---
+  - id: SK_CAM_CO
+    name: "Cam Co"
+    trigger: ON_MOVE_PASS
+    rank_config:
+      A: {min_star: 1, base_rate: 6, chance: 1}
+      S: {min_star: 1, base_rate: 11, chance: 1}
+
+  - id: SK_PHA_HUY
+    name: "Pha Huy"
+    trigger: ON_MOVE_PASS
+    rank_config:
+      A: {min_star: 1, base_rate: 14, chance: 1}
+      S: {min_star: 1, base_rate: 20, chance: 1}
+
+  # --- ON_LAND (dừng tại ô của mình) ---
+  - id: SK_AO_ANH
+    name: "Ao Anh"
+    trigger: ON_LAND
+    rank_config:
+      A: {min_star: 1, base_rate: 50, chance: 2}
+      S: {min_star: 1, base_rate: 60, chance: 3}
+
+  - id: SK_BIEN_CAM
+    name: "Bien Cam"
+    trigger: ON_LAND
+    rank_config:
+      A: {min_star: 1, base_rate: 45, chance: 2}
+      S: {min_star: 1, base_rate: 55, chance: 3}
+
+  - id: SK_LAU_DAI_TINH_AI
+    name: "Lau Dai Tinh Ai"
+    trigger: ON_LAND
+    rank_config:
+      A: {min_star: 1, base_rate: 38, chance: 2}
+      S: {min_star: 1, base_rate: 48, chance: 3}
+
+  # --- ON_LAND_OPPONENT (dừng tại ô đối thủ) ---
+  - id: SK_BUA_SET
+    name: "Bua Set"
+    trigger: ON_LAND_OPPONENT
+    rank_config:
+      A: {min_star: 1, base_rate: 25, chance: 1}
+      S: {min_star: 1, base_rate: 30, chance: 2}
+
+  # --- ON_LAND_TRAVEL (dừng tại Travel tile) ---
+  - id: SK_TOC_CHIEN
+    name: "Toc Chien"
+    trigger: ON_LAND_TRAVEL
+    rank_config:
+      A: {min_star: 1, base_rate: 40, chance: 2}
+      S: {min_star: 1, base_rate: 50, chance: 4}
+
+  - id: SK_SO_10
+    name: "So 10"
+    trigger: ON_LAND_TRAVEL
+    rank_config:
+      A: {min_star: 1, base_rate: 44, chance: 2}
+      S: {min_star: 1, base_rate: 55, chance: 4}
+
+  # --- ON_TRUM_DU_LICH: multiple triggers ---
+  - id: SK_TRUM_DU_LICH
+    name: "Trum Du Lich"
+    trigger:
+      - ON_ACQUIRE
+      - ON_LAND_RESORT
+    rank_config:
+      A: {min_star: 1, base_rate: 21, chance: 1}
+      S: {min_star: 1, base_rate: 26, chance: 1}
+    secondary_rate: null
+
+  # --- ON_UPGRADE ---
+  - id: SK_TEDDY
+    name: "Teddy"
+    trigger: ON_UPGRADE
+    rank_config:
+      A: {min_star: 1, base_rate: 14, chance: 2}
+      S: {min_star: 1, base_rate: 23, chance: 3}
+    secondary_rate: 60.0
+
+  - id: SK_GAY_NHU_Y
+    name: "Gay Nhu Y"
+    trigger:
+      - ON_UPGRADE
+      - ON_OPPONENT_TRAVEL
+    rank_config:
+      A: {min_star: 1, base_rate: 14, chance: 2}
+      S: {min_star: 1, base_rate: 23, chance: 3}
+    secondary_rate: 70.0
+
+  - id: SK_MONG_NGUA
+    name: "Mong Ngua"
+    trigger: ON_UPGRADE
+    rank_config:
+      A: {min_star: 1, base_rate: 36, chance: 2}
+      S: {min_star: 1, base_rate: 46, chance: 3}
+
+  - id: SK_O_KY_DIEU
+    name: "O Ky Dieu"
+    trigger: ON_UPGRADE
+    rank_config:
+      A: {min_star: 1, base_rate: 19, chance: 1}
+      S: {min_star: 1, base_rate: 24, chance: 2}
+
+  - id: SK_GRAMMY
+    name: "Grammy"
+    trigger: ON_UPGRADE
+    rank_config:
+      A: {min_star: 1, base_rate: 16, chance: 1}
+      S: {min_star: 1, base_rate: 22, chance: 2}
+
+  # --- ON_PASS_START ---
+  - id: SK_MU_PHEP
+    name: "Mu Phep"
+    trigger: ON_PASS_START
+    rank_config:
+      B: {min_star: 1, base_rate: 41, chance: 2}
+      A: {min_star: 1, base_rate: 51, chance: 3}
+      S: {min_star: 1, base_rate: 66, chance: 5}
+    always_active: true
+
+  # --- ON_ACQUIRE ---
+  - id: SK_MC2
+    name: "MC2"
+    trigger: ON_ACQUIRE
+    rank_config:
+      A: {min_star: 1, base_rate: 21, chance: 1}
+      S: {min_star: 1, base_rate: 26, chance: 2}
+
+  # --- ON_ENTER_PRISON ---
+  - id: SK_JOKER
+    name: "Joker"
+    trigger: ON_ENTER_PRISON
+    rank_config:
+      A: {min_star: 1, base_rate: 50, chance: 2}
+      S: {min_star: 1, base_rate: 60, chance: 3}
+
+  - id: SK_HQXX
+    name: "HQXX"
+    trigger: ON_ENTER_PRISON
+    rank_config:
+      A: {min_star: 1, base_rate: 20, chance: 1}
+      S: {min_star: 1, base_rate: 25, chance: 2}
+
+  # --- ON_OPPONENT_LAND_YOURS (reactive: đối thủ dừng tại ô của player) ---
+  - id: SK_NGOI_SAO
+    name: "Ngoi Sao"
+    trigger: ON_OPPONENT_LAND_YOURS
+    rank_config:
+      A: {min_star: 1, base_rate: 14, chance: 3}
+      S: {min_star: 1, base_rate: 29, chance: 4}
+
+  - id: SK_CUONG_CHE
+    name: "Cuong Che"
+    trigger: ON_OPPONENT_MOVE_TO_YOURS
+    rank_config:
+      A: {min_star: 1, base_rate: 50, chance: 2}
+      S: {min_star: 1, base_rate: 60, chance: 3}
+
+  # --- ON_MOVE_TO_OPPONENT (di chuyển đến ô đối thủ đang đứng) ---
+  - id: SK_SUNG_VANG
+    name: "Sung Vang"
+    trigger: ON_MOVE_TO_OPPONENT
+    rank_config:
+      A: {min_star: 1, base_rate: 28, chance: 2}
+      S: {min_star: 1, base_rate: 38, chance: 3}
+
+  - id: SK_LOC_XOAY
+    name: "Loc Xoay"
+    trigger: ON_MOVE_TO_OPPONENT
+    rank_config:
+      A: {min_star: 1, base_rate: 38, chance: 2}
+      S: {min_star: 1, base_rate: 48, chance: 3}
+
+  # --- ON_OPPONENT_MOVE_SKILL (reactive: khi đối thủ dùng skill di chuyển) ---
+  - id: SK_HO_DIEP
+    name: "Ho Diep"
+    trigger: ON_OPPONENT_MOVE_SKILL
+    rank_config:
+      A: {min_star: 1, base_rate: 44, chance: 4}
+      S: {min_star: 1, base_rate: 64, chance: 4}
+    secondary_rate: null

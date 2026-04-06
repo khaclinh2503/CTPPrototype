@@ -34,6 +34,24 @@ class Player:
     double_toll_turns: int = 0            # EF_16 self-debuff rounds remaining, per D-12
     virus_turns: int = 0                  # unused field — kept for backward compat (tile-level debuff used instead)
 
+    # Phase 2.5: Skill/Pendant/Pet system
+    rank: str = "R"                          # D-01: C/D/B/A/S/R
+    star: int = 5                            # D-01: 1-5
+    skills: list[str] = field(default_factory=list)   # D-19: 5 skill IDs
+    pendants: list[str] = field(default_factory=list) # D-32: 3 pendant IDs
+    pet: str | None = None                   # D-38: 1 pet ID
+    pet_stamina: int = 0                     # D-40: current stamina
+    pet_tier: int = 1                        # D-39: 1-5
+    cam_co_decay_index: int = 0              # SK_CAM_CO rate decay tracking
+    cam_co_current_rate: float = 0.0         # SK_CAM_CO current rate in turn
+    joker_pending: bool = False              # SK_JOKER TH2 pending reward
+    skills_disabled_this_turn: bool = False  # SK_LOC_XOAY disable
+    cards_disabled_this_turn: bool = False   # SK_LOC_XOAY disable
+    consecutive_doubles: int = 0             # SK_HQXX doubles reset
+    bound_turns: int = 0                     # PET_TROI_CHAN bind
+    dkxx_bonus_pool: float = 0.0            # PT_DKXX2/PT_XICH_NGOC pool
+    pendant_rank: str = "B"                  # D-31: B/A/S/R/SR
+
     def can_afford(self, amount: float) -> bool:
         """Check if player has enough cash (excluding property value).
 
