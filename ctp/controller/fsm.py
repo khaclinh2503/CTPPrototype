@@ -57,6 +57,7 @@ class GameController:
         event_bus: EventBus,
         buy_decision_fn: Callable[["GameController", Player, Tile, float], bool] | None = None,
         starting_cash: float = 1_000_000,
+        skill_engine=None,
     ):
         """Initialize the game controller.
 
@@ -68,12 +69,15 @@ class GameController:
             buy_decision_fn: Callback quyết định player có mua đất không.
                 Signature: (controller, player, tile, price) -> bool.
                 Mặc định None = luôn mua nếu đủ tiền (headless auto-buy).
+            skill_engine: SkillEngine instance, or None to disable all skill hooks
+                (backward-compatible — when None, FSM behaves exactly as before).
         """
         self.board = board
         self.players = players
         self.max_turns = max_turns
         self.event_bus = event_bus
         self.buy_decision_fn = buy_decision_fn  # None = always buy if affordable
+        self.skill_engine = skill_engine  # None = backward compatible, no skills
         self.travel_decision_fn = None  # set bên ngoài nếu cần UI/interactive
         self.water_slide_decision_fn = None  # (controller, player, candidates) -> Tile | None
         self.accept_card_fn = None   # (player, card_id) -> bool; None = AI luôn nhận
@@ -226,6 +230,61 @@ class GameController:
 
         # EF_19 Escape card — handled inside _resolve_prison_attempt via prison_choice_fn
 
+        # [SKILL] Reset per-turn skill flags at start of ROLL phase
+        if self.skill_engine:
+            player = self.current_player
+            player.skills_disabled_this_turn = False
+            player.cards_disabled_this_turn = False
+            player.cam_co_decay_index = 0
+            # Recalculate SK_CAM_CO rate if player has the skill
+            if "SK_CAM_CO" in player.skills:
+                cam_co_cfg = self.skill_engine.skill_configs.get("SK_CAM_CO")
+                if cam_co_cfg is not None:
+                    player.cam_co_current_rate = self.skill_engine.calc_rate(cam_co_cfg, player)
+                else:
+                    player.cam_co_current_rate = 0.0
+            else:
+                player.cam_co_current_rate = 0.0
+
+            # [SKILL] Resolve joker_pending: deferred reward from SK_JOKER
+            if player.joker_pending:
+                player.joker_pending = False
+                ctx = {"board": self.board, "players": self.players, "is_player_turn": True}
+                self.skill_engine.fire("ON_JOKER_RESOLVE", player, ctx)
+
+            # [SKILL] Check bound_turns (PET_TROI_CHAN): if bound, roll dice
+            # but skip MOVE if odd result; decrement bound_turns
+            if player.bound_turns > 0:
+                dice = self.roll_dice()
+                player.bound_turns -= 1
+                self.event_bus.publish(GameEvent(
+                    event_type=EventType.DICE_ROLL,
+                    player_id=player.player_id,
+                    data={
+                        "dice": dice,
+                        "total": sum(dice),
+                        "doubles": dice[0] == dice[1],
+                        "bound_roll": True,
+                    }
+                ))
+                if sum(dice) % 2 != 0:
+                    # Odd → skip MOVE this turn
+                    self.phase = TurnPhase.END_TURN
+                    return []
+                # Even → proceed normally with this dice result
+                self._rolled_doubles = (dice[0] == dice[1])
+                if self._rolled_doubles:
+                    self._doubles_streak += 1
+                else:
+                    self._doubles_streak = 0
+                self.event_bus.publish(GameEvent(
+                    event_type=EventType.TURN_STARTED,
+                    player_id=player.player_id,
+                    data={"turn": self.current_turn}
+                ))
+                self.phase = TurnPhase.MOVE
+                return []
+
         # [NEW D-42 Step B] Decrement double_toll_turns ở đầu ROLL phase
         if self.current_player.double_toll_turns > 0:
             self.current_player.double_toll_turns -= 1
@@ -255,6 +314,25 @@ class GameController:
             self.phase = TurnPhase.MOVE
             return []
 
+        # [SKILL] ON_DKXX_CHECK: pendants (PT_DKXX2, PT_XICH_NGOC R2) contribute to dkxx_bonus_pool
+        _dkxx_triggered = False
+        if self.skill_engine:
+            player = self.current_player
+            dkxx_ctx = {"board": self.board, "players": self.players, "is_player_turn": True}
+            self.skill_engine.fire_pendants("ON_DKXX_CHECK", player, dkxx_ctx)
+            # After pendant fire, dkxx_bonus_pool may have been updated by handlers
+            # Check if bonus pool triggers enhanced precision
+            if player.dkxx_bonus_pool > 0:
+                _dkxx_triggered = random.randint(0, 99) < player.dkxx_bonus_pool
+                player.dkxx_bonus_pool = 0.0  # Reset after check
+                if _dkxx_triggered:
+                    player.accuracy_rate = min(100, player.accuracy_rate + 50)  # temp boost
+
+        # [SKILL] ON_ROLL_BEFORE: fire skills before dice roll
+        if self.skill_engine:
+            roll_before_ctx = {"board": self.board, "players": self.players, "is_player_turn": True}
+            self.skill_engine.fire("ON_ROLL_BEFORE", self.current_player, roll_before_ctx)
+
         # [NEW D-42 Step C] AI chọn khoảng lực
         chosen_range = self._choose_range_ai()
         # [NEW D-42 Step D] Precision roll
@@ -264,6 +342,10 @@ class GameController:
         lo, hi = _CAN_LUC_RANGES[chosen_range]
         if lo <= sum(precision_dice) <= hi:
             precision_hit = True
+
+        # Restore accuracy_rate if it was temporarily boosted by DKXX
+        if _dkxx_triggered and self.skill_engine:
+            self.current_player.accuracy_rate -= 50  # restore after roll
 
         # Set dice result
         self._current_dice = precision_dice
@@ -298,6 +380,13 @@ class GameController:
                 player_id=self.current_player.player_id,
                 data={"turns": self.current_player.prison_turns_remaining, "reason": "triple_doubles"}
             ))
+            # [SKILL] ON_ENTER_PRISON: fire Joker
+            if self.skill_engine:
+                prison_enter_ctx = {
+                    "board": self.board, "players": self.players,
+                    "is_player_turn": True, "reason": "triple_doubles",
+                }
+                self.skill_engine.fire("ON_ENTER_PRISON", self.current_player, prison_enter_ctx)
             self.phase = TurnPhase.END_TURN
             return []
 
@@ -321,8 +410,76 @@ class GameController:
             }
         ))
 
+        # [SKILL] ON_ROLL_AFTER: fire skills/pendants after dice result known
+        if self.skill_engine:
+            roll_after_ctx = {
+                "board": self.board,
+                "players": self.players,
+                "is_player_turn": True,
+                "dice_result": sum(dice),
+                "dice": dice,
+            }
+            roll_results = self.skill_engine.fire("ON_ROLL_AFTER", self.current_player, roll_after_ctx)
+            # Apply dice modifiers from skill results (D-46: XXCT/XeĐo/Moonwalk)
+            new_total = self._resolve_roll_modifiers(roll_results, sum(dice))
+            if new_total != sum(dice):
+                # Reconstruct dice to match new total (keep first die, adjust second)
+                d1 = min(6, new_total - 1) if new_total > 1 else 1
+                d2 = new_total - d1
+                d2 = max(1, min(6, d2))
+                d1 = new_total - d2
+                self._current_dice = (d1, d2)
+
         self.phase = TurnPhase.MOVE
         return []
+
+    def _resolve_roll_modifiers(self, roll_results: list, original_total: int) -> int:
+        """Apply dice modifier results from ON_ROLL_AFTER handlers.
+
+        D-46: XeĐo overrides XXCT. Moonwalk adds direction choice.
+        T-02.5-17: Handler results must have 'type' key.
+
+        Args:
+            roll_results: List of results from fire("ON_ROLL_AFTER", ...).
+            original_total: Original dice total.
+
+        Returns:
+            New dice total (may be same as original if no valid modifiers).
+        """
+        replace_result = None
+        modifier_result = None
+        direction_result = None
+
+        for r in roll_results:
+            if not isinstance(r, dict) or "type" not in r:
+                continue  # T-02.5-18: validate result dict
+            if r["type"] == "dice_replace":
+                replace_result = r
+            elif r["type"] == "dice_modifier":
+                modifier_result = r
+            elif r["type"] == "direction_choice":
+                direction_result = r
+
+        # D-46: XeĐo (dice_replace) overrides XXCT (dice_modifier)
+        if replace_result is not None:
+            options = replace_result.get("options", [original_total])
+            if options:
+                # AI: choose closest to original total
+                chosen = min(options, key=lambda x: abs(x - original_total))
+                return chosen
+
+        if modifier_result is not None:
+            options = modifier_result.get("options", [original_total])
+            if options:
+                # AI: choose middle option (closest to original)
+                chosen = min(options, key=lambda x: abs(x - original_total))
+                return chosen
+
+        # direction_result handled in _do_move (Moonwalk backward movement)
+        if direction_result is not None:
+            self._pending_direction = direction_result.get("options", ["forward"])[0]
+
+        return original_total
 
     def _resolve_prison_attempt(self) -> str:
         """Xử lý lượt của người chơi đang ở trong tù.
@@ -431,6 +588,15 @@ class GameController:
             return 'play'
 
         # Còn lượt → thử đổ đôi để thoát sớm
+        # [SKILL] ON_PRISON_ROLL: fire XichNgoc R1 before rolling for escape
+        if self.skill_engine:
+            prison_roll_ctx = {
+                "board": self.board, "players": self.players,
+                "is_player_turn": True,
+            }
+            self.skill_engine.fire_pendants(
+                "ON_PRISON_ROLL", self.current_player, prison_roll_ctx)
+
         dice = self.roll_dice()
         is_doubles = (dice[0] == dice[1])
         self.event_bus.publish(GameEvent(
@@ -703,6 +869,50 @@ class GameController:
 
         if self._passed_start:
             events = strategy.on_pass(self.current_player, start_tile, self.board, self.event_bus)
+            # [SKILL] ON_PASS_START: fire Grammy, MuPhep, SO_10 E2 for passing bonus
+            if self.skill_engine:
+                pass_ctx = {
+                    "board": self.board,
+                    "players": self.players,
+                    "is_player_turn": True,
+                    "base_bonus": sum(e.data.get("amount", 0) for e in events),
+                }
+                pass_results = self.skill_engine.fire("ON_PASS_START", self.current_player, pass_ctx)
+                # Apply additive passing bonus modifiers (D-47)
+                passing_bonus_pct = 0
+                for r in pass_results:
+                    if isinstance(r, dict) and r.get("type") == "pass_bonus_pct":
+                        passing_bonus_pct += r.get("value", 0)
+                if passing_bonus_pct > 0:
+                    base = pass_ctx["base_bonus"]
+                    extra_amount = int(base * passing_bonus_pct / 100)
+                    self.current_player.cash += extra_amount
+
+        # [SKILL] ON_MOVE_PASS: fire CamCo, PhaHuy for each tile passed (dice_walk)
+        if self.skill_engine:
+            for step in range(1, dice_total):
+                mid_pos = ((old_pos - 1 + step) % 32) + 1
+                mid_tile = self.board.get_tile(mid_pos)
+                move_pass_ctx = {
+                    "board": self.board,
+                    "players": self.players,
+                    "is_player_turn": True,
+                    "tile": mid_tile,
+                    "movement_type": "dice_walk",
+                }
+                self.skill_engine.fire("ON_MOVE_PASS", self.current_player, move_pass_ctx)
+                # ON_OPPONENT_PASS_YOURS: for each opponent whose property player passes
+                if mid_tile.owner_id and mid_tile.owner_id != self.current_player.player_id:
+                    owner = next((p for p in self.players if p.player_id == mid_tile.owner_id), None)
+                    if owner:
+                        opp_pass_ctx = {
+                            "board": self.board,
+                            "players": self.players,
+                            "is_player_turn": False,
+                            "tile": mid_tile,
+                            "passing_player": self.current_player,
+                        }
+                        self.skill_engine.fire_pet("ON_OPPONENT_PASS_YOURS", owner, opp_pass_ctx)
 
         self.current_player.position = ((new_pos - 1) % 32) + 1
 
@@ -780,6 +990,93 @@ class GameController:
             )
             events.extend(dest_events)
 
+        # [SKILL] Tile-based hooks after on_land()
+        if self.skill_engine:
+            player = self.current_player
+            base_ctx = {"board": self.board, "players": self.players}
+
+            if tile.space_id == SpaceId.TRAVEL:
+                # ON_LAND_TRAVEL: fire TocChien, SO_10 E1, SieuTaxi R1
+                travel_ctx = {**base_ctx, "is_player_turn": True, "tile": tile}
+                self.skill_engine.fire("ON_LAND_TRAVEL", player, travel_ctx)
+                # ON_OPPONENT_TRAVEL: fire GayNhuY E1 for all other players
+                for other in self.players:
+                    if other.player_id != player.player_id and not other.is_bankrupt:
+                        opp_travel_ctx = {**base_ctx, "is_player_turn": False, "tile": tile,
+                                          "traveler": player}
+                        self.skill_engine.fire("ON_OPPONENT_TRAVEL", other, opp_travel_ctx)
+
+            elif tile.space_id in (SpaceId.CITY, SpaceId.RESORT):
+                is_opponent_tile = (tile.owner_id is not None
+                                    and tile.owner_id != player.player_id)
+                is_own_tile = (tile.owner_id == player.player_id)
+
+                if is_own_tile:
+                    # ON_LAND_OWN: pendants TuTruong, KetVang E2, BanTayVang
+                    own_ctx = {**base_ctx, "is_player_turn": True, "tile": tile}
+                    self.skill_engine.fire_pendants("ON_LAND_OWN", player, own_ctx)
+
+                elif is_opponent_tile:
+                    # D-45 toll order: check free-toll skills first
+                    toll_ctx = {**base_ctx, "is_player_turn": True, "tile": tile}
+                    toll_results = self.skill_engine.fire("ON_LAND_OPPONENT", player, toll_ctx)
+                    toll_pendant_results = self.skill_engine.fire_pendants(
+                        "ON_LAND_OPPONENT", player, toll_ctx)
+
+                    # Check for toll waive (BuaSet, GiayBay, MangNhen R1, SieuTaxi R2)
+                    toll_waived = any(
+                        isinstance(r, dict) and r.get("type") in ("toll_waive",)
+                        for r in (toll_results + toll_pendant_results)
+                    )
+
+                    if not toll_waived:
+                        # Fire toll boost skills (NgoiSao x2, TuiBaGang E1, KetVang E1)
+                        boost_ctx = {**base_ctx, "is_player_turn": True, "tile": tile}
+                        self.skill_engine.fire("ON_TOLL_BOOST", player, boost_ctx)
+                        self.skill_engine.fire_pendants("ON_TOLL_BOOST", player, boost_ctx)
+
+                    # ON_CANT_AFFORD_TOLL: PET_THIEN_THAN
+                    toll_amount = 0
+                    for e in events:
+                        if e.event_type == EventType.RENT_PAID:
+                            toll_amount = e.data.get("amount", 0)
+                            break
+                    if toll_amount > 0 and not player.can_afford(0):
+                        cant_ctx = {**base_ctx, "is_player_turn": True,
+                                    "tile": tile, "toll": toll_amount}
+                        self.skill_engine.fire_pet("ON_CANT_AFFORD_TOLL", player, cant_ctx)
+
+                    # ON_OPPONENT_LAND_YOURS: fire for property owner (NgoiSao, CuongChe, ChongMuaNha)
+                    owner = next(
+                        (p for p in self.players if p.player_id == tile.owner_id), None
+                    )
+                    if owner:
+                        opp_land_ctx = {**base_ctx, "is_player_turn": False,
+                                        "tile": tile, "visitor": player}
+                        self.skill_engine.fire("ON_OPPONENT_LAND_YOURS", owner, opp_land_ctx)
+                        self.skill_engine.fire_pendants(
+                            "ON_OPPONENT_LAND_YOURS", owner, opp_land_ctx)
+
+                # ON_MOVE_TO_OPPONENT: check if any other player is on this tile
+                for other in self.players:
+                    if (other.player_id != player.player_id
+                            and not other.is_bankrupt
+                            and other.position == tile.position):
+                        # SungVang, LocXoay
+                        move_to_opp_ctx = {**base_ctx, "is_player_turn": True,
+                                           "tile": tile, "opponent": other}
+                        self.skill_engine.fire("ON_MOVE_TO_OPPONENT", player, move_to_opp_ctx)
+                        # ON_OPPONENT_MOVE_TO_YOURS: CuongChe for tile owner
+                        if tile.owner_id == other.player_id:
+                            opp_move_ctx = {**base_ctx, "is_player_turn": False,
+                                            "tile": tile, "mover": player}
+                            self.skill_engine.fire(
+                                "ON_OPPONENT_MOVE_TO_YOURS", other, opp_move_ctx)
+                        # ON_SAME_TILE: TuiBaGang E2 for landing player
+                        same_ctx = {**base_ctx, "is_player_turn": True,
+                                    "tile": tile, "opponent": other}
+                        self.skill_engine.fire_pendants("ON_SAME_TILE", player, same_ctx)
+
         if was_unowned:
             # Lan dau: mua + xay ngay (khong tao upgrade eligible -> khong co [Nang cap])
             buy_events = self._try_buy_property(self.current_player, tile)
@@ -806,6 +1103,12 @@ class GameController:
         from ctp.controller.acquisition import resolve_acquisition
 
         tile = self.board.get_tile(self.current_player.position)
+
+        # [SKILL] Check acquisition_blocked_turns before allowing acquisition
+        if tile.acquisition_blocked_turns > 0:
+            self.phase = TurnPhase.UPGRADE
+            return []
+
         acquire_rate = 1.0  # From Board.json General.acquireRate
         events = resolve_acquisition(
             self.current_player, tile, self.board,
@@ -818,6 +1121,29 @@ class GameController:
                     and e.player_id == self.current_player.player_id):
                 pos = e.data.get("position")
                 self._upgrade_eligible[pos] = 4  # toi da L3; Landmark co dieu kien rieng
+
+                # [SKILL] ON_ACQUIRE: fire MC2, TrumDuLich E1
+                if self.skill_engine:
+                    acquire_ctx = {
+                        "board": self.board, "players": self.players,
+                        "is_player_turn": True, "tile": tile,
+                    }
+                    self.skill_engine.fire("ON_ACQUIRE", self.current_player, acquire_ctx)
+
+                # [SKILL] ON_OPPONENT_ACQUIRE_YOURS: fire PET_PHU_THU for previous owner
+                if self.skill_engine:
+                    prev_owner_id = e.data.get("from_player")
+                    prev_owner = next(
+                        (p for p in self.players if p.player_id == prev_owner_id), None
+                    )
+                    if prev_owner:
+                        opp_acq_ctx = {
+                            "board": self.board, "players": self.players,
+                            "is_player_turn": False, "tile": tile,
+                            "acquirer": self.current_player,
+                        }
+                        self.skill_engine.fire_pet(
+                            "ON_OPPONENT_ACQUIRE_YOURS", prev_owner, opp_acq_ctx)
 
         self.phase = TurnPhase.UPGRADE
         return events
@@ -835,6 +1161,62 @@ class GameController:
             eligible_positions=self._upgrade_eligible,
         )
         self._upgrade_eligible.clear()
+
+        # [SKILL] ON_UPGRADE hooks: fire for each property upgraded
+        if self.skill_engine:
+            player = self.current_player
+            _cascade_depth = 0
+            for e in list(events):
+                if e.event_type != EventType.PROPERTY_UPGRADED:
+                    continue
+                if e.player_id != player.player_id:
+                    continue
+                pos = e.data.get("position")
+                new_level = e.data.get("new_level", 0)
+                tile = self.board.get_tile(pos) if pos else None
+                if tile is None:
+                    continue
+
+                upgrade_ctx = {
+                    "board": self.board, "players": self.players,
+                    "is_player_turn": True,
+                    "tile": tile, "new_level": new_level,
+                }
+                # ON_UPGRADE: Teddy, GayNhuY E2, AoAnh, HoDiep E2
+                upgrade_results = self.skill_engine.fire("ON_UPGRADE", player, upgrade_ctx)
+                # ON_UPGRADE pendants
+                self.skill_engine.fire_pendants("ON_UPGRADE", player, upgrade_ctx)
+
+                # D-50: if skill creates L5, fire ON_UPGRADE cascade (max depth 3)
+                if new_level == 5 and _cascade_depth < 3:
+                    _cascade_depth += 1
+                    cascade_ctx = {**upgrade_ctx, "cascade": True}
+                    self.skill_engine.fire("ON_UPGRADE_L5", player, cascade_ctx)
+
+                # ON_OPPONENT_UPGRADE_SYMBOL: fire SieuSaoChep R1 for all other players
+                for other in self.players:
+                    if other.player_id != player.player_id and not other.is_bankrupt:
+                        opp_upg_ctx = {
+                            "board": self.board, "players": self.players,
+                            "is_player_turn": False,
+                            "tile": tile, "new_level": new_level,
+                            "upgrader": player,
+                        }
+                        self.skill_engine.fire_pendants(
+                            "ON_OPPONENT_UPGRADE_SYMBOL", other, opp_upg_ctx)
+
+                # ON_OPPONENT_BUILD: fire PET_XI_CHO for players whose pet is XI_CHO
+                for other in self.players:
+                    if other.player_id != player.player_id and not other.is_bankrupt:
+                        if other.pet == "PET_XI_CHO":
+                            xi_cho_ctx = {
+                                "board": self.board, "players": self.players,
+                                "is_player_turn": False,
+                                "tile": tile, "builder": player,
+                            }
+                            self.skill_engine.fire_pet(
+                                "ON_OPPONENT_BUILD", other, xi_cho_ctx)
+
         self.phase = TurnPhase.CHECK_BANKRUPTCY
         return events
 
@@ -935,6 +1317,12 @@ class GameController:
                 tile.toll_debuff_turns -= 1
                 if tile.toll_debuff_turns == 0:
                     tile.toll_debuff_rate = 1.0
+
+        # [SKILL] Decrement acquisition_blocked_turns on all tiles at END_TURN
+        if self.skill_engine:
+            for tile in self.board.board:
+                if tile.acquisition_blocked_turns > 0:
+                    tile.acquisition_blocked_turns -= 1
 
         # Advance turn counter
         self._advance_to_next_player()
@@ -1202,6 +1590,25 @@ class GameController:
         if not active:
             return None
         return max(active, key=lambda p: self._get_total_wealth(p)).player_id
+
+    def fire_game_start(self) -> None:
+        """Fire ON_GAME_START skill hooks for all players.
+
+        Call this after creating GameController and before the game loop.
+        When skill_engine is None, this is a no-op (backward compatible).
+
+        ON_GAME_START fires PT_SIEU_SAO_CHEP R2 double cash effect.
+        """
+        if not self.skill_engine:
+            return
+        for player in self.players:
+            game_start_ctx = {
+                "board": self.board,
+                "players": self.players,
+                "is_player_turn": True,
+            }
+            self.skill_engine.fire("ON_GAME_START", player, game_start_ctx)
+            self.skill_engine.fire_pendants("ON_GAME_START", player, game_start_ctx)
 
     @property
     def winner(self) -> str | None:
