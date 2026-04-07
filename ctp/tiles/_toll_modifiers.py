@@ -27,10 +27,13 @@ def _get_held_card_effect(card_id: str) -> str:
 def apply_toll_modifiers(
     player: Player, owner: Optional[Player], tile, rent: float, event_bus,
     use_card_fn=None,
+    skill_toll_waived: bool = False,
+    skill_toll_multiply: float = 1.0,
+    skill_toll_boost_pct: int = 0,
 ) -> tuple[float, bool]:
-    """Apply virus/double_toll/held_card modifiers lên rent.
+    """Apply skill + virus/double_toll/held_card modifiers lên rent.
 
-    Per D-44 thứ tự: tile_debuff → double_toll → EF_20 Angel → EF_2 Discount.
+    Order: skill_waive → skill_multiply → skill_boost → tile_debuff → double_toll → EF_20 Angel → EF_2 Discount.
 
     Args:
         player: Player đang trả toll.
@@ -41,10 +44,23 @@ def apply_toll_modifiers(
         use_card_fn: Optional callback (player, card_id, toll_amount) -> bool.
             Nếu None (headless/AI): luôn dùng thẻ.
             Nếu trả về False: giữ thẻ, trả toll bình thường.
+        skill_toll_waived: True nếu BuaSet/GiayBay/MangNhen/SieuTaxi waive toll.
+        skill_toll_multiply: NgoiSao toll multiplier (default 1.0).
+        skill_toll_boost_pct: TuiBaGang/KetVang boost percent (default 0).
 
     Returns:
         (modified_rent, skip_toll) — nếu skip_toll=True thì không trừ tiền.
     """
+    # Step 0: Skill-based toll modifiers (from pre-toll hooks in FSM)
+    if skill_toll_waived:
+        return 0.0, True
+
+    if skill_toll_multiply != 1.0:
+        rent = int(rent * skill_toll_multiply)
+
+    if skill_toll_boost_pct > 0:
+        rent = int(rent * (1 + skill_toll_boost_pct / 100))
+
     # Step 1: tile-level virus/yellow-sand debuff — clear ngay khi visitor đầu tiên đặt chân vào
     if tile.toll_debuff_turns > 0:
         rate = tile.toll_debuff_rate   # 0.0 = miễn phí, 0.5 = giảm 50%

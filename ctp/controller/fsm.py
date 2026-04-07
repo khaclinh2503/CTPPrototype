@@ -104,6 +104,7 @@ class GameController:
         self._doubles_streak: int = 0       # đổ đôi liên tiếp; 3 lần → vào tù
         self._elevated_tile_to_resolve: int | None = None  # vị trí ô nâng cần resolve
         self._pending_debt: int = 0  # nợ thuê chưa trả (khi không đủ tiền trả ngay)
+        self._pending_direction: str = "forward"  # SK_MOONWALK: "forward" or "backward"
 
     @property
     def current_player(self) -> Player:
@@ -861,8 +862,16 @@ class GameController:
                 return events
 
         # --- Di chuyển bình thường ---
-        new_pos = old_pos + dice_total
-        self._passed_start = new_pos > 32
+        # SK_MOONWALK: backward movement support
+        direction = self._pending_direction
+        self._pending_direction = "forward"  # reset after consuming
+
+        if direction == "backward":
+            new_pos = ((old_pos - 1 - dice_total) % 32) + 1
+            self._passed_start = False  # backward never triggers Start bonus
+        else:
+            new_pos = old_pos + dice_total
+            self._passed_start = new_pos > 32
 
         start_tile = self.board.get_tile(1)
         strategy = TileRegistry.resolve(SpaceId.START)
@@ -891,7 +900,10 @@ class GameController:
         # [SKILL] ON_MOVE_PASS: fire CamCo, PhaHuy for each tile passed (dice_walk)
         if self.skill_engine:
             for step in range(1, dice_total):
-                mid_pos = ((old_pos - 1 + step) % 32) + 1
+                if direction == "backward":
+                    mid_pos = ((old_pos - 1 - step) % 32) + 1
+                else:
+                    mid_pos = ((old_pos - 1 + step) % 32) + 1
                 mid_tile = self.board.get_tile(mid_pos)
                 move_pass_ctx = {
                     "board": self.board,
@@ -914,7 +926,10 @@ class GameController:
                         }
                         self.skill_engine.fire_pet("ON_OPPONENT_PASS_YOURS", owner, opp_pass_ctx)
 
-        self.current_player.position = ((new_pos - 1) % 32) + 1
+        if direction == "backward":
+            self.current_player.position = new_pos
+        else:
+            self.current_player.position = ((new_pos - 1) % 32) + 1
 
         self.event_bus.publish(GameEvent(
             event_type=EventType.PLAYER_MOVE,
@@ -924,6 +939,7 @@ class GameController:
                 "new_pos": self.current_player.position,
                 "passed_start": self._passed_start,
                 "move_type": 1,   # walk tile-by-tile
+                "direction": direction,
             }
         ))
 
@@ -966,6 +982,68 @@ class GameController:
             extra["donate_select_fn"] = self.donate_select_fn
         elif tile.space_id in (SpaceId.CITY, SpaceId.RESORT):
             extra["use_card_fn"] = self.use_card_fn
+
+        # [SKILL] Pre-toll hooks: fire BEFORE on_land() so toll modifiers apply
+        if self.skill_engine and tile.space_id in (SpaceId.CITY, SpaceId.RESORT):
+            is_opponent_tile = (tile.owner_id is not None
+                                and tile.owner_id != self.current_player.player_id)
+            if is_opponent_tile:
+                player = self.current_player
+                base_ctx = {"board": self.board, "players": self.players}
+                toll_ctx = {**base_ctx, "is_player_turn": True, "tile": tile}
+
+                # D-45: check free-toll skills first
+                toll_results = self.skill_engine.fire("ON_LAND_OPPONENT", player, toll_ctx)
+                toll_pendant_results = self.skill_engine.fire_pendants(
+                    "ON_LAND_OPPONENT", player, toll_ctx)
+
+                all_toll_results = toll_results + toll_pendant_results
+
+                # Check toll_waive (BuaSet, GiayBay, MangNhen R1, SieuTaxi R2)
+                skill_toll_waived = any(
+                    isinstance(r, dict) and r.get("type") in ("toll_waive", "toll_waive_and_travel")
+                    for r in all_toll_results
+                )
+
+                # Owner-side hooks: NgoiSao toll_multiply, CuongChe, ChongMuaNha
+                owner = next(
+                    (p for p in self.players if p.player_id == tile.owner_id), None
+                )
+                skill_toll_multiply = 1.0
+                owner_toll_waived = False
+                if owner:
+                    opp_land_ctx = {**base_ctx, "is_player_turn": False,
+                                    "tile": tile, "visitor": player,
+                                    "opponent": player}
+                    owner_results = self.skill_engine.fire(
+                        "ON_OPPONENT_LAND_YOURS", owner, opp_land_ctx)
+                    owner_pendant_results = self.skill_engine.fire_pendants(
+                        "ON_OPPONENT_LAND_YOURS", owner, opp_land_ctx)
+                    for r in (owner_results + owner_pendant_results):
+                        if isinstance(r, dict):
+                            if r.get("type") == "toll_multiply":
+                                skill_toll_multiply *= r.get("factor", 1)
+                                if r.get("toll_waived"):
+                                    owner_toll_waived = True
+
+                if owner_toll_waived:
+                    skill_toll_waived = True
+
+                # Toll boost (TuiBaGang E1, KetVang E1) — only if not waived
+                skill_toll_boost_pct = 0
+                if not skill_toll_waived:
+                    boost_ctx = {**base_ctx, "is_player_turn": True, "tile": tile}
+                    boost_results = self.skill_engine.fire("ON_TOLL_BOOST", player, boost_ctx)
+                    boost_pendant_results = self.skill_engine.fire_pendants(
+                        "ON_TOLL_BOOST", player, boost_ctx)
+                    for r in (boost_results + boost_pendant_results):
+                        if isinstance(r, dict) and r.get("type") == "toll_boost":
+                            skill_toll_boost_pct += r.get("percent", 0)
+
+                extra["skill_toll_waived"] = skill_toll_waived
+                extra["skill_toll_multiply"] = skill_toll_multiply
+                extra["skill_toll_boost_pct"] = skill_toll_boost_pct
+
         events = strategy.on_land(
             self.current_player, tile, self.board, self.event_bus,
             players=self.players, **extra
@@ -1017,23 +1095,9 @@ class GameController:
                     self.skill_engine.fire_pendants("ON_LAND_OWN", player, own_ctx)
 
                 elif is_opponent_tile:
-                    # D-45 toll order: check free-toll skills first
-                    toll_ctx = {**base_ctx, "is_player_turn": True, "tile": tile}
-                    toll_results = self.skill_engine.fire("ON_LAND_OPPONENT", player, toll_ctx)
-                    toll_pendant_results = self.skill_engine.fire_pendants(
-                        "ON_LAND_OPPONENT", player, toll_ctx)
-
-                    # Check for toll waive (BuaSet, GiayBay, MangNhen R1, SieuTaxi R2)
-                    toll_waived = any(
-                        isinstance(r, dict) and r.get("type") in ("toll_waive",)
-                        for r in (toll_results + toll_pendant_results)
-                    )
-
-                    if not toll_waived:
-                        # Fire toll boost skills (NgoiSao x2, TuiBaGang E1, KetVang E1)
-                        boost_ctx = {**base_ctx, "is_player_turn": True, "tile": tile}
-                        self.skill_engine.fire("ON_TOLL_BOOST", player, boost_ctx)
-                        self.skill_engine.fire_pendants("ON_TOLL_BOOST", player, boost_ctx)
+                    # NOTE: ON_LAND_OPPONENT, ON_OPPONENT_LAND_YOURS, ON_TOLL_BOOST
+                    # now fire PRE-on_land (see pre-toll hooks above) so toll modifiers
+                    # apply correctly. Only post-toll hooks remain here.
 
                     # ON_CANT_AFFORD_TOLL: PET_THIEN_THAN
                     toll_amount = 0
@@ -1045,17 +1109,6 @@ class GameController:
                         cant_ctx = {**base_ctx, "is_player_turn": True,
                                     "tile": tile, "toll": toll_amount}
                         self.skill_engine.fire_pet("ON_CANT_AFFORD_TOLL", player, cant_ctx)
-
-                    # ON_OPPONENT_LAND_YOURS: fire for property owner (NgoiSao, CuongChe, ChongMuaNha)
-                    owner = next(
-                        (p for p in self.players if p.player_id == tile.owner_id), None
-                    )
-                    if owner:
-                        opp_land_ctx = {**base_ctx, "is_player_turn": False,
-                                        "tile": tile, "visitor": player}
-                        self.skill_engine.fire("ON_OPPONENT_LAND_YOURS", owner, opp_land_ctx)
-                        self.skill_engine.fire_pendants(
-                            "ON_OPPONENT_LAND_YOURS", owner, opp_land_ctx)
 
                 # ON_MOVE_TO_OPPONENT: check if any other player is on this tile
                 for other in self.players:
